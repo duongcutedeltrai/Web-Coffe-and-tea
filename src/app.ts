@@ -1,11 +1,21 @@
-const express = require('express')
+import express from "express"
+import webRouter from "./router/web";
+
+
 const app = express()
-const port = 3000
+const PORT = process.env.PORT || 3000;
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
+//config view enginee
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
 
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+
+//static files
+app.use(express.static('public'))
+
+//config routers
+webRouter(app)
+
+app.listen(PORT, () => {
+    console.log(`Example app listening on port ${PORT}`);
 })
