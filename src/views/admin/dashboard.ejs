@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>MIRA - Whiskas Dry Adult Dewasa 7+</title>
+        <link rel="stylesheet" href="/admin/css/style.css" />
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="32x32"
+            href="/images/favicon/favicon-32x32.png"
+        />
+
+        <style>
+            /* Main Content */
+            .main-content {
+                margin-left: 250px;
+                flex: 1;
+                padding: 0;
+            }
+
+        
+           
+            .content {
+                padding: 30px;
+                display: flex;
+                gap: 40px;
+            }
+
+            .product-section {
+                flex: 1;
+            }
+
+            .product-image {
+                width: 100%;
+                max-width: 400px;
+                height: 400px;
+                background: #fff;
+                border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                margin-bottom: 30px;
+                overflow: hidden;
+            }
+
+            .product-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .chart-section {
+                background: white;
+                border-radius: 15px;
+                padding: 25px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            }
+
+            .chart-title {
+                font-size: 16px;
+                font-weight: 600;
+                margin-bottom: 20px;
+                color: #333;
+            }
+
+            .chart {
+                height: 200px;
+                display: flex;
+                align-items: end;
+                justify-content: space-between;
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+
+            .bar {
+                background: #e53e3e;
+                min-height: 20px;
+                border-radius: 4px;
+                transition: all 0.3s ease;
+                cursor: pointer;
+                flex: 1;
+            }
+
+            .bar:hover {
+                background: #c53030;
+                transform: scale(1.05);
+            }
+
+            .chart-labels {
+                display: flex;
+                justify-content: space-between;
+                font-size: 12px;
+                color: #666;
+                margin-top: 10px;
+            }
+
+            .product-details {
+                width: 350px;
+                background: white;
+                border-radius: 15px;
+                padding: 30px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+                height: fit-content;
+            }
+
+            .product-title {
+                font-size: 24px;
+                font-weight: 700;
+                color: #333;
+                margin-bottom: 15px;
+                line-height: 1.3;
+            }
+
+            .rating {
+                display: flex;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+
+            .stars {
+                color: #ffd700;
+                margin-right: 10px;
+            }
+
+            .rating-text {
+                color: #666;
+                font-size: 14px;
+            }
+
+            .price {
+                font-size: 32px;
+                font-weight: 700;
+                color: #e53e3e;
+                margin-bottom: 20px;
+            }
+
+            .description {
+                color: #666;
+                line-height: 1.6;
+                margin-bottom: 25px;
+                font-size: 14px;
+            }
+
+            .quantity-section {
+                display: flex;
+                align-items: center;
+                margin-bottom: 25px;
+                gap: 15px;
+            }
+
+            .quantity-label {
+                font-weight: 600;
+                color: #333;
+            }
+
+            .quantity-controls {
+                display: flex;
+                align-items: center;
+                border: 2px solid #e2e8f0;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            .quantity-btn {
+                width: 40px;
+                height: 40px;
+                border: none;
+                background: #f7fafc;
+                cursor: pointer;
+                font-size: 18px;
+                font-weight: bold;
+                transition: all 0.2s;
+            }
+
+            .quantity-btn:hover {
+                background: #e2e8f0;
+            }
+
+            .quantity-input {
+                width: 60px;
+                height: 40px;
+                border: none;
+                text-align: center;
+                font-weight: 600;
+                outline: none;
+            }
+
+            .action-buttons {
+                display: flex;
+                gap: 15px;
+                margin-bottom: 30px;
+            }
+
+            .btn-primary {
+                flex: 1;
+                padding: 15px 25px;
+                background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+                color: white;
+                border: none;
+                border-radius: 12px;
+                font-size: 16px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 15px rgba(229, 62, 62, 0.4);
+            }
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(229, 62, 62, 0.6);
+            }
+
+            .btn-secondary {
+                padding: 15px 20px;
+                background: white;
+                border: 2px solid #e2e8f0;
+                border-radius: 12px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .btn-secondary:hover {
+                border-color: #e53e3e;
+                color: #e53e3e;
+            }
+
+            /* Reviews Section */
+            .reviews-section {
+                background: white;
+                border-radius: 15px;
+                padding: 30px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+                margin-top: 30px;
+            }
+
+            .reviews-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 25px;
+            }
+
+            .reviews-title {
+                font-size: 20px;
+                font-weight: 700;
+                color: #333;
+            }
+
+            .overall-rating {
+                text-align: center;
+            }
+
+            .rating-score {
+                font-size: 48px;
+                font-weight: 700;
+                color: #e53e3e;
+                margin-bottom: 10px;
+            }
+
+            .rating-breakdown {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                margin: 20px 0;
+            }
+
+            .rating-row {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .rating-stars-small {
+                color: #ffd700;
+                font-size: 14px;
+            }
+
+            .rating-bar {
+                flex: 1;
+                height: 8px;
+                background: #e2e8f0;
+                border-radius: 4px;
+                overflow: hidden;
+            }
+
+            .rating-fill {
+                height: 100%;
+                background: #e53e3e;
+                border-radius: 4px;
+            }
+
+            .rating-count {
+                font-size: 12px;
+                color: #666;
+                width: 30px;
+            }
+
+            .review-item {
+                border-bottom: 1px solid #e2e8f0;
+                padding: 20px 0;
+                display: flex;
+                gap: 15px;
+            }
+
+            .review-item:last-child {
+                border-bottom: none;
+            }
+
+            .reviewer-avatar {
+                width: 45px;
+                height: 45px;
+                background: #e2e8f0;
+                border-radius: 50%;
+                flex-shrink: 0;
+            }
+
+            .review-content {
+                flex: 1;
+            }
+
+            .reviewer-info {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 8px;
+            }
+
+            .reviewer-name {
+                font-weight: 600;
+                color: #333;
+            }
+
+            .review-date {
+                color: #666;
+                font-size: 12px;
+            }
+
+            .review-rating {
+                color: #ffd700;
+                font-size: 14px;
+                margin-bottom: 8px;
+            }
+
+            .review-text {
+                color: #666;
+                line-height: 1.5;
+                font-size: 14px;
+            }
+
+            .review-images {
+                display: flex;
+                gap: 8px;
+                margin-top: 10px;
+            }
+
+            .review-image {
+                width: 60px;
+                height: 60px;
+                background: #e2e8f0;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            .review-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            @media (max-width: 768px) {
+                .sidebar {
+                    transform: translateX(-100%);
+                    transition: transform 0.3s ease;
+                }
+
+                .sidebar.active {
+                    transform: translateX(0);
+                }
+
+                .main-content {
+                    margin-left: 0;
+                }
+
+                .content {
+                    flex-direction: column;
+                    gap: 20px;
+                }
+
+                .product-details {
+                    width: 100%;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <%- include('./layout/sidebar.ejs'); -%>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <%- include('./layout/header.ejs'); -%>
+
+                <div class="content">
+                    <div class="product-section">
+                        <div class="product-image">
+                            <img
+                                src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjRjdGQUZDIi8+CjxyZWN0IHg9IjUwIiB5PSIxMDAiIHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiByeD0iMjAiIGZpbGw9InVybCgjZ3JhZGllbnQwX2xpbmVhcl8xXzEpIi8+CjxjaXJjbGUgY3g9IjIwMCIgY3k9IjE4MCIgcj0iNDAiIGZpbGw9IiNGRkQ3MDAiIG9wYWNpdHk9IjAuOCIvPgo8dGV4dCB4PSIyMDAiIHk9IjM0MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4IiBmaWxsPSIjNjY2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5XaGlza2FzIERyeSBBZHVsdCBEZXdhc2EgNys8L3RleHQ+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50MF9saW5lYXJfMV8xIiB4MT0iNTAiIHkxPSIxMDAiIHgyPSIzNTAiIHkyPSIzMDAiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHN0b3Agc3RvcC1jb2xvcj0iI0ZGQjMzMyIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNGRjg5MDAiLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4K"
+                                alt="Whiskas Dry Adult Dewasa 7+"
+                            />
+                        </div>
+
+                        <div class="chart-section">
+                            <h3 class="chart-title">Đơn vị bán phân này</h3>
+                            <div class="chart">
+                                <div class="bar" style="height: 60%"></div>
+                                <div class="bar" style="height: 40%"></div>
+                                <div class="bar" style="height: 45%"></div>
+                                <div class="bar" style="height: 35%"></div>
+                                <div class="bar" style="height: 30%"></div>
+                                <div class="bar" style="height: 65%"></div>
+                                <div class="bar" style="height: 50%"></div>
+                            </div>
+                            <div class="chart-labels">
+                                <span>T2</span>
+                                <span>T3</span>
+                                <span>T4</span>
+                                <span>T5</span>
+                                <span>T6</span>
+                                <span>T7</span>
+                                <span>CN</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-details">
+                        <h1 class="product-title">
+                            Whiskas® Dry Adult Dewasa 7+, Cat food Rasa Mackerel
+                        </h1>
+
+                        <div class="rating">
+                            <div class="stars">★★★★☆</div>
+                            <span class="rating-text">4.5 (128 reviews)</span>
+                        </div>
+
+                        <div class="price">$33.00</div>
+
+                        <div class="description">
+                            Whiskas Dry Adult Dewasa 7+ dengan rasa mackerel
+                            memberikan nu   trisi lengkap untuk kucing dewasa usia
+                            7 tahun ke atas. Diperkaya dengan vitamin dan
+                            mineral penting untuk menjaga kesehatan kucing
+                            kesayangan Anda.
+                        </div>
+
+                        <div class="quantity-section">
+                            <span class="quantity-label">Số lượng:</span>
+                            <div class="quantity-controls">
+                                <button
+                                    class="quantity-btn"
+                                    onclick="decreaseQuantity()"
+                                >
+                                    -
+                                </button>
+                                <input
+                                    type="number"
+                                    class="quantity-input"
+                                    value="1"
+                                    id="quantity"
+                                    min="1"
+                                />
+                                <button
+                                    class="quantity-btn"
+                                    onclick="increaseQuantity()"
+                                >
+                                    +
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button class="btn-primary" onclick="addToCart()">
+                                Thêm vào giỏ hàng
+                            </button>
+                            <button class="btn-secondary">♡</button>
+                            <button class="btn-secondary">↗</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reviews Section -->
+                <div class="reviews-section" style="margin: 0 30px 30px 30px">
+                    <div class="reviews-header">
+                        <h2 class="reviews-title">Reviews and Ratings</h2>
+                        <div class="overall-rating">
+                            <div class="rating-score">4.5</div>
+                            <div class="stars">★★★★☆</div>
+                            <div style="font-size: 12px; color: #666">
+                                Based on 128 reviews
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rating-breakdown">
+                        <div class="rating-row">
+                            <span class="rating-stars-small">★★★★★</span>
+                            <div class="rating-bar">
+                                <div
+                                    class="rating-fill"
+                                    style="width: 85%"
+                                ></div>
+                            </div>
+                            <span class="rating-count">85</span>
+                        </div>
+                        <div class="rating-row">
+                            <span class="rating-stars-small">★★★★☆</span>
+                            <div class="rating-bar">
+                                <div
+                                    class="rating-fill"
+                                    style="width: 65%"
+                                ></div>
+                            </div>
+                            <span class="rating-count">25</span>
+                        </div>
+                        <div class="rating-row">
+                            <span class="rating-stars-small">★★★☆☆</span>
+                            <div class="rating-bar">
+                                <div
+                                    class="rating-fill"
+                                    style="width: 15%"
+                                ></div>
+                            </div>
+                            <span class="rating-count">12</span>
+                        </div>
+                        <div class="rating-row">
+                            <span class="rating-stars-small">★★☆☆☆</span>
+                            <div class="rating-bar">
+                                <div
+                                    class="rating-fill"
+                                    style="width: 5%"
+                                ></div>
+                            </div>
+                            <span class="rating-count">4</span>
+                        </div>
+                        <div class="rating-row">
+                            <span class="rating-stars-small">★☆☆☆☆</span>
+                            <div class="rating-bar">
+                                <div
+                                    class="rating-fill"
+                                    style="width: 2%"
+                                ></div>
+                            </div>
+                            <span class="rating-count">2</span>
+                        </div>
+                    </div>
+
+                    <div class="reviews-list">
+                        <div class="review-item">
+                            <div class="reviewer-avatar"></div>
+                            <div class="review-content">
+                                <div class="reviewer-info">
+                                    <span class="reviewer-name"
+                                        >Phạm Hoàng Đình</span
+                                    >
+                                    <span class="review-date">Frame 5017</span>
+                                </div>
+                                <div class="review-rating">★★★★★</div>
+                                <div class="review-text">
+                                    A real wonder was a head from Vietnam as
+                                    well. A good location and breakfast is very
+                                    delicious as one piece of the best food in
+                                    very nice with good people and very
+                                    friendly.
+                                </div>
+                                <div class="review-images">
+                                    <div class="review-image"></div>
+                                    <div class="review-image"></div>
+                                    <div class="review-image"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="review-item">
+                            <div class="reviewer-avatar"></div>
+                            <div class="review-content">
+                                <div class="reviewer-info">
+                                    <span class="reviewer-name"
+                                        >Phạm Hoàng Đình</span
+                                    >
+                                    <span class="review-date">Frame 5017</span>
+                                </div>
+                                <div class="review-rating">★★★★★</div>
+                                <div class="review-text">
+                                    I am serious was a head from Vietnam as
+                                    well. A good location and breakfast is very
+                                    delicious as one piece of the best food in
+                                    very nice and very helpful.
+                                </div>
+                                <div class="review-images">
+                                    <div class="review-image"></div>
+                                    <div class="review-image"></div>
+                                    <div class="review-image"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="review-item">
+                            <div class="reviewer-avatar"></div>
+                            <div class="review-content">
+                                <div class="reviewer-info">
+                                    <span class="reviewer-name"
+                                        >Phạm Hoàng Đình</span
+                                    >
+                                    <span class="review-date">Frame 5016</span>
+                                </div>
+                                <div class="review-rating">★★★★☆</div>
+                                <div class="review-text">
+                                    A real wonder was a head from Vietnam as
+                                    well. A good location and breakfast is very
+                                    delicious as one piece of the best food in
+                                    very nice with very
+                                </div>
+                                <div class="review-images">
+                                    <div class="review-image"></div>
+                                    <div class="review-image"></div>
+                                    <div class="review-image"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <script>
+            function decreaseQuantity() {
+                const input = document.getElementById("quantity");
+                const currentValue = parseInt(input.value);
+                if (currentValue > 1) {
+                    input.value = currentValue - 1;
+                }
+            }
+
+            function increaseQuantity() {
+                const input = document.getElementById("quantity");
+                const currentValue = parseInt(input.value);
+                input.value = currentValue + 1;
+            }
+
+            function addToCart() {
+                const quantity = document.getElementById("quantity").value;
+                alert(`Đã thêm ${quantity} sản phẩm vào giỏ hàng!`);
+            }
+
+            // Mobile menu toggle (if needed)
+            function toggleSidebar() {
+                const sidebar = document.querySelector(".sidebar");
+                sidebar.classList.toggle("active");
+            }
+
+            // Add hover effects to chart bars
+            document.querySelectorAll(".bar").forEach((bar, index) => {
+                bar.addEventListener("mouseenter", function () {
+                    this.style.transform = "scale(1.05)";
+                    this.style.boxShadow = "0 4px 8px rgba(229, 62, 62, 0.3)";
+                });
+
+                bar.addEventListener("mouseleave", function () {
+                    this.style.transform = "scale(1)";
+                    this.style.boxShadow = "none";
+                });
+            });
+
+            // Add smooth scrolling animation
+            window.addEventListener("scroll", function () {
+                const elements = document.querySelectorAll(
+                    ".product-details, .chart-section, .reviews-section"
+                );
+                elements.forEach((element) => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const elementVisible = 150;
+
+                    if (elementTop < window.innerHeight - elementVisible) {
+                        element.style.opacity = "1";
+                        element.style.transform = "translateY(0)";
+                    }
+                });
+            });
+
+            // Initialize animation styles
+            document
+                .querySelectorAll(
+                    ".product-details, .chart-section, .reviews-section"
+                )
+                .forEach((element) => {
+                    element.style.opacity = "0";
+                    element.style.transform = "translateY(20px)";
+                    element.style.transition = "all 0.6s ease";
+                });
+
+            // Show elements on load
+            window.addEventListener("load", function () {
+                setTimeout(() => {
+                    document
+                        .querySelectorAll(
+                            ".product-details, .chart-section, .reviews-section"
+                        )
+                        .forEach((element) => {
+                            element.style.opacity = "1";
+                            element.style.transform = "translateY(0)";
+                        });
+                }, 300);
+            });
+        </script>
+    </body>
+</html>

@@ -1,5 +1,5 @@
 import express from "express"
-import webRouter from "./router/web";
+import webRouter from "./routers/web";
 
 
 const app = express()
