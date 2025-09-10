@@ -96,7 +96,7 @@ body {
 }
 
 .sb-sidenav-toggled .main-content {
-    margin-left: 0;
+    margin-left: -250px;
 }
 
 /* header */
