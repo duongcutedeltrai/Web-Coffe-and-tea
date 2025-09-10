@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIRA Restaurant Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/admin/css/dashboard.css">
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <%- include('../layout/sidebar.ejs'); -%>
+
+                <!-- Main Content -->
+                <div class="col-md-9 col-lg-10 px-0">
+
+                    <!-- Left: Page Title -->
+                    <div class="main-content">
+                        <!-- Header -->
+                        <%- include('../layout/header.ejs'); -%>
+                            <!-- Dashboard Content -->
+                            <div class="dashboard-content">
+                                <h4 class="mb-4">Dashboard</h4>
+                                <!-- Stats Cards -->
+                                <div class="row mb-4">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="stat-card">
+                                            <div class="stat-icon purple">
+                                                <i class="fas fa-users"></i>
+                                            </div>
+                                            <div class="stat-value">40,689</div>
+                                            <div class="stat-label">Total User</div>
+                                            <div class="stat-change positive">
+                                                <i class="fas fa-arrow-up"></i>
+                                                8.5% Up from yesterday
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="stat-card">
+                                            <div class="stat-icon orange">
+                                                <i class="fas fa-shopping-cart"></i>
+                                            </div>
+                                            <div class="stat-value">10,293</div>
+                                            <div class="stat-label">Total Order</div>
+                                            <div class="stat-change positive">
+                                                <i class="fas fa-arrow-up"></i>
+                                                1.3% Up from past week
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="stat-card">
+                                            <div class="stat-icon green">
+                                                <i class="fas fa-dollar-sign"></i>
+                                            </div>
+                                            <div class="stat-value">$89,000</div>
+                                            <div class="stat-label">Total Sales</div>
+                                            <div class="stat-change negative">
+                                                <i class="fas fa-arrow-down"></i>
+                                                4.3% Down from yesterday
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Sales Chart -->
+                                <div class="chart-section">
+                                    <div class="chart-header">
+                                        <h5 class="chart-title">Sales Details</h5>
+                                        <select class="form-select w-auto">
+                                            <option>October</option>
+                                            <option>November</option>
+                                            <option>December</option>
+                                        </select>
+                                    </div>
+                                    <!-- <canvas id="salesChart" height="100"></canvas> -->
+                                </div>
+
+                                <!-- Bottom Section -->
+                                <div class="bottom-section">
+                                    <!-- Order Type Chart -->
+                                    <div class="chart-card">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h5>Most Type of Order</h5>
+                                            <button class="btn btn-danger btn-sm">Today</button>
+                                        </div>
+                                        <!-- <canvas id="orderChart" height="200"></canvas> -->
+                                    </div>
+
+                                    <!-- Top Menu Items -->
+                                    <div class="chart-card">
+                                        <h5 class="mb-3">Top Menu Items</h5>
+                                        <div class="menu-item">
+                                            <div class="menu-item-image">🍕</div>
+                                            <div class="menu-item-info">
+                                                <div class="menu-item-name">Veg Crispy</div>
+                                                <div class="menu-item-percentage">67%</div>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-warning" style="width: 67%"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="menu-item">
+                                            <div class="menu-item-image">🍖</div>
+                                            <div class="menu-item-info">
+                                                <div class="menu-item-name">Paneer Chilly</div>
+                                                <div class="menu-item-percentage">40%</div>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-info" style="width: 40%"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="menu-item">
+                                            <div class="menu-item-image">🥗</div>
+                                            <div class="menu-item-info">
+                                                <div class="menu-item-name">Creamy lasches</div>
+                                                <div class="menu-item-percentage">30%</div>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-success" style="width: 30%"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="menu-item">
+                                            <div class="menu-item-image">🍛</div>
+                                            <div class="menu-item-info">
+                                                <div class="menu-item-name">Veg khichpuri</div>
+                                                <div class="menu-item-percentage">50%</div>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-primary" style="width: 50%"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Deals Table -->
+                                <div class="deals-table">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5>Deals Details</h5>
+                                        <button class="btn btn-danger btn-sm">View All</button>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Customer</th>
+                                                    <th>Menu</th>
+                                                    <th>Date - Time</th>
+                                                    <th>Amount</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="customer-avatar me-2">AW</div>
+                                                            <span>Angia Watson</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>0959 Nopalitos Lansing</td>
+                                                    <td>12.09.2019 - 12.53 PM</td>
+                                                    <td>$54.16</td>
+                                                    <td><span class="status-badge status-delivered">Delivered</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="customer-avatar me-2">AW</div>
+                                                            <span>Angia Watson</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>0959 Nopalitos Lansing</td>
+                                                    <td>12.09.2019 - 12.53 PM</td>
+                                                    <td>$54.16</td>
+                                                    <td><span class="status-badge status-pending">Pending</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="customer-avatar me-2">AW</div>
+                                                            <span>Angia Watson</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>0959 Nopalitos Lansing</td>
+                                                    <td>12.09.2019 - 12.53 PM</td>
+                                                    <td>$54.16</td>
+                                                    <td><span class="status-badge status-cancelled">Cancelled</span>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="/admin/js/dashboard.js"></script>
+</body>
+
+</html>
