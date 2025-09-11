@@ -358,28 +358,44 @@ body {
     font-size: 0.9rem;
 }
 
+#sidebarToggle {
+    border: none;
+    background: transparent;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Mobile */
 @media (max-width: 768px) {
-    .bottom-section {
-        grid-template-columns: 1fr;
+    #sidebarToggle {
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        z-index: 1100;
+        border: none;
+        background: transparent;
+        font-size: 1.5rem;
+        cursor: pointer;
+        border-radius: 8px;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .header {
+        left: 0;
+        width: 100%;
+    }
+
+    .infor-header {
+        position: relative;
+        right: -242px;
     }
 
     .sidebar {
-        position: fixed;
         left: -250px;
-        width: 250px;
-        z-index: 1000;
         transition: left 0.3s ease;
     }
 
     .sidebar.show {
         left: 0;
-    }
-
-    .main-content {
-        margin-left: 0;
-    }
-
-    .dashboard-content {
-        padding: 1rem;
     }
 }
