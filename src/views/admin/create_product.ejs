@@ -1,0 +1,112 @@
+<div class="overlay" id="overlay">
+    <div class="popup">
+        <span class="close-btn" id="closeBtn">&larr;</span>
+
+        <form
+            action=""
+            method="post"
+            class="product-form"
+            enctype="multipart/form-data"
+        >
+            <div class="form__content">
+                <div class="form_left">
+                    <h2>Add Food</h2>
+                    <label>Name <span class="bb">*</span></label>
+                    <input
+                        type="text"
+                        placeholder="Enter food name"
+                        name="name"
+                    />
+
+                    <label>Description</label>
+                    <textarea
+                        placeholder="Enter description"
+                        name="desc"
+                    ></textarea>
+
+                    <label>Price <span class="bb">*</span></label>
+                    <div class="price-group">
+                        <div class="sizes__form">
+                            <input
+                                type="button"
+                                class="size-btn active"
+                                id="sizeM"
+                                value="M"
+                            />
+                            <input
+                                type="button"
+                                class="size-btn"
+                                id="sizeL"
+                                value="L"
+                            />
+                            <input
+                                type="button"
+                                class="size-btn"
+                                id="sizeXL"
+                                value="XL"
+                            />
+                        </div>
+                        <input
+                            type="text"
+                            id="priceInput"
+                            class="price-input"
+                            placeholder="Nhập giá"
+                        />
+                    </div>
+                    <label>Cập nhật tình trạng <span class="bb">*</span></label>
+                    <input type="text" style="display: none" name="status" />
+                    <div class="status-group">
+                        <div class="status-btn active">Đang bán</div>
+                        <div class="status-btn">Hết hàng</div>
+                        <div class="status-btn">Tạm ẩn</div>
+                    </div>
+                </div>
+                <div class="form_right">
+                    <label>Preview images</label>
+                    <!-- Input file -->
+                    <!-- Khung upload -->
+                    <label class="upload-box" id="dropArea">
+                        <span class="plus">+</span>
+                        Drop your images here, or
+                        <span style="color: #d64a4a; text-decoration: underline"
+                            >click to browse</span
+                        >
+                        <small
+                            >1600 × 1200 (4:3) recommended, up to 10MB
+                            each.</small
+                        >
+                        <input
+                            type="file"
+                            id="fileInput"
+                            multiple
+                            accept="image/*"
+                        />
+                    </label>
+                    <div
+                        class="preview"
+                        id="preview"
+                        style="display: none"
+                    ></div>
+                    <label class="label">Số lượng ly tối đa:</label>
+                    <div class="not_limit">
+                        <p>Cho phép không giới hạn số lượng</p>
+                        <label class="switch">
+                            <input type="checkbox" id="toggle" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div id="inputBox" class="input-wrapper">
+                        <input
+                            type="number"
+                            id="cupInput"
+                            placeholder="Nhập số lượng"
+                        />
+                        <span>Ly</span>
+                    </div>
+                </div>
+            </div>
+            <button class="submit-btn">Sửa thông tin</button>
+        </form>
+    </div>
+</div>

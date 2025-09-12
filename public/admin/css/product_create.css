@@ -1,0 +1,324 @@
+/* Overlay mờ */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    opacity: 0;
+    pointer-events: none;
+    justify-content: flex-end;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+}
+
+.overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+/* Popup container */
+.popup {
+    width: 60%;
+    height: 100vh;
+    background: #fff;
+    padding: 20px 30px;
+    box-shadow: -4px 0 15px rgba(0, 0, 0, 0.2);
+    transform: translateX(100%);
+    transition: transform 0.4s ease-in-out;
+    overflow-y: auto;
+}
+
+.overlay.active .popup {
+    transform: translateX(0);
+}
+
+.bb {
+    color: red;
+}
+h2 {
+    margin-top: 30px;
+    /* margin-left: 20px; */
+    font-size: 42px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+.product-form {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.form__content {
+    padding: 20px;
+    display: flex;
+    /* flex-direction: column; */
+    gap: 35px;
+    margin-top: 10px;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.form_left {
+    width: 60%;
+}
+
+label {
+    display: block;
+    margin: 26px 0 9px;
+    font-weight: 500;
+}
+
+input[type="text"],
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+}
+textarea {
+    height: 170px;
+}
+input[type="text"]:focus,
+input[type="number"]:focus,
+textarea:focus {
+    border: 1px solid #f72b2b; /* viền đỏ */
+    outline: none; /* bỏ viền mặc định xanh */
+    box-shadow: 0 0 0 2px rgba(236, 46, 46, 0.548); /* hiệu ứng mờ đỏ */
+}
+textarea {
+    min-height: 70px;
+}
+.sizes__form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.size-btn {
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    background: white;
+    transition: 0.2s;
+}
+.size-btn.active {
+    background: #b71c1c;
+    color: #fff;
+    border: none;
+}
+.price-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+}
+.price-group {
+    display: flex;
+    flex-direction: column;
+    /* gap: 7px; */
+    margin: 10px 0;
+}
+.price-option {
+    width: 60px;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.price-option.active {
+    background: #b71c1c;
+    color: #fff;
+    border: none;
+}
+
+.status-group {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+}
+.status-btn {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+}
+.status-btn.active {
+    background: #b71c1c;
+    color: #fff;
+    border: none;
+}
+
+.dropzone {
+    border: 2px dashed #9ca3af;
+    border-radius: 8px;
+    padding: 30px;
+    font-family: sans-serif;
+    color: #4b5563;
+}
+.dropzone.dz-started .dz-message {
+    display: none;
+}
+
+.upload-box {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.3s;
+    margin-bottom: 30px;
+}
+
+.upload-box:hover {
+    border-color: #666;
+}
+
+.upload-box input {
+    display: none;
+}
+
+.upload-box .plus {
+    font-size: 32px;
+    color: #666;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.upload-box small {
+    display: block;
+    margin-top: 4px;
+    color: #666;
+}
+
+.preview {
+    width: 220px;
+    height: 280px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: auto;
+}
+
+.preview img {
+    /* width: 200px; */
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    object-fit: cover;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    margin-top: 20px;
+    border: none;
+    background: #b71c1c;
+    color: white;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.not_limit {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.not_limit p {
+    /* margin-top: 7px; */
+    color: #b71c1c;
+    font-weight: 500;
+}
+/* Toggle Switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+    margin-left: 10px;
+    vertical-align: middle;
+    margin-top: 10px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #c62828; /* màu đỏ */
+}
+
+input:checked + .slider:before {
+    transform: translateX(22px);
+}
+
+/* Input với suffix */
+.input-wrapper {
+    position: relative;
+    margin-top: 10px;
+}
+
+.input-wrapper input {
+    width: 100%;
+    padding: 10px 40px 10px 12px;
+    border: 2px solid #7b3ff3;
+    border-radius: 8px;
+    outline: none;
+    font-size: 16px;
+}
+
+.input-wrapper span {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    color: #555;
+}
+
+.unlimited-text {
+    color: #c62828;
+    font-weight: 600;
+    margin-top: 5px;
+}
+/* Nút đóng */
+.close-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #b71c1c;
+}
