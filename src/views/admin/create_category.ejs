@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thêm nhóm sản phẩm</title>
+    <link rel="stylesheet" href="/admin/css/categories.css" />
+    <link rel="stylesheet" href="/admin/css/style.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <%- include('./layout/sidebar.ejs'); -%> <%-
+      include('./layout/header.ejs'); -%>
+
+      <div class="content">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div class="page-title">
+            <h1>Thêm nhóm sản phẩm mới</h1>
+            <p class="page-description">Tạo nhóm sản phẩm mới cho hệ thống</p>
+          </div>
+          <a href="/admin/categories" class="btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            Quay lại
+          </a>
+        </div>
+
+        <!-- Add Form -->
+        <div class="form-container">
+          <form
+            id="addGroupForm"
+            class="category-form"
+            method="post"
+            action="/admin/categories/create"
+            enctype="multipart/form-data"
+          >
+            <div class="form-group">
+              <label for="groupName">Tên nhóm</label>
+              <input type="text" id="groupName" name="groupName" required />
+            </div>
+            <div class="form-group">
+              <label for="groupDescription">Mô tả</label>
+              <textarea
+                id="groupDescription"
+                name="groupDescription"
+                rows="3"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label for="groupImage">Hình ảnh tượng trưng</label>
+              <div class="image-upload-container">
+                <input
+                  type="file"
+                  id="groupImage"
+                  name="groupImage"
+                  accept="image/*"
+                  class="image-input"
+                />
+                <div class="image-preview" id="imagePreview">
+                  <i class="fas fa-image"></i>
+                  <span>Chọn hình ảnh</span>
+                </div>
+              </div>
+            </div>
+            <div class="form-actions">
+              <a href="/admin/categories" class="btn-secondary">Hủy</a>
+              <button
+                type="submit"
+                class="btn-primary"
+                onclick="window.location.href='/admin/categories'"
+              >
+                Thêm nhóm
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
