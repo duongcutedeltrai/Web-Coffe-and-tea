@@ -16,9 +16,10 @@ datasource db {
 model cart {
   cart_id      Int            @id @default(autoincrement())
   user_id      Int
-  total        Int
+
+  total        Decimal        @db.Decimal(10, 2)
   quantity     Int
-  users        users          @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction, map: "cart_ibfk_1")
+  users        users          @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "cart_ibfk_1")
   cart_details cart_details[]
 
   @@index([user_id], map: "user_id")
@@ -29,7 +30,8 @@ model cart_details {
   cart_id        Int
   product_id     Int
   quantity       Int
-  price          Int
+
+  price          Decimal  @db.Decimal(10, 2)
   cart           cart     @relation(fields: [cart_id], references: [cart_id], onDelete: NoAction, onUpdate: NoAction, map: "cart_details_ibfk_1")
   products       products @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "cart_details_ibfk_2")
 
@@ -45,6 +47,8 @@ model categories {
   products    products[]
   created_at   DateTime?  @default(now()) @db.DateTime(0)
   deleted_at  DateTime? 
+
+
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -56,6 +60,7 @@ model feedback {
   rating     Int
   comment    String?  @db.VarChar(255)
   users      users    @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction, map: "feedback_ibfk_1")
+
   products   products @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "feedback_ibfk_2")
 
   @@index([product_id], map: "product_id")
@@ -108,6 +113,7 @@ model orders {
   order_details        order_details[]
   order_status_history order_status_history[]
   users                users?                 @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction, map: "orders_ibfk_1")
+
   payment              payment[]
 
   @@index([user_id], map: "user_id")
@@ -129,10 +135,15 @@ model products {
   product_id         Int                  @id @default(autoincrement())
   name               String               @db.VarChar(255)
   description        String?              @db.VarChar(255)
+
   sold               Int                  @default(0)
   category_id        Int?
   images             String?               @db.VarChar(255)
   quantity           Int                  @default(-1)
+
+  //price              Decimal              @db.Decimal(10, 2)
+
+
   cart_details       cart_details[]
   feedback           feedback[]
   inventory          inventory[]
@@ -140,6 +151,7 @@ model products {
   categories         categories?          @relation(fields: [category_id], references: [category_id], onDelete: NoAction, onUpdate: NoAction, map: "products_ibfk_1")
   promotion_products promotion_products[]
   price_product      price_product[]
+
 
   @@index([category_id], map: "category_id")
 }
@@ -155,6 +167,7 @@ model price_product {
   @@unique([product_id, size], map: "product_size_unique")
   @@index([product_id], map: "product_id_idx")
 }
+
 
 model promotion_products {
   promotion_product_id Int        @id @default(autoincrement())
@@ -172,7 +185,9 @@ model promotions {
   promotion_id       Int                  @id @default(autoincrement())
   code               String               @unique(map: "code") @db.VarChar(50)
   description        String?              @db.VarChar(255)
-  discount_percent   Int
+
+  discount_percent   Decimal              @db.Decimal(5, 2)
+
   start_date         DateTime             @db.Date
   end_date           DateTime             @db.Date
   promotion_products promotion_products[]
@@ -186,6 +201,7 @@ model roles {
 }
 
 model users {
+
  user_id  Int         @id @default(autoincrement())
   email    String      @unique(map: "email") @db.VarChar(255)
   username String      @db.VarChar(255)
@@ -205,12 +221,14 @@ model users {
   cart          cart[]
    point_history point_history[]
   staff_detail  staff_detail?
+
   feedback      feedback[]
   orders        orders[]
   roles         roles                @relation(fields: [role_id], references: [role_id], onDelete: NoAction, onUpdate: NoAction, map: "users_ibfk_1")
 
   @@index([role_id], map: "role_id")
 }
+
 
 model point_history {
   id         Int      @id @default(autoincrement())
@@ -244,11 +262,13 @@ enum membership_level {
   GOLD
   DIAMOND
 }
+
 enum inventory_change_type {
   import
   export
   adjustment
 }
+
 
 enum product_size {
   M
@@ -256,6 +276,7 @@ enum product_size {
   XL
   DEFAULT
 }
+
 
 enum order_status_history_status {
   pending
@@ -277,10 +298,12 @@ enum payment_status {
   success
   failed
 }
+
 enum user_status {
   ACTIVE
   LOCKED
 }
+
 enum orders_status {
   pending
   paid

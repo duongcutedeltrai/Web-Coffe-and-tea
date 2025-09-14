@@ -1,18 +1,19 @@
-//import database o day
-// Get the client
 import mysql from "mysql2/promise";
+import dotenv from "dotenv";
+dotenv.config();
 
-// Create the connection to database
-
-const getConection = async () => {
-    const connection = await mysql.createConnection({
-        port: 37695, // default MySQL port
-        host: "shinkansen.proxy.rlwy.net",
-        user: "root",
-        password: "cqAPIvdFQlxmqaqmVSvzHgZMXROCmKbH", // replace with youactual password
-        database: "railway",
-    });
-    return connection;
+const connectionDB = async () => {
+  await mysql.createConnection({
+    port: 3306,
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    // host:"shinkansen.proxy.rlwy.net",
+    // user:"root" ,
+    // password:"cqAPIvdFQlxmqaqmVSvzHgZMXROCmKbH",
+    // database:"db_coffeetea",
+  });
 };
 
-export default getConection;
+export { connectionDB };
