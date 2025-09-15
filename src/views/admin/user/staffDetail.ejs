@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MIRA - Whiskas Dry Adult Dewasa 7+</title>
+    <link rel="stylesheet" href="/admin/css/style.css" />
+    <link rel="stylesheet" href="/admin/css/users/detailUser.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVr   V/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png" />
+</head>
+
+<body>
+    <div class="container">
+        <%- include('../layout/sidebar.ejs'); -%>
+
+            <%- include('../layout/header.ejs'); -%>
+                <!-- Main Content -->
+
+
+                <main class="main-content">
+                    <h2 style="margin-bottom: 20px;">Chi tiết nhân viên</h2>
+                    <div class="container_detail">
+                        <!-- Header -->
+                        <div class="header_detail">
+                            <div class="header-content">
+                                <img src="/placeholder.svg?height=120&width=120" alt="Customer Avatar"
+                                    class="customer-avatar" id="customerAvatar">
+                                <div class="customer-info">
+                                    <h1 id="customerName">Nguyễn Văn An</h1>
+                                    <p id="customerEmail">📧 nguyenvanan@email.com</p>
+                                    <p id="customerPhone">📱 +84 901 234 567</p>
+                                    <p id="customerJoinDate">📅 Tham gia: 15/03/2023</p>
+                                </div>
+                                <div class="actions">
+                                    <button class="btn btn-primary" onclick="openUpdateModal()">
+                                        ✏️ Cập nhật thông tin
+                                    </button>
+                                    <button class="btn btn-primary" onclick="goBack()">
+                                        ← Quay lại
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Content -->
+                        <div class="content">
+                            <!-- Tabs -->
+                            <div class="tabs">
+                                <div class="tab active" onclick="switchTab('infor')">Thông tin cơ bản</div>
+                                <div class="tab" onclick="switchTab('work')">Thông tin công việc</div>
+                                <div class="tab" onclick="switchTab('performance')">Hiệu suất và đánh giá</div>
+                            </div>
+
+                            <!-- Tab Content -->
+                            <div id="infor" class="tab-content active">
+                                <div class="info-grid">
+                                    <div class="info-card">
+                                        <h3>🏠 Thông tin cá nhân</h3>
+                                        <div class="info-item">
+                                            <span class="info-label">Họ và tên:</span>
+                                            <span class="info-value">Nguyễn Văn An</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Giới tính:</span>
+                                            <span class="info-value">Nam</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Ngày sinh:</span>
+                                            <span class="info-value">15/08/1990</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">CMND :</span>
+                                            <span class="info-value">1123456789</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Địa chỉ:</span>
+                                            <span class="info-value">123 Nguyễn Huệ, Q1, TP.HCM</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="info-card">
+                                        <h3>Thông tin liên hệ</h3>
+                                        <div class="info-item">
+                                            <span class="info-label">Email :</span>
+                                            <span class="info-value">tranthihoa@company.com</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Điện thoại :</span>
+                                            <span class="info-value">
+                                                +84 901 234 568</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Người liên hệ khẩn cấp:</span>
+                                            <span class="info-value">Trần Văn Nam</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">SĐT khẩn cấp:</span>
+                                            <span class="info-value">+84 912 345 678</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Quan hệ:</span>
+                                            <span class="info-value">Anh trai</span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div id="work" class="tab-content">
+                                <div class="info-grid">
+                                    <div class="info-card">
+                                        <h3>
+                                            Thông tin công việc</h3>
+                                        <div class="info-item">
+                                            <span class="info-label">Mã nhân viên:</span>
+                                            <span class="info-value">NV2022001</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Chức vụ:</span>
+                                            <span class="info-value">Phục vụ</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Ngày bắt đầu:</span>
+                                            <span class="info-value">12/05/2022</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Trạng thái:</span>
+                                            <span class="info-value status-active">Đang làm
+                                                việc</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="info-card">
+                                        <h3>Thông tin lương & Phúc lợi</h3>
+                                        <div class="info-item">
+                                            <span class="info-label">Lương cơ bản:
+                                            </span>
+                                            <span class="info-value">12.000.000 VND</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Phụ cấp:</span>
+                                            <span class="info-value">
+                                                2.000.000 VND</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Loại hợp đồng:</span>
+                                            <span class="info-value">
+                                                Hợp đồng không xác định thời hạn</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Ngày ký HĐ:</span>
+                                            <span class="info-value">12/05/2022</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Bảo hiểm:</span>
+                                            <span class="info-value">Đầy đủ</span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                            <div id="performance" class="tab-content">
+                                <div class="performance-metrics">
+                                    <div class="metric-card">
+                                        <div class="metric-value">92%</div>
+                                        <div class="metric-label">Đánh giá tổng thể</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-value">156</div>
+                                        <div class="metric-label">Đơn hàng đã xử lý</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-value">2.5M</div>
+                                        <div class="metric-label">Doanh thu tháng này</div>
+                                    </div>
+
+                                </div>
+
+                                <div class="info-grid">
+                                    <div class="info-card" onclick="openChartModal()">
+                                        <div
+                                            style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                                            <h3>
+                                                Kết quả làm việc</h3>
+                                            <button
+                                                style="border: none; border-radius: 999px; padding: 0 20px; background-color: #b22830; color: #fff; font-weight: bold; cursor: pointer; position: relative;">xem
+                                                biểu đồ</button>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Số ngày làm việc:</span>
+                                            <span class="info-value">22/22 ngày</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Số giờ làm thêm:</span>
+                                            <span class="info-value">15 giờ</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Số đơn hoàn thành:</span>
+                                            <span class="info-value">156 đơn</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Doanh thu cá nhân:</span>
+                                            <span class="info-value">2.500.000 VND</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="info-card">
+                                        <h3>Đánh giá & Khen thưởng</h3>
+                                        <div class="info-item">
+                                            <span class="info-label">Đánh giá cuối năm 2023:
+                                            </span>
+                                            <span class="info-value">
+                                                Xuất sắc</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Lần đánh giá gần nhất:</span>
+                                            <span class="info-value">
+
+                                                15/08/2024</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Khen thưởng:
+                                            </span>
+                                            <span class="info-value">
+                                                Nhân viên xuất sắc tháng 7</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Ghi chú:</span>
+                                            <span class="info-value">Làm việc tích cực, nhiệt tình</span>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Update Modal -->
+                    <div id="updateModal" class="modal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2 class="modal-title">Cập nhật thông tin khách hàng</h2>
+                                <button class="close-btn" onclick="closeUpdateModal()">&times;</button>
+                            </div>
+
+                            <form id="updateForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Họ và tên *</label>
+                                        <input type="text" class="form-input" id="updateName" value="Nguyễn Văn An"
+                                            required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Email *</label>
+                                        <input type="email" class="form-input" id="updateEmail"
+                                            value="nguyenvanan@email.com" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Số điện thoại *</label>
+                                        <input type="tel" class="form-input" id="updatePhone" value="+84 901 234 567"
+                                            required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Giới tính</label>
+                                        <select class="form-input" id="updateGender">
+                                            <option value="Nam" selected>Nam</option>
+                                            <option value="Nữ">Nữ</option>
+                                            <option value="Khác">Khác</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Ngày sinh</label>
+                                        <input type="date" class="form-input" id="updateBirthDate" value="1990-08-15">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Trạng thái</label>
+                                        <select class="form-input" id="updateStatus">
+                                            <option value="active" selected>Hoạt động</option>
+                                            <option value="inactive">Không hoạt động</option>
+                                            <option value="banned">Bị khóa</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Địa chỉ</label>
+                                    <input type="text" class="form-input" id="updateAddress"
+                                        value="123 Nguyễn Huệ, Q1, TP.HCM">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Ghi chú</label>
+                                    <textarea class="form-input" id="updateNotes" rows="3"
+                                        placeholder="Ghi chú về khách hàng..."></textarea>
+                                </div>
+
+                                <button type="submit" class="btn-save">
+                                    <span id="saveText">💾 Lưu thay đổi</span>
+                                    <span id="saveLoading" class="loading" style="display: none;"></span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+
+
+                </main>
+    </div>
+
+    <!-- Update Modal -->
+    <div id="updateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Cập nhật thông tin khách hàng</h2>
+                <button class="close-btn" onclick="closeUpdateModal()">&times;</button>
+            </div>
+
+            <form id="updateForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Họ và tên *</label>
+                        <input type="text" class="form-input" id="updateName" value="Nguyễn Văn An" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-input" id="updateEmail" value="nguyenvanan@email.com" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Số điện thoại *</label>
+                        <input type="tel" class="form-input" id="updatePhone" value="+84 901 234 567" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Giới tính</label>
+                        <select class="form-input" id="updateGender">
+                            <option value="Nam" selected>Nam</option>
+                            <option value="Nữ">Nữ</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Ngày sinh</label>
+                        <input type="date" class="form-input" id="updateBirthDate" value="1990-08-15">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Trạng thái</label>
+                        <select class="form-input" id="updateStatus">
+                            <option value="active" selected>Hoạt động</option>
+                            <option value="inactive">Không hoạt động</option>
+                            <option value="banned">Bị khóa</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Địa chỉ</label>
+                    <input type="text" class="form-input" id="updateAddress" value="123 Nguyễn Huệ, Q1, TP.HCM">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Ghi chú</label>
+                    <textarea class="form-input" id="updateNotes" rows="3"
+                        placeholder="Ghi chú về khách hàng..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-save">
+                    <span id="saveText">💾 Lưu thay đổi</span>
+                    <span id="saveLoading" class="loading" style="display: none;"></span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- chart modal -->
+    <div id="chartModal" class="modal">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="cart--title">Doanh số sản phẩm</h2>
+                <div class="tabs">
+                    <div class="tab" data-type="daily">Daily</div>
+                    <div class="tab" data-type="weekly">Weekly</div>
+                    <div class="tab" data-type="monthly">Monthly</div>
+                </div>
+                <button class="close-btn" onclick="closeChartModal()">&times;</button>
+            </div>
+            <canvas id="myChart" height="150"></canvas>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/admin/js/users/user-detail.js"></script>
+
+</body>
+
+</html>

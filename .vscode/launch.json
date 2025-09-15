@@ -2,7 +2,7 @@
     "version": "1.0.0",
     "configurations": [
         {
-            "name": "debug-pblCoffe",
+            "name": "debug-pbl",
             "type": "node",
             "request": "launch",
             "cwd": "${workspaceRoot}",
@@ -10,12 +10,7 @@
             "runtimeArgs": [
                 "run",
                 "start:debug"
-            ],
-            "console": "integratedTerminal",
-            "skipFiles": [
-                "<node_internals>/**",
-                "node_modules/**"
             ]
         }
-    ]
+    ],
 }

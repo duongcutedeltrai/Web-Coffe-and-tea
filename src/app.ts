@@ -1,5 +1,6 @@
 import express from "express"
 import webRouter from "./routers/web";
+import initDatabase from "./config/seed";
 
 
 const app = express()
@@ -12,6 +13,9 @@ app.set('view engine', 'ejs');
 
 //static files
 app.use(express.static('public'))
+
+//seeding data
+initDatabase()
 
 //config routers
 webRouter(app)

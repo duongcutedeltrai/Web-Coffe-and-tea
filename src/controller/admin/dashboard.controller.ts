@@ -2,10 +2,10 @@
 import { Request, Response } from "express";
 
 const getDetailProductPage = async (req: Request, res: Response) => {
-    return res.render("admin/detail_product.ejs");
+    return res.render("admin/product/detail_product.ejs");
 };
 const getProductsPage = async (req: Request, res: Response) => {
-    return res.render("admin/products");
+    return res.render("admin/product/products.ejs");
 };
 
 export { getDetailProductPage, getProductsPage };

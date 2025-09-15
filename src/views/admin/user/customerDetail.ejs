@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MIRA - Whiskas Dry Adult Dewasa 7+</title>
+    <link rel="stylesheet" href="/admin/css/style.css" />
+    <link rel="stylesheet" href="/admin/css/users/detailUser.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVr   V/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png" />
+</head>
+
+<body>
+    <div class="container">
+        <%- include('../layout/sidebar.ejs'); -%>
+
+            <%- include('../layout/header.ejs'); -%>
+                <!-- Main Content -->
+
+
+                <main class="main-content">
+                    <h2 style="margin-bottom: 20px;">Chi tiết khách hàng</h2>
+                    <div class="container_detail">
+                        <!-- Header -->
+                        <div class="header_detail">
+                            <div class="header-content">
+
+                                <img src="<%= user.avatar ? '/images/users/' + user.avatar : '/images/users/avatar-face.jpg' %>"
+                                    alt="Customer Avatar" class="customer-avatar" id="customerAvatar">
+
+                                <div class="customer-info">
+                                    <h1 id="customerName">
+                                        <%= user.username %>
+                                    </h1>
+                                    <p id="customerEmail">📧 <%= user.email %>
+                                    </p>
+                                    <p id="customerPhone">📱 <%= user.phone %>
+                                    </p>
+                                    <p id="customerJoinDate">
+                                        📅 <%= user.birthday ? user.birthday.toLocaleDateString("vi-VN") : "" %>
+                                    </p>
+                                </div>
+                                <div class="actions">
+                                    <button class="btn btn-primary" onclick="openUpdateModal()">
+                                        ✏️ Cập nhật thông tin
+                                    </button>
+                                    <button class="btn btn-primary" onclick="goBack()">
+                                        ← Quay lại
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Content -->
+                        <div class="content">
+                            <!-- Tabs -->
+                            <div class="tabs">
+                                <div class="tab active" onclick="switchTab('info')">Thông tin cơ bản</div>
+                                <div class="tab" onclick="switchTab('orders')">Lịch sử đơn hàng</div>
+                                <div class="tab" onclick="switchTab('loyalty')">Điểm thưởng</div>
+                            </div>
+
+                            <!-- Tab Content -->
+                            <div id="info" class="tab-content active">
+                                <div class="info-grid">
+                                    <div class="info-card">
+                                        <h3>🏠 Thông tin cá nhân</h3>
+                                        <div class="info-item">
+                                            <span class="info-label">Họ và tên:</span>
+                                            <span class="info-value">
+                                                <%= user.username %>
+                                            </span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Giới tính:</span>
+                                            <span class="info-value">
+                                                <%= user.gender %>
+                                            </span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Ngày sinh:</span>
+                                            <span class="info-value">
+                                                <%= user.birthday ? user.birthday.toLocaleDateString("vi-VN") : "" %>
+                                            </span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Địa chỉ:</span>
+                                            <span class="info-value">
+                                                <%= user.address %>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="info-card">
+                                        <h3>📊 Thống kê tài khoản</h3>
+                                        <div class="info-item">
+                                            <span class="info-label">Tổng đơn hàng:</span>
+                                            <span class="info-value">24 đơn</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Tổng chi tiêu:</span>
+                                            <span class="info-value">15.750.000 VNĐ</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Đơn hàng trung bình:</span>
+                                            <span class="info-value">656.250 VNĐ</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Lần mua cuối:</span>
+                                            <span class="info-value">28/11/2024</span>
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+                            </div>
+
+                            <div id="orders" class="tab-content">
+                                <table class="orders-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Mã đơn</th>
+                                            <th>Ngày đặt</th>
+                                            <th>Sản phẩm</th>
+                                            <th>Tổng tiền</th>
+                                            <th>Trạng thái</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>#ORD001</td>
+                                            <td>28/11/2024</td>
+                                            <td>Cà phê Arabica Premium x2</td>
+                                            <td>450.000 VNĐ</td>
+                                            <td><span class="order-status status-completed">Hoàn thành</span></td>
+                                            <td><button class="btn " style="padding: 8px 16px; font-size: 0.9rem;">Xem
+                                                    chi tiết</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>#ORD002</td>
+                                            <td>15/11/2024</td>
+                                            <td>Trà Earl Grey x1, Bánh croissant x3</td>
+                                            <td>320.000 VNĐ</td>
+                                            <td><span class="order-status status-completed">Hoàn thành</span></td>
+                                            <td><button class="btn btn-primary"
+                                                    style="padding: 8px 16px; font-size: 0.9rem;">Xem chi tiết</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>#ORD003</td>
+                                            <td>02/11/2024</td>
+                                            <td>Combo cà phê + bánh ngọt</td>
+                                            <td>280.000 VNĐ</td>
+                                            <td><span class="order-status status-processing">Đang xử lý</span></td>
+                                            <td><button class="btn btn-primary"
+                                                    style="padding: 8px 16px; font-size: 0.9rem;">Xem chi tiết</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div id="loyalty" class="tab-content">
+                                <div class="info-grid">
+                                    <div class="info-card">
+                                        <h3>🏆 Điểm thưởng hiện tại</h3>
+                                        <div class="info-item">
+                                            <span class="info-label">Điểm tích lũy:</span>
+                                            <span class="info-value">2,450 điểm</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Hạng thành viên:</span>
+                                            <span class="info-value">Vàng</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Ưu đãi hiện tại:</span>
+                                            <span class="info-value">Giảm 15%</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="info-card">
+                                        <h3>📈 Lịch sử điểm</h3>
+                                        <div class="info-item">
+                                            <span class="info-label">28/11/2024:</span>
+                                            <span class="info-value">+45 điểm</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">15/11/2024:</span>
+                                            <span class="info-value">+32 điểm</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">02/11/2024:</span>
+                                            <span class="info-value">-100 điểm (đổi quà)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Update Modal -->
+                    <div id="updateModal" class="modal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2 class="modal-title">Cập nhật thông tin khách hàng</h2>
+                                <button class="close-btn" onclick="closeUpdateModal()">&times;</button>
+                            </div>
+
+                            <form id="updateForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Họ và tên *</label>
+                                        <input type="text" class="form-input" id="updateName" value="Nguyễn Văn An"
+                                            required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Email *</label>
+                                        <input type="email" class="form-input" id="updateEmail"
+                                            value="nguyenvanan@email.com" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Số điện thoại *</label>
+                                        <input type="tel" class="form-input" id="updatePhone" value="+84 901 234 567"
+                                            required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Giới tính</label>
+                                        <select class="form-input" id="updateGender">
+                                            <option value="Nam" selected>Nam</option>
+                                            <option value="Nữ">Nữ</option>
+                                            <option value="Khác">Khác</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Ngày sinh</label>
+                                        <input type="date" class="form-input" id="updateBirthDate" value="1990-08-15">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Trạng thái</label>
+                                        <select class="form-input" id="updateStatus">
+                                            <option value="active" selected>Hoạt động</option>
+                                            <option value="inactive">Không hoạt động</option>
+                                            <option value="banned">Bị khóa</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Địa chỉ</label>
+                                    <input type="text" class="form-input" id="updateAddress"
+                                        value="123 Nguyễn Huệ, Q1, TP.HCM">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Ghi chú</label>
+                                    <textarea class="form-input" id="updateNotes" rows="3"
+                                        placeholder="Ghi chú về khách hàng..."></textarea>
+                                </div>
+
+                                <button type="submit" class="btn-save">
+                                    <span id="saveText">💾 Lưu thay đổi</span>
+                                    <span id="saveLoading" class="loading" style="display: none;"></span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                </main>
+    </div>
+
+    <!-- Update Modal -->
+    <div id="updateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Cập nhật thông tin khách hàng</h2>
+                <button class="close-btn" onclick="closeUpdateModal()">&times;</button>
+            </div>
+
+            <form id="updateForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Họ và tên *</label>
+                        <input type="text" class="form-input" id="updateName" value="Nguyễn Văn An" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-input" id="updateEmail" value="nguyenvanan@email.com" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Số điện thoại *</label>
+                        <input type="tel" class="form-input" id="updatePhone" value="+84 901 234 567" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Giới tính</label>
+                        <select class="form-input" id="updateGender">
+                            <option value="Nam" selected>Nam</option>
+                            <option value="Nữ">Nữ</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Ngày sinh</label>
+                        <input type="date" class="form-input" id="updateBirthDate" value="1990-08-15">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Trạng thái</label>
+                        <select class="form-input" id="updateStatus">
+                            <option value="active" selected>Hoạt động</option>
+                            <option value="inactive">Không hoạt động</option>
+                            <option value="banned">Bị khóa</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Địa chỉ</label>
+                    <input type="text" class="form-input" id="updateAddress" value="123 Nguyễn Huệ, Q1, TP.HCM">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Ghi chú</label>
+                    <textarea class="form-input" id="updateNotes" rows="3"
+                        placeholder="Ghi chú về khách hàng..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-save">
+                    <span id="saveText">💾 Lưu thay đổi</span>
+                    <span id="saveLoading" class="loading" style="display: none;"></span>
+                </button>
+            </form>
+        </div>
+    </div>
+    <script src="/admin/js/users/user-detail.js"></script>
+</body>
+
+</html>
