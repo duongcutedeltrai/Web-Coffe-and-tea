@@ -189,34 +189,36 @@
                                 <div class="info-grid">
                                     <div class="info-card">
                                         <h3>🏆 Điểm thưởng hiện tại</h3>
-                                        <div class="info-item">
-                                            <span class="info-label">Điểm tích lũy:</span>
-                                            <span class="info-value">2,450 điểm</span>
-                                        </div>
-                                        <div class="info-item">
-                                            <span class="info-label">Hạng thành viên:</span>
-                                            <span class="info-value">Vàng</span>
-                                        </div>
-                                        <div class="info-item">
-                                            <span class="info-label">Ưu đãi hiện tại:</span>
-                                            <span class="info-value">Giảm 15%</span>
-                                        </div>
+
+                                        <% user.point_history.forEach((point)=> { %>
+                                            <div class="info-item">
+                                                <span class="info-label">Điểm tích lũy:</span>
+                                                <span class="info-value">
+                                                    <%= user.point %> điểm
+                                                </span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Hạng thành viên:</span>
+                                                <span class="info-value">Vàng</span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Ưu đãi hiện tại:</span>
+                                                <span class="info-value">Chưa có</span>
+                                            </div>
+                                            <% }); %>
                                     </div>
 
                                     <div class="info-card">
                                         <h3>📈 Lịch sử điểm</h3>
-                                        <div class="info-item">
-                                            <span class="info-label">28/11/2024:</span>
-                                            <span class="info-value">+45 điểm</span>
-                                        </div>
-                                        <div class="info-item">
-                                            <span class="info-label">15/11/2024:</span>
-                                            <span class="info-value">+32 điểm</span>
-                                        </div>
-                                        <div class="info-item">
-                                            <span class="info-label">02/11/2024:</span>
-                                            <span class="info-value">-100 điểm (đổi quà)</span>
-                                        </div>
+                                        <% user.point_history.forEach((point)=> { %>
+                                            <div class="info-item">
+                                                <span class="info-label">
+                                                    <%= new Date(point.created_at).toLocaleDateString("vi-VN") %>
+                                                </span>
+                                                <span class="info-value">+ <%= point.change %> điểm</span>
+                                            </div>
+                                            <% }); %>
+
                                     </div>
                                 </div>
                             </div>

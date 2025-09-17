@@ -172,6 +172,9 @@ const getDetailCustomerById = async (id: number) => {
                 }
             },
 
+            point_history: true,
+            staff_detail: true
+
         }
     })
     return viewDetail

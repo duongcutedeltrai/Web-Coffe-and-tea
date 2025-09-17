@@ -8,7 +8,8 @@ const initDatabase = async () => {
     const countOrder = await prisma.orders.count();
     const countProduct = await prisma.products.count();
     const countOrderDetail = await prisma.order_details.count();
-
+    const countPointHistory = await prisma.point_history.count();
+    const countStaffDetail = await prisma.staff_detail.count();
 
     if (countRole == 0) {
         await prisma.roles.createMany({
@@ -53,6 +54,7 @@ const initDatabase = async () => {
                         password: "123456",
                         phone: "111111",
                         role_id: customerRole.role_id,
+                        point: 40,
                         gender: "nam"
                     },
                 ]
@@ -211,9 +213,48 @@ const initDatabase = async () => {
         }
     }
 
+    if (countPointHistory == 0) {
+        const user = await prisma.users.findFirst({
+            where: {
+                email: "duonghaitt311@gmail.com"
+            }
+        });
+
+        if (user) {
+            await prisma.point_history.createMany({
+                data: [
+                    {
+                        user_id: user.user_id,
+                        change: 20,
+
+                    }
+                ]
+            }
+            )
+        }
+    }
+
+    if (countStaffDetail == 0) {
+        const user = await prisma.users.findFirst({
+            where: {
+                email: "staff1@gmail.com"
+            }
+        })
+
+        if (user) {
+            await prisma.staff_detail.createMany({
+                data: {
+                    user_id: user.user_id,
+                    position: "Pha chế",
+                    salary: 5000000,
+                    shift: "Ca sáng",
+                }
+            });
+        }
+    }
 
 
-    if (countRole !== 0 && countUser !== 0 && countProduct !== 0 && countOrderDetail !== 0) {
+    if (countRole !== 0 && countUser !== 0 && countProduct !== 0 && countOrderDetail !== 0 && countStaffDetail !== 0 && countPointHistory !== 0) {
         console.log(">>>>>>ALEREADY INIT DATA")
     }
 }

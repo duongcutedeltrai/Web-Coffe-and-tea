@@ -129,50 +129,78 @@
                                     <div class="info-card">
                                         <h3>
                                             Thông tin công việc</h3>
-                                        <div class="info-item">
-                                            <span class="info-label">Mã nhân viên:</span>
-                                            <span class="info-value">NV2022001</span>
-                                        </div>
-                                        <div class="info-item">
-                                            <span class="info-label">Chức vụ:</span>
-                                            <span class="info-value">Phục vụ</span>
-                                        </div>
-                                        <div class="info-item">
-                                            <span class="info-label">Ngày bắt đầu:</span>
-                                            <span class="info-value">12/05/2022</span>
-                                        </div>
-                                        <div class="info-item">
-                                            <span class="info-label">Trạng thái:</span>
-                                            <span class="info-value status-active">Đang làm
-                                                việc</span>
-                                        </div>
+
+                                        <% if (user.staff_detail) { %>
+                                            <div class="info-item">
+                                                <span class="info-label">Mã nhân viên:</span>
+                                                <span class="info-value">
+                                                    #<%= "MNV" + user.staff_detail.staff_id.toString().padStart(3, '0' )
+                                                        %>
+                                                </span>
+                                            </div>
+
+
+                                            <div class="info-item">
+                                                <span class="info-label">Chức vụ:</span>
+                                                <span class="info-value">
+                                                    <%= user.staff_detail.position %>
+                                                </span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Ngày bắt đầu:</span>
+                                                <span class="info-value">
+                                                    <%= new
+                                                        Date(user.staff_detail.hire_date).toLocaleDateString("vi-VN") %>
+                                                </span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Trạng thái:</span>
+                                                <span class="info-value status-active">Đang làm
+                                                    việc</span>
+                                            </div>
+                                            <% } %>
+
+
+
+
                                     </div>
 
                                     <div class="info-card">
                                         <h3>Thông tin lương & Phúc lợi</h3>
-                                        <div class="info-item">
-                                            <span class="info-label">Lương cơ bản:
-                                            </span>
-                                            <span class="info-value">12.000.000 VND</span>
-                                        </div>
-                                        <div class="info-item">
-                                            <span class="info-label">Phụ cấp:</span>
-                                            <span class="info-value">
-                                                2.000.000 VND</span>
-                                        </div>
-                                        <div class="info-item">
-                                            <span class="info-label">Loại hợp đồng:</span>
-                                            <span class="info-value">
-                                                Hợp đồng không xác định thời hạn</span>
-                                        </div>
-                                        <div class="info-item">
-                                            <span class="info-label">Ngày ký HĐ:</span>
-                                            <span class="info-value">12/05/2022</span>
-                                        </div>
-                                        <div class="info-item">
-                                            <span class="info-label">Bảo hiểm:</span>
-                                            <span class="info-value">Đầy đủ</span>
-                                        </div>
+
+                                        <% if (user.staff_detail) { %>
+
+                                            <div class="info-item">
+                                                <span class="info-label">Lương cơ bản:
+                                                </span>
+                                                <span class="info-value">
+                                                    <%= new Intl.NumberFormat("vi-VN", { style: "currency" ,
+                                                        currency: "VND" }).format(user.staff_detail.salary) %>
+                                                </span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Phụ cấp:</span>
+                                                <span class="info-value">
+                                                    2.000.000 VND</span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Loại hợp đồng:</span>
+                                                <span class="info-value">
+                                                    Hợp đồng không xác định thời hạn</span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Ngày ký HĐ:</span>
+                                                <span class="info-value">
+                                                    <%= new
+                                                        Date(user.staff_detail.hire_date).toLocaleDateString("vi-VN") %>
+                                                </span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Bảo hiểm:</span>
+                                                <span class="info-value">Đầy đủ</span>
+                                            </div>
+                                            <% } %>
+
                                     </div>
 
                                 </div>
