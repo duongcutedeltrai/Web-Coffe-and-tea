@@ -90,43 +90,6 @@ document.getElementById('chartModal').addEventListener('click', function (e) {
 });
 
 
-// Form submission
-document.getElementById('updateForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-
-    // Show loading state
-    const saveText = document.getElementById('saveText');
-    const saveLoading = document.getElementById('saveLoading');
-    const submitBtn = e.target.querySelector('.btn-save');
-
-    saveText.style.display = 'none';
-    saveLoading.style.display = 'inline-block';
-    submitBtn.disabled = true;
-
-    // Simulate API call
-    setTimeout(() => {
-        // Update customer info in the header
-        const name = document.getElementById('updateName').value;
-        const email = document.getElementById('updateEmail').value;
-        const phone = document.getElementById('updatePhone').value;
-
-        document.getElementById('customerName').textContent = name;
-        document.getElementById('customerEmail').textContent = `📧 ${email}`;
-        document.getElementById('customerPhone').textContent = `📱 ${phone}`;
-
-        // Show success message
-        alert('✅ Cập nhật thông tin khách hàng thành công!');
-
-        // Reset loading state
-        saveText.style.display = 'inline';
-        saveLoading.style.display = 'none';
-        submitBtn.disabled = false;
-
-        // Close modal
-        closeUpdateModal();
-    }, 2000);
-});
-
 // Go back functionality
 function goBack() {
     if (window.history.length > 1) {
@@ -151,44 +114,44 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Add click animation to buttons
-    const buttons = document.querySelectorAll('.btn');
-    buttons.forEach(button => {
-        button.addEventListener('click', function () {
-            this.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                this.style.transform = '';
-            }, 150);
-        });
-    });
+    // // Add click animation to buttons
+    // const buttons = document.querySelectorAll('.btn');
+    // buttons.forEach(button => {
+    //     button.addEventListener('click', function () {
+    //         this.style.transform = 'scale(0.95)';
+    //         setTimeout(() => {
+    //             this.style.transform = '';
+    //         }, 150);
+    //     });
+    // });
 
-    // Lấy username trực tiếp từ EJS, fallback nếu rỗng
-    let username = "<%= user.username %>".trim();
-    if (!username) {
-        username = "Nguyễn Văn An"; // Fallback giá trị mẫu nếu EJS không render đúng
-        console.warn('Username từ EJS rỗng, sử dụng fallback.');
-    }
+    // // Lấy username trực tiếp từ EJS, fallback nếu rỗng
+    // let username = "<%= user.username %>".trim();
+    // if (!username) {
+    //     username = "Nguyễn Văn An"; // Fallback giá trị mẫu nếu EJS không render đúng
+    //     console.warn('Username từ EJS rỗng, sử dụng fallback.');
+    // }
 
-    const customerName = document.getElementById("customerName");
-    customerName.textContent = ""; // reset để chạy typewriter
+    // const customerName = document.getElementById("customerName");
+    // customerName.textContent = ""; // reset để chạy typewriter
 
-    let i = 0;
-    function typeWriter() {
-        if (i < username.length) {
-            customerName.textContent += username[i];
-            i++;
-            setTimeout(typeWriter, 100);
-        } else {
-            console.log('Typewriter hoàn tất:', customerName.textContent);
-        }
-    }
+    // let i = 0;
+    // function typeWriter() {
+    //     if (i < username.length) {
+    //         customerName.textContent += username[i];
+    //         i++;
+    //         setTimeout(typeWriter, 100);
+    //     } else {
+    //         console.log('Typewriter hoàn tất:', customerName.textContent);
+    //     }
+    // }
 
-    // Luôn chạy typewriter nếu có username
-    if (username) {
-        typeWriter();
-    } else {
-        console.error('Không có username để chạy typewriter.');
-    }
+    // // Luôn chạy typewriter nếu có username
+    // if (username) {
+    //     typeWriter();
+    // } else {
+    //     console.error('Không có username để chạy typewriter.');
+    // }
 });
 
 // Keyboard shortcuts
@@ -218,3 +181,18 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         }
     });
 });
+
+//preview data
+function previewAvatar(input) {
+    const preview = document.getElementById('avatarPreview');
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            preview.src = e.target.result; // chỉ update src
+        };
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        // fallback nếu không chọn file
+        preview.src = '/images/users/avatar-face.jpg';
+    }
+}

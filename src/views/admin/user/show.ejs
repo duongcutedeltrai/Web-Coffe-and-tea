@@ -80,12 +80,7 @@
 
                                 </div>
 
-                                <div class="filter-group">
-                                    <button class="btn btn-primary" onclick="openAddModal()">
-                                        <i class="fas fa-plus"></i>
-                                        Thêm tài khoản
-                                    </button>
-                                </div>
+
                             </div>
 
                             <div class="filters-row">
@@ -151,10 +146,7 @@
                                         <i class="fas fa-download"></i>
                                         Xuất Excel
                                     </button>
-                                    <button class="btn btn-secondary">
-                                        <i class="fas fa-filter"></i>
-                                        Bộ lọc nâng cao
-                                    </button>
+
                                 </div>
                             </div>
                             <div class="table-wrapper">
@@ -164,15 +156,16 @@
                                             <th>Tên</th>
                                             <th>email</th>
                                             <th>Vai trò</th>
-                                            <th>Trạng thái</th>
+                                            <th>Giới tính</th>
                                             <th>Tổng chi tiêu</th>
                                             <th>Đơn hàng</th>
                                             <th>Thao tác</th>
                                         </tr>
                                     </thead>
+
                                     <tbody id="customerTableBody">
-                                        <% users.forEach( function (user) { %>
-                                            <tr onclick="window.location='/admin/user/customer-detail/<%= user.user_id %>'"
+                                        <% users.forEach(function (user) { %>
+                                            <tr onclick="window.location= '/admin/user/customer-detail/<%= user.user_id %>'"
                                                 style="cursor: pointer;">
                                                 <td>
                                                     <%= user.username %>
@@ -181,17 +174,19 @@
                                                     <%= user.email %>
                                                 </td>
                                                 <td>
-                                                    <%= user.roles.name %>
+                                                    <span class="role-badge admin">Customer</span>
                                                 </td>
                                                 <td>
-                                                    <%= user.status %>
+                                                    <%= user.gender %>
                                                 </td>
 
                                                 <td>
-                                                    <% user.orders.forEach(order=> { %>
+                                                    <% const total=user.orders.reduce((sum, order)=> sum +
+                                                        order.total_amount, 0);
+                                                        %>
+
                                                         <%= new Intl.NumberFormat('vi-VN', { style: 'currency' ,
-                                                            currency: 'VND' }).format(order.total_amount) %>
-                                                            <% }) %>
+                                                            currency: 'VND' }).format(total) %>
 
 
                                                 </td>
@@ -199,23 +194,62 @@
                                                     <%= user.orders.length %>
                                                 </td>
 
-                                                <td style="text-align:  center;">
-                                                    <div style="display: flex; gap: 20px;">
-                                                        <form action="" method="get">
-                                                            <button type="submit" class="btn btn-warning">Khóa</button>
-                                                        </form>
-
-                                                        <form action="  " method="post">
-                                                            <button type="submit" class="btn btn-danger">Xóa</button>
-                                                        </form>
+                                                <td>
+                                                    <div
+                                                        style="display: flex; gap: 20px; position: relative; left: 30px;">
+                                                        <% if (user.status==="ACTIVE" ) { %>
+                                                            <form action="/admin/lock-user/<%= user.user_id %>"
+                                                                method="post">
+                                                                <button type="submit"
+                                                                    class="btn btn-warning btn-lock">Khóa</button>
+                                                            </form>
+                                                            <% } else { %>
+                                                                <form action="/admin/unlock-user/<%= user.user_id %>"
+                                                                    method="post">
+                                                                    <button type="submit"
+                                                                        class="btn btn-success btn-unlock">Mở
+                                                                        khóa</button>
+                                                                </form>
+                                                                <% } %>
+                                                                    <form
+                                                                        action="/admin/delete-user/<%= user.user_id %>"
+                                                                        method="post">
+                                                                        <button type="submit"
+                                                                            class="btn btn-danger">Xóa</button>
+                                                                    </form>
                                                     </div>
                                                 </td>
                                             </tr>
                                             <% }) %>
-
                                     </tbody>
                                 </table>
                             </div>
+
+                            <!-- Pagination -->
+                            <ul class="pagination">
+                                <li>
+                                    <a class="<%= pageCustomer === 1 || totalPagesCustomer === 1 ? 'disabled' : '' %>"
+                                        href="/admin/user?pageCustomer=<%= pageCustomer - 1 %>">&laquo;
+                                        Prev</a>
+                                </li>
+
+                                <% for(let i=1; i <=totalPagesCustomer; i++) { %>
+                                    <li>
+                                        <a class="<%= pageCustomer === i ? 'active' : '' %>"
+                                            href="/admin/user?pageCustomer=<%= i %>">
+                                            <%= i %>
+                                        </a>
+                                    </li>
+                                    <% } %>
+
+                                        <li>
+                                            <a class="<%= pageCustomer === totalPagesCustomer || totalPagesCustomer === 1 ? 'disabled' : '' %>"
+                                                href="/admin/user?pageCustomer=<%= pageCustomer + 1 %>">Next
+                                                &raquo;</a>
+                                        </li>
+                            </ul>
+
+
 
 
                         </section>
@@ -230,10 +264,13 @@
                                         <i class="fas fa-download"></i>
                                         Xuất Excel
                                     </button>
-                                    <button class="btn btn-secondary">
-                                        <i class="fas fa-filter"></i>
-                                        Bộ lọc nâng cao
-                                    </button>
+
+                                    <div class="filter-group">
+                                        <button class="btn btn-primary" onclick="openAddModal()">
+                                            <i class="fas fa-plus"></i>
+                                            Thêm tài khoản
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             <div class="table-wrapper">
@@ -243,45 +280,90 @@
                                             <th>Tên</th>
                                             <th>email</th>
                                             <th>Vai trò</th>
-                                            <th>Trạng thái</th>
+                                            <th>Giới tính</th>
                                             <th>Thao tác</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="customerTableBody">
-                                        <% users.forEach( function (user) { %>
-                                            <tr onclick="window.location= '/admin/user/staff-detail'"
+
+                                    <tbody id="staffTableBody">
+                                        <% staffs.forEach(function (staff) { %>
+                                            <tr onclick="window.location= '/admin/user/staff-detail/<%= staff.user_id %>'"
                                                 style="cursor: pointer;">
                                                 <td>
-                                                    <%= user.username %>
+                                                    <%= staff.username %>
                                                 </td>
                                                 <td>
-                                                    <%= user.email %>
+                                                    <%= staff.email %>
                                                 </td>
                                                 <td>
-                                                    <%= user.roles.name %>
+                                                    <% if(staff.roles.name==="ADMIN" ) { %>
+                                                        <span class="role-badge admin">Admin</span>
+                                                        <% } else { %>
+                                                            <span class="role-badge staff">Staff</span>
+                                                            <% } %>
                                                 </td>
                                                 <td>
-                                                    <%= user.status %>
+                                                    <%= staff.gender %>
                                                 </td>
-
                                                 <td>
-                                                    <div style="display: flex; gap: 20px; transform: translateX(50px);">
-                                                        <form action="" method="get">
-                                                            <button type="submit" class="btn btn-warning">Khóa</button>
-                                                        </form>
-
-                                                        <form action="/admin/delete-user/<%= user.user_id %>"
-                                                            method="post">
-                                                            <button type="submit" class="btn btn-danger">Xóa</button>
-                                                        </form>
+                                                    <div
+                                                        style="display: flex; gap: 20px; position: relative; left: 100px;">
+                                                        <% if (staff.status==="ACTIVE" ) { %>
+                                                            <form action="/admin/lock-user/<%= staff.user_id %>"
+                                                                method="post">
+                                                                <button type="submit"
+                                                                    class="btn btn-warning btn-lock">Khóa</button>
+                                                            </form>
+                                                            <% } else { %>
+                                                                <form action="/admin/unlock-user/<%= staff.user_id %>"
+                                                                    method="post">
+                                                                    <button type="submit"
+                                                                        class="btn btn-success btn-unlock">Mở
+                                                                        khóa</button>
+                                                                </form>
+                                                                <% } %>
+                                                                    <form
+                                                                        action="/admin/delete-user/<%= staff.user_id %>"
+                                                                        method="post">
+                                                                        <button type="submit"
+                                                                            class="btn btn-danger">Xóa</button>
+                                                                    </form>
                                                     </div>
                                                 </td>
                                             </tr>
                                             <% }) %>
-
                                     </tbody>
+
+
+
+
                                 </table>
                             </div>
+
+
+                            <!-- Pagination -->
+                            <ul class="pagination">
+                                <li>
+                                    <a class="<%= pageStaff === 1 || totalPagesStaff === 1 ? 'disabled' : '' %>"
+                                        href="/admin/user?pageStaff=<%= pageStaff - 1 %>">&laquo;
+                                        Prev</a>
+                                </li>
+
+                                <% for(let i=1; i <=totalPagesStaff; i++) { %>
+                                    <li>
+                                        <a class="<%= pageStaff === i ? 'active' : '' %>"
+                                            href="/admin/user?pageStaff=<%= i %>">
+                                            <%= i %>
+                                        </a>
+                                    </li>
+                                    <% } %>
+
+                                        <li>
+                                            <a class="<%= pageStaff === totalPagesStaff || totalPagesStaff === 1 ? 'disabled' : '' %>"
+                                                href="/admin/user?pageStaff=<%= pageStaff + 1 %>">Next
+                                                &raquo;</a>
+                                        </li>
+                            </ul>
 
 
                         </section>

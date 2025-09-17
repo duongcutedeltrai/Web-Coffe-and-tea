@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
-    renderUsers();
+
     setupEventListeners();
+
+
 });
 
 function setupEventListeners() {
@@ -46,3 +48,4 @@ function previewAvatar(input) {
         reader.readAsDataURL(input.files[0]);
     }
 }
+

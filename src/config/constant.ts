@@ -5,6 +5,8 @@ export const ACCOUNT_TYPE = {
 }
 
 export const STATUS_USER = {
-    ACTIVITY: "hoat dong",
-    LOCK: "bi khoa"
+    ACTIVITY: "ACTIVE",
+    LOCK: "LOCKED"
 }
+
+export const TOTAL_ITEM_PER_PAGE = 5

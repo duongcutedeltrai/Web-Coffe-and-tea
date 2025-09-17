@@ -45,25 +45,26 @@
 
                         <select class="form-input" name="roleId" id="userRole" style="cursor: pointer;" required>
                             <option value="">Chọn vai trò</option>
-                            <% roles.forEach(role=> { %>
-                                <option value="<%= role.role_id %>">
-                                    <%= role.name %>
+                            <% optionRoles.forEach((optionRole)=> { %>
+                                <option value="<%= optionRole.role_id %>">
+                                    <%= optionRole.name %>
                                 </option>
                                 <% }) %>
                         </select>
+
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">Trạng thái</label>
+                        <label class="form-label">Gender</label>
 
 
-                        <select name="status" class="form-input" class="form-select">
-                            <% statusOptions.forEach((status,index)=> { %>
-                                <option value="<%-status.value %>" <%=status.value===users.status ? 'selected' : '' %>
+                        <select name="gender" class="form-input" class="form-select">
+                            <% genderOptions.forEach((gen,index)=> { %>
+                                <option value="<%-gen.value %>" <%=gen.value===users.gender ? 'selected' : '' %>
                                     >
-                                    <%- status.name %>
+                                    <%- gen.name %>
                                 </option>
                                 <%})%>
                         </select>
