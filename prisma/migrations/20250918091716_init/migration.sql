@@ -2,7 +2,7 @@
 CREATE TABLE `cart` (
     `cart_id` INTEGER NOT NULL AUTO_INCREMENT,
     `user_id` INTEGER NOT NULL,
-    `total` INTEGER NOT NULL,
+    `total` DECIMAL(10, 2) NOT NULL,
     `quantity` INTEGER NOT NULL,
 
     INDEX `user_id`(`user_id`),
@@ -15,7 +15,7 @@ CREATE TABLE `cart_details` (
     `cart_id` INTEGER NOT NULL,
     `product_id` INTEGER NOT NULL,
     `quantity` INTEGER NOT NULL,
-    `price` INTEGER NOT NULL,
+    `price` DECIMAL(10, 2) NOT NULL,
 
     INDEX `cart_id`(`cart_id`),
     INDEX `product_id`(`product_id`),
@@ -27,6 +27,7 @@ CREATE TABLE `categories` (
     `category_id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(100) NOT NULL,
     `description` VARCHAR(255) NULL,
+    `images` VARCHAR(255) NULL,
     `created_at` DATETIME(0) NULL DEFAULT CURRENT_TIMESTAMP(0),
     `deleted_at` DATETIME(3) NULL,
 
@@ -118,7 +119,7 @@ CREATE TABLE `products` (
     `description` VARCHAR(255) NULL,
     `sold` INTEGER NOT NULL DEFAULT 0,
     `category_id` INTEGER NULL,
-    `images` VARCHAR(255) NOT NULL,
+    `images` VARCHAR(255) NULL,
     `quantity` INTEGER NOT NULL DEFAULT -1,
 
     INDEX `category_id`(`category_id`),
@@ -129,7 +130,7 @@ CREATE TABLE `products` (
 CREATE TABLE `price_product` (
     `price_product_id` INTEGER NOT NULL AUTO_INCREMENT,
     `product_id` INTEGER NOT NULL,
-    `size` ENUM('M', 'L', 'XL', 'NONE') NULL,
+    `size` ENUM('M', 'L', 'XL', 'DEFAULT') NULL,
     `price` INTEGER NOT NULL,
 
     INDEX `product_id_idx`(`product_id`),
@@ -153,7 +154,7 @@ CREATE TABLE `promotions` (
     `promotion_id` INTEGER NOT NULL AUTO_INCREMENT,
     `code` VARCHAR(50) NOT NULL,
     `description` VARCHAR(255) NULL,
-    `discount_percent` INTEGER NOT NULL,
+    `discount_percent` DECIMAL(5, 2) NOT NULL,
     `start_date` DATE NOT NULL,
     `end_date` DATE NOT NULL,
 
@@ -177,15 +178,48 @@ CREATE TABLE `users` (
     `username` VARCHAR(255) NOT NULL,
     `password` VARCHAR(255) NOT NULL,
     `phone` VARCHAR(255) NOT NULL,
-    `address` VARCHAR(255) NOT NULL,
-    `avatar` VARCHAR(255) NOT NULL,
+    `address` VARCHAR(255) NULL,
+    `avatar` VARCHAR(255) NULL,
+    `gender` VARCHAR(45) NULL,
+    `birthday` DATETIME(3) NULL,
+    `status` ENUM('ACTIVE', 'LOCKED') NOT NULL DEFAULT 'ACTIVE',
     `point` INTEGER NULL DEFAULT 0,
     `role_id` INTEGER NOT NULL,
+    `reset_token` VARCHAR(255) NULL,
+    `reset_token_expire` DATETIME(0) NULL,
     `auth_provider` ENUM('system', 'google', 'facebook', 'apple') NULL DEFAULT 'system',
+    `membership` ENUM('BRONZE', 'SILVER', 'GOLD', 'DIAMOND') NULL,
+    `discount_rate` INTEGER NULL DEFAULT 0,
 
     UNIQUE INDEX `email`(`email`),
     INDEX `role_id`(`role_id`),
     PRIMARY KEY (`user_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `point_history` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `user_id` INTEGER NOT NULL,
+    `change` INTEGER NOT NULL,
+    `reason` VARCHAR(255) NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    INDEX `point_history_user_id_idx`(`user_id`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `staff_detail` (
+    `staff_id` INTEGER NOT NULL AUTO_INCREMENT,
+    `user_id` INTEGER NOT NULL,
+    `position` VARCHAR(100) NOT NULL,
+    `hire_date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `salary` INTEGER NULL,
+    `shift` VARCHAR(50) NULL,
+
+    UNIQUE INDEX `staff_detail_user_id_key`(`user_id`),
+    INDEX `staff_detail_user_id_idx`(`user_id`),
+    PRIMARY KEY (`staff_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
@@ -198,7 +232,7 @@ ALTER TABLE `cart_details` ADD CONSTRAINT `cart_details_ibfk_1` FOREIGN KEY (`ca
 ALTER TABLE `cart_details` ADD CONSTRAINT `cart_details_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products`(`product_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE `feedback` ADD CONSTRAINT `feedback_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `feedback` ADD CONSTRAINT `feedback_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE `feedback` ADD CONSTRAINT `feedback_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products`(`product_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -216,7 +250,7 @@ ALTER TABLE `order_details` ADD CONSTRAINT `order_details_ibfk_2` FOREIGN KEY (`
 ALTER TABLE `order_status_history` ADD CONSTRAINT `order_status_history_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders`(`order_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE `orders` ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `orders` ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE `payment` ADD CONSTRAINT `payment_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders`(`order_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -235,3 +269,9 @@ ALTER TABLE `promotion_products` ADD CONSTRAINT `promotion_products_ibfk_2` FORE
 
 -- AddForeignKey
 ALTER TABLE `users` ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles`(`role_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE `point_history` ADD CONSTRAINT `point_history_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `staff_detail` ADD CONSTRAINT `staff_detail_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;

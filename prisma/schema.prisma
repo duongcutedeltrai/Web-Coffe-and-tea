@@ -16,7 +16,6 @@ datasource db {
 model cart {
   cart_id      Int            @id @default(autoincrement())
   user_id      Int
-
   total        Decimal        @db.Decimal(10, 2)
   quantity     Int
   users        users          @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "cart_ibfk_1")
@@ -201,12 +200,11 @@ model roles {
 }
 
 model users {
-
  user_id  Int         @id @default(autoincrement())
   email    String      @unique(map: "email") @db.VarChar(255)
   username String      @db.VarChar(255)
   password String      @db.VarChar(255)
-  phone    String      @db.VarChar(255)
+  phone    String?      @db.VarChar(255)
   address  String?     @db.VarChar(255)
   avatar   String?     @db.VarChar(255)
   gender   String?     @db.VarChar(45)
@@ -214,14 +212,14 @@ model users {
   status   user_status @default(ACTIVE)
   point    Int?        @default(0)
   role_id       Int
+  reset_token   String?               @db.VarChar(255)
+  reset_token_expire  DateTime?              @db.DateTime(0)
   auth_provider users_auth_provider? @default(system)
-
    membership    membership_level?
   discount_rate Int?              @default(0)
   cart          cart[]
    point_history point_history[]
   staff_detail  staff_detail?
-
   feedback      feedback[]
   orders        orders[]
   roles         roles                @relation(fields: [role_id], references: [role_id], onDelete: NoAction, onUpdate: NoAction, map: "users_ibfk_1")

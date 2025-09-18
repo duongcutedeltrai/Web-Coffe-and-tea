@@ -1,6 +1,8 @@
 import express, { Express } from "express";
+
 import { productRoute, productRouteAPI } from "./admin/product.route";
-// import { categoryRouteAPI } from "./category.route";
+
+import authRoute from "./auth.route";
 
 const router = express.Router();
 import categoryRoute from "./admin/category.route";
@@ -15,6 +17,8 @@ const webRouter = (app: Express) => {
   app.use("/", homeRouter);
   // app.use("/api/admin", categoryRouteAPI);
   // app.use("/", router);
+
+  app.use("/auth", authRoute);
 };
 
 export default webRouter;

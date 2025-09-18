@@ -1,107 +1,107 @@
 <!DOCTYPE html>
 <html lang="vi">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Restaurant Menu</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
-            rel="stylesheet"
-        />
-        <!-- Embedded CSS to avoid MIME type issues -->
-        <link rel="stylesheet" href="/admin/css/products/products.css" />
-        <link rel="stylesheet" href="/admin/css/products/product_create.css" />
-        <link rel="stylesheet" href="/admin/css/style.css" />
-        <script
-            src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js"
-            type="module"
-        ></script>
-        <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-            rel="stylesheet"
-        />
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-        <link
-            rel="stylesheet"
-            href="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.css"
-        />
-        <script src="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.min.js"></script>
-    </head>
-    <body>
-        <div class="container">
-            <%- include('../layout/sidebar.ejs'); -%> <%-
-            include('../layout/header.ejs'); -%> <%-
-            include('./create_product.ejs'); -%>
-            <div class="content">
-                <div class="top">
-                    <div class="top-content">
-                        <h1>Menu</h1>
-                        <p class="date">Thursday, 2 Feb 2021</p>
-                    </div>
-                    <div class="search-container">
-                        <i class="fas fa-search search-icon"></i>
-                        <input
-                            type="text"
-                            placeholder="Search for food, coffee, etc..."
-                            class="search-input"
-                        />
-                    </div>
-                </div>
-
-                <!-- Category Navigation -->
-                <div class="category-nav-container">
-                    <nav class="explore__menu--list"></nav>
-
-                    <button class="scroll-arrow left" id="scrollLeft">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button class="scroll-arrow right" id="scrollRight">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
-
-                <!-- Main Content -->
-                <main class="main-content">
-                    <div class="menu-header">
-                        <div class="menu-title">
-                            <h2>All products</h2>
-                            <p class="date">Thursday, 2 Feb 2021</p>
-                        </div>
-                        <div class="menu-controls">
-                            <div class="filter-btn">
-                                <i class="fas fa-filter"></i>
-                            </div>
-                            <select class="order-status">
-                                <option>Order Status</option>
-                                <option>Pending</option>
-                                <option>Completed</option>
-                                <option>Cancelled</option>
-                            </select>
-                            <button class="reset-filter">
-                                <i class="fas fa-redo"></i>
-                                Reset Filter
-                            </button>
-                        </div>
-                    </div>
-                    <!-- Add New Dish Card -->
-                    <div class="loading-wrapper"></div>
-                    <!-- Menu Grid -->
-                    <div class="menu-grid"></div>
-                    <div id="pagination-container" class="pagination"></div>
-                    <!-- Pagination -->
-                    <div class="pagination">
-                        <span class="page-info"></span>
-                        <div class="page-numbers"></div>
-                    </div>
-                </main>
-            </div>
-            <!-- Header -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Restaurant Menu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Embedded CSS to avoid MIME type issues -->
+    <link rel="stylesheet" href="/admin/css/products/products.css" />
+    <link rel="stylesheet" href="/admin/css/products/product_create.css" />
+    <link rel="stylesheet" href="/admin/css/style.css" />
+    <script
+      src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js"
+      type="module"
+    ></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.css"
+    />
+    <script src="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <%- include('../layout/sidebar.ejs'); -%> <%-
+      include('../layout/header.ejs'); -%> <%- include('./create_product.ejs');
+      -%>
+      <div class="content">
+        <div class="top">
+          <div class="top-content">
+            <h1>Menu</h1>
+            <p class="date">Thursday, 2 Feb 2021</p>
+          </div>
+          <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input
+              type="text"
+              placeholder="Search for food, coffee, etc..."
+              class="search-input"
+            />
+          </div>
         </div>
 
-        <!-- Embedded JavaScript to avoid 404 errors -->
-        <script src="/admin/js/products/products.js"></script>
-        <script src="/admin/js/products/product_create.js"></script>
-    </body>
+        <!-- Category Navigation -->
+        <div class="category-nav-container">
+          <nav class="explore__menu--list"></nav>
+
+          <button class="scroll-arrow left" id="scrollLeft">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button class="scroll-arrow right" id="scrollRight">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+          <div class="menu-header">
+            <div class="menu-title">
+              <h2>All products</h2>
+              <p class="date">Thursday, 2 Feb 2021</p>
+            </div>
+            <div class="menu-controls">
+              <div class="filter-btn">
+                <i class="fas fa-filter"></i>
+              </div>
+              <select class="order-status">
+                <option>Order Status</option>
+                <option>Pending</option>
+                <option>Completed</option>
+                <option>Cancelled</option>
+              </select>
+              <button class="reset-filter">
+                <i class="fas fa-redo"></i>
+                Reset Filter
+              </button>
+            </div>
+          </div>
+          <!-- Add New Dish Card -->
+          <div class="loading-wrapper"></div>
+          <!-- Menu Grid -->
+          <div class="menu-grid"></div>
+          <div id="pagination-container" class="pagination"></div>
+          <!-- Pagination -->
+          <div class="pagination">
+            <span class="page-info"></span>
+            <div class="page-numbers"></div>
+          </div>
+        </main>
+      </div>
+      <!-- Header -->
+    </div>
+
+    <!-- Embedded JavaScript to avoid 404 errors -->
+    <script src="/admin/js/products/products.js"></script>
+    <script src="/admin/js/products/product_create.js"></script>
+  </body>
 </html>
