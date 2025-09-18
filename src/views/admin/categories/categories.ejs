@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Product Categories</title>
+        <link rel="stylesheet" href="/admin/css/categories/categories.css" />
+        <link rel="stylesheet" href="/admin/css/style.css" />
+        <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+        />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <%- include('../layout/sidebar.ejs'); -%> <%-
+            include('../layout/header.ejs'); -%>
+
+            <div class="content">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div class="page-title">
+                        <h1>Nhóm sản phẩm</h1>
+                        <p class="page-description">
+                            Tổ chức sản phẩm theo danh mục
+                        </p>
+                    </div>
+                    <button
+                        class="btn-primary"
+                        id="addGroupBtn"
+                        onclick="window.location.href='/admin/categories/create'"
+                    >
+                        <i class="fas fa-plus"></i>
+                        Thêm nhóm
+                    </button>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <h3>Tổng nhóm</h3>
+                        </div>
+                        <div class="stat-value" id="totalGroups">
+                            <%= categories.length %>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <h3>Tổng sản phẩm</h3>
+                        </div>
+                        <div class="stat-value" id="totalProducts">
+                            <%= categories.reduce((acc, category) => acc +
+                            category.productsCount, 0) %>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <h3>Trung bình/nhóm</h3>
+                        </div>
+                        <div class="stat-value" id="averageProducts">
+                            <%= categories.length === 0 ? 0 :
+                            Math.round(categories.reduce((acc, category) => acc
+                            + category.productsCount, 0) / categories.length) %>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Groups Table -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <h2>Bảng nhóm sản phẩm</h2>
+                        <p class="table-description">
+                            Xem chi tiết tất cả nhóm sản phẩm
+                        </p>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="groups-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tên nhóm</th>
+                                    <th>Mô tả</th>
+                                    <th>Số sản phẩm</th>
+                                    <th>Ngày tạo</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="groupsTableBody">
+                                <% categories.forEach(function(category){ %>
+                                <tr>
+                                    <td><%=category.category_id %></td>
+                                    <td>
+                                        <div class="table-group-name">
+                                            <!-- <img src="${group.image}" alt="${group.name}" class="table-group-image"> -->
+                                            <span><%=category.name %></span>
+                                        </div>
+                                    </td>
+                                    <td><%=category.description %></td>
+                                    <td>
+                                        <span class="table-badge"
+                                            ><%=category.productsCount%></span
+                                        >
+                                    </td>
+                                    <td>
+                                        <% if (category.created_at) { %> <%= new
+                                        Date(category.created_at).toLocaleDateString('vi-VN')
+                                        %> <% } else { %> - <% } %>
+                                    </td>
+                                    <td>
+                                        <div class="group-actions">
+                                            <button
+                                                class="btn-icon edit"
+                                                onclick="window.location.href='/admin/categories/update/<%=category.category_id %>'"
+                                            >
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button
+                                                class="btn-icon delete"
+                                                data-id="<%= category.category_id %>"
+                                                data-name="<%= category.name %>"
+                                            >
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Added delete confirmation popup overlay -->
+        <div class="delete-popup-overlay" id="deletePopupOverlay">
+            <div class="delete-popup">
+                <div class="delete-confirmation">
+                    <div class="warning-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h2>Bạn có chắc chắn muốn xóa nhóm này?</h2>
+                    <div class="category-info" id="popupCategoryInfo">
+                        <!-- Category details will be populated by JavaScript -->
+                    </div>
+                    <p class="warning-text">
+                        Hành động này không thể hoàn tác. Tất cả sản phẩm trong
+                        nhóm này sẽ được chuyển về nhóm "Chưa phân loại".
+                    </p>
+                    <div class="form-actions">
+                        <button
+                            type="button"
+                            id="cancelDelete"
+                            class="btn-secondary"
+                        >
+                            Hủy
+                        </button>
+                        <form id="deleteForm" method="post">
+                            <button type="submit" class="btn-danger">
+                                Xóa nhóm
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            $(document).ready(function () {
+                // Khi bấm nút thùng rác
+                $(".delete").on("click", function () {
+                    const id = $(this).data("id");
+                    const name = $(this).data("name");
+
+                    // Cập nhật thông tin trong popup
+                    $("#popupCategoryInfo").html(
+                        `<p><strong>${name}</strong> (ID: ${id})</p>`
+                    );
+
+                    // Gán action cho form xóa
+                    $("#deleteForm").attr(
+                        "action",
+                        `/admin/categories/delete/${id}`
+                    );
+
+                    // Hiện popup
+                    $("#deletePopupOverlay").fadeIn();
+                });
+
+                // Bấm nút Hủy
+                $("#cancelDelete").on("click", function () {
+                    $("#deletePopupOverlay").fadeOut();
+                });
+
+                // Click ra ngoài overlay cũng đóng popup
+                $("#deletePopupOverlay").on("click", function (e) {
+                    if (e.target.id === "deletePopupOverlay") {
+                        $(this).fadeOut();
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>

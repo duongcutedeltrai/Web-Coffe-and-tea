@@ -1,0 +1,136 @@
+<div class="overlay" id="overlay">
+    <div class="popup">
+        <div class="form-header">
+            <button class="back-btn">
+                <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+                    <path d="m15 18-6-6 6-6" />
+                </svg>
+            </button>
+            <h1 class="form-title">Add Food</h1>
+        </div>
+
+        <form
+            action="/api/admin/products"
+            method="post"
+            class="product-form"
+            enctype="multipart/form-data"
+        >
+            <div class="form__content">
+                <div class="form_left">
+                    <label>Name <span class="bb">*</span></label>
+                    <input
+                        type="text"
+                        placeholder="Enter food name"
+                        name="name"
+                    />
+
+                    <label>Description</label>
+                    <textarea
+                        placeholder="Enter description"
+                        name="desc"
+                    ></textarea>
+
+                    <label>Price <span class="bb">*</span></label>
+                    <div class="price-group">
+                        <div class="sizes__form">
+                            <input
+                                name="sizeM"
+                                type="button"
+                                class="size active"
+                                id="sizeM"
+                                value="M"
+                            />
+                            <input
+                                name="sizeL"
+                                type="button"
+                                class="size"
+                                id="sizeL"
+                                value="L"
+                            />
+                            <input
+                                name="sizeXL"
+                                type="button"
+                                class="size"
+                                id="sizeXL"
+                                value="XL"
+                            />
+                        </div>
+                        <input
+                            type="text"
+                            id="priceInput"
+                            class="price-input"
+                            placeholder="Nhập giá"
+                        />
+                    </div>
+                    <label>Cập nhật tình trạng <span class="bb">*</span></label>
+                    <input type="text" style="display: none" name="status" />
+                    <div class="status-group">
+                        <div class="status-btn active">Đang bán</div>
+                        <div class="status-btn">Hết hàng</div>
+                        <div class="status-btn">Tạm ẩn</div>
+                    </div>
+                    <label>Category <span class="bb">*</span></label>
+                    <select
+                        id="category"
+                        name="category"
+                        class="form-select"
+                        required
+                    ></select>
+                </div>
+                <div class="form_right">
+                    <label>Preview images</label>
+                    <!-- Input file -->
+                    <!-- Khung upload -->
+                    <label class="upload-box" id="dropArea">
+                        <span class="plus">+</span>
+                        Drop your images here, or
+                        <span style="color: #d64a4a; text-decoration: underline"
+                            >click to browse</span
+                        >
+                        <small
+                            >1600 × 1200 (4:3) recommended, up to 5MB
+                            each.</small
+                        >
+                        <input
+                            type="file"
+                            id="fileInput"
+                            multiple
+                            accept=".png,.jpg,.jpeg"
+                            name="image"
+                        />
+                    </label>
+                    <div
+                        class="preview"
+                        id="preview"
+                        style="display: none"
+                    ></div>
+                    <label class="label">Số lượng ly tối đa:</label>
+                    <div class="not_limit">
+                        <p>Cho phép không giới hạn số lượng</p>
+                        <label class="switch">
+                            <input type="checkbox" id="toggle" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div id="inputBox" class="input-wrapper">
+                        <input
+                            type="number"
+                            id="cupInput"
+                            placeholder="Nhập số lượng"
+                        />
+                        <span>Ly</span>
+                    </div>
+                </div>
+            </div>
+            <button class="submit-btn">Sửa thông tin</button>
+        </form>
+    </div>
+</div>
