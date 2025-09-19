@@ -1,31 +1,38 @@
 const openBtn = document.querySelector(".popup_update--btn");
 const overlay = document.getElementById("overlay");
 const closeBtn = document.getElementById("closeBtn");
-
-openBtn.addEventListener("click", () => {
-    overlay.classList.add("active");
-});
-
-closeBtn.addEventListener("click", () => {
-    overlay.classList.remove("active");
-});
-
-// Đổi trạng thái button chọn (Price, Status)
-document.querySelectorAll(".price-option").forEach((btn) => {
-    btn.addEventListener("click", () => {
-        document
-            .querySelectorAll(".price-option")
-            .forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
+document.addEventListener("DOMContentLoaded", () => {
+    // Delegation cho nút mở popup
+    document.addEventListener("click", (e) => {
+        if (e.target.closest(".popup_update--btn")) {
+            overlay.classList.add("active");
+        }
     });
-});
 
-document.querySelectorAll(".status-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-        document
-            .querySelectorAll(".status-btn")
-            .forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
+    // Đóng popup
+    document.addEventListener("click", (e) => {
+        if (e.target.closest(".back-btn")) {
+            overlay.classList.remove("active");
+        }
+    });
+
+    // Đổi trạng thái button chọn (Price, Status)
+    document.querySelectorAll(".price-option").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            document
+                .querySelectorAll(".price-option")
+                .forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+        });
+    });
+
+    document.querySelectorAll(".status-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            document
+                .querySelectorAll(".status-btn")
+                .forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+        });
     });
 });
 function formatVND(value) {
@@ -42,7 +49,7 @@ function vndToInt(vndString) {
 }
 
 // --- main ---
-const sizeButtons = document.querySelectorAll(".size-btn");
+const sizeButtons = document.querySelectorAll(".size");
 const priceInput = document.getElementById("priceInput");
 const prices = { M: 0, L: 0, XL: 0 };
 let currentSize = "M";
@@ -156,9 +163,11 @@ toggle.addEventListener("change", () => {
     if (toggle.checked) {
         cupInput.value = ""; // xoá giá trị thật bên trong
         cupInput.placeholder = "Không giới hạn";
+        cupInput.style.display = "none";
         cupInput.readOnly = true;
     } else {
         cupInput.placeholder = "Nhập số lượng";
+        cupInput.style.display = "block";
         cupInput.readOnly = false;
     }
 });

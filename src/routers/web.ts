@@ -1,24 +1,22 @@
 import express, { Express } from "express";
-import { getDetailProductPage, getProductsPage } from "../controller/admin/dashboard.controller";
-import { getUserAdminPage, getViewDetailCustomerAdminPage, getViewDetailStaffAdminPage, postCreateUser, postDeleteUser, postLockUser, postUnlockUser, postUpdateStaff } from "../controller/admin/user.controller";
-import fileUploadMiddleware from "../middleware/multer";
+
+import AdminCategoryController from "../controller/admin/category.controller";
+import { productRoute, productRouteAPI } from "./admin/product.route";
+// import { categoryRouteAPI } from "./category.route";
 const router = express.Router();
+import categoryRoute from "./admin/category.route";
+import userRoute from "./admin/user.route";
+import homeRouter from "./admin/home.route";
 
 const webRouter = (app: Express) => {
-    app.get("/admin/detail_product", getDetailProductPage);
-    app.get("/admin/products", getProductsPage);
 
-    // admin user
-    app.get("/admin/user", getUserAdminPage)
-    app.post("/admin/create-user", fileUploadMiddleware("avatar", "images/users"), postCreateUser)
-    app.post("/admin/delete-user/:id", postDeleteUser)
-    app.post("/admin/update-user", fileUploadMiddleware("avatar", "images/users"), postUpdateStaff)
-    app.post("/admin/lock-user/:id", postLockUser)
-    app.post("/admin/unlock-user/:id", postUnlockUser)
-    app.get("/admin/user/customer-detail/:id", getViewDetailCustomerAdminPage)
-    app.get("/admin/user/staff-detail/:id", getViewDetailStaffAdminPage)
-
-    app.use("/", router);
+    app.use("/admin", productRoute);
+    app.use("/api/admin", productRouteAPI);
+    app.use("/admin", categoryRoute);
+    app.use("/admin", userRoute);
+    app.use("/", homeRouter);
+    // app.use("/api/admin", categoryRouteAPI);
+    // app.use("/", router);
 };
 
 export default webRouter;

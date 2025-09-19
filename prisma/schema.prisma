@@ -35,11 +35,13 @@ model categories {
   category_id Int        @id @default(autoincrement())
   name        String     @db.VarChar(100)
   description String?    @db.VarChar(255)
+  images      String?    @db.VarChar(255)
+  products    products[]
   created_at  DateTime?  @default(now()) @db.DateTime(0)
   deleted_at  DateTime?
-  products    products[]
 }
 
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model feedback {
   id         Int      @id @default(autoincrement())
   user_id    Int
@@ -99,7 +101,7 @@ model orders {
   receiver_phone       String                 @db.VarChar(20)
   order_details        order_details[]
   order_status_history order_status_history[]
-  users                users                  @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction, map: "orders_ibfk_1")
+  users                users?                 @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction, map: "orders_ibfk_1")
   payment              payment[]
 
   @@index([user_id], map: "user_id")
@@ -124,16 +126,28 @@ model products {
   sold               Int                  @default(0)
   category_id        Int?
   images             String?              @db.VarChar(255)
-  quantity           Int                  @default(0)
+  quantity           Int                  @default(-1)
   cart_details       cart_details[]
   feedback           feedback[]
   inventory          inventory[]
   order_details      order_details[]
-  price_product      price_product[]
   categories         categories?          @relation(fields: [category_id], references: [category_id], onDelete: NoAction, onUpdate: NoAction, map: "products_ibfk_1")
   promotion_products promotion_products[]
+  price_product      price_product[]
 
   @@index([category_id], map: "category_id")
+}
+
+model price_product {
+  price_product_id Int           @id @default(autoincrement())
+  product_id       Int
+  size             product_size?
+  price            Int
+
+  products products @relation(fields: [product_id], references: [product_id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([product_id, size], map: "product_size_unique")
+  @@index([product_id], map: "product_id_idx")
 }
 
 model promotion_products {
@@ -147,6 +161,7 @@ model promotion_products {
   @@index([promotion_id], map: "promotion_id")
 }
 
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model promotions {
   promotion_id       Int                  @id @default(autoincrement())
   code               String               @unique(map: "code") @db.VarChar(50)
@@ -165,29 +180,28 @@ model roles {
 }
 
 model users {
-  user_id  Int         @id @default(autoincrement())
-  email    String      @unique(map: "email") @db.VarChar(255)
-  username String      @db.VarChar(255)
-  password String      @db.VarChar(255)
-  phone    String      @db.VarChar(255)
-  address  String?     @db.VarChar(255)
-  avatar   String?     @db.VarChar(255)
-  gender   String?     @db.VarChar(45)
-  birthday DateTime?
-  status   user_status @default(ACTIVE)
-  point    Int?        @default(0)
+  user_id       Int                  @id @default(autoincrement())
+  email         String               @unique(map: "email") @db.VarChar(255)
+  username      String               @db.VarChar(255)
+  password      String               @db.VarChar(255)
+  phone         String               @db.VarChar(255)
+  address       String?              @db.VarChar(255)
+  avatar        String?              @db.VarChar(255)
+  gender        String?              @db.VarChar(45)
+  birthday      DateTime?
+  status        user_status          @default(ACTIVE)
+  point         Int?                 @default(0)
+  role_id       Int
+  auth_provider users_auth_provider? @default(system)
 
   membership    membership_level?
   discount_rate Int?              @default(0)
-
-  role_id       Int
-  auth_provider users_auth_provider? @default(system)
   cart          cart[]
-  feedback      feedback[]
-  orders        orders[]
-  roles         roles                @relation(fields: [role_id], references: [role_id], onDelete: NoAction, onUpdate: NoAction, map: "users_ibfk_1")
   point_history point_history[]
   staff_detail  staff_detail?
+  feedback      feedback[]
+  orders        orders[]
+  roles         roles             @relation(fields: [role_id], references: [role_id], onDelete: NoAction, onUpdate: NoAction, map: "users_ibfk_1")
 
   @@index([role_id], map: "role_id")
 }
@@ -217,15 +231,11 @@ model staff_detail {
   @@index([user_id])
 }
 
-model price_product {
-  price_product_id Int                 @id @default(autoincrement())
-  product_id       Int
-  size             price_product_size?
-  price            Int
-  products         products            @relation(fields: [product_id], references: [product_id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@unique([product_id, size], map: "product_size_unique")
-  @@index([product_id], map: "product_id_idx")
+enum membership_level {
+  BRONZE
+  SILVER
+  GOLD
+  DIAMOND
 }
 
 enum inventory_change_type {
@@ -234,11 +244,11 @@ enum inventory_change_type {
   adjustment
 }
 
-enum payment_method {
-  cod
-  banking
-  momo
-  paypal
+enum product_size {
+  M
+  L
+  XL
+  DEFAULT
 }
 
 enum order_status_history_status {
@@ -249,10 +259,22 @@ enum order_status_history_status {
   canceled
 }
 
+enum payment_method {
+  cod
+  banking
+  momo
+  paypal
+}
+
 enum payment_status {
   pending
   success
   failed
+}
+
+enum user_status {
+  ACTIVE
+  LOCKED
 }
 
 enum orders_status {
@@ -268,23 +290,4 @@ enum users_auth_provider {
   google
   facebook
   apple
-}
-
-enum price_product_size {
-  M
-  L
-  XL
-  DEFAULT
-}
-
-enum user_status {
-  ACTIVE
-  LOCKED
-}
-
-enum membership_level {
-  BRONZE
-  SILVER
-  GOLD
-  DIAMOND
 }
