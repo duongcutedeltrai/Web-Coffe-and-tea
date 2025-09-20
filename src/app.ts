@@ -1,7 +1,7 @@
 import express from "express";
 import webRouter from "./routers/web";
 
-import getConection from "./config/database";
+// import getConection from "./config/database";
 import { initDatabase } from "./config/seed";
 import { z } from "zod";
 
@@ -23,7 +23,7 @@ initDatabase()
 
 //config routers
 webRouter(app);
-getConection();
+// getConection();
 
 initDatabase();
 app.listen(PORT, () => {
