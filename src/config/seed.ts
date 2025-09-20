@@ -1,12 +1,9 @@
 import { product_size } from "@prisma/client";
 import { prisma } from "./client";
-import { STATUS_USER } from "./constant";
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 const initDatabase = async () => {
-    // const countUser = await prisma.user.count();
-    // const countRole = await prisma.role.count();
     const countUser = await prisma.users.count();
     const countRole = await prisma.roles.count();
     const countOrder = await prisma.orders.count();
@@ -15,6 +12,9 @@ const initDatabase = async () => {
     const countPointHistory = await prisma.point_history.count();
     const countStaffDetail = await prisma.staff_detail.count();
     const countCaterogies = await prisma.categories.count();
+
+
+
     if (countRole == 0) {
         await prisma.roles.createMany({
             data: [
@@ -53,6 +53,16 @@ const initDatabase = async () => {
                 data: [
                     {
                         email: "duonghaitt311@gmail.com",
+                        username: "phamanhduong",
+                        password: "123456",
+                        phone: "111111",
+                        role_id: customerRole.role_id,
+                        point: 40,
+                        gender: "nam",
+                    },
+
+                    {
+                        email: "duonghaitt3112@gmail.com",
                         username: "phamanhduong",
                         password: "123456",
                         phone: "111111",
@@ -184,7 +194,7 @@ const initDatabase = async () => {
     if (countOrderDetail == 0) {
         const product = await prisma.products.findFirst({
             where: {
-                name: "Cà phê đen đá",
+                name: "PHÊ XỈU VANI",
             },
         });
         const order = await prisma.orders.findFirst();
@@ -231,12 +241,14 @@ const initDatabase = async () => {
 
         if (user) {
             await prisma.staff_detail.createMany({
-                data: {
-                    user_id: user.user_id,
-                    position: "Pha chế",
-                    salary: 5000000,
-                    shift: "Ca sáng",
-                },
+                data: [
+                    {
+                        user_id: user.user_id,
+                        position: "Pha chế",
+                        salary: 5000000,
+                        shift: "Ca sáng",
+                    },
+                ]
             });
         }
     }

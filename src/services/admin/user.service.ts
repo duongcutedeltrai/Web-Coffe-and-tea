@@ -1,8 +1,11 @@
 import { TOTAL_ITEMS_PER_PAGE } from "../../config/constant";
 import { prisma } from "../../config/client";
 import { Prisma } from "@prisma/client";
+import { name } from "ejs";
 
 class AdminUserService {
+
+    // user phan customer
     getUserCustomer = async (role: string, page: number) => {
         const pageSize = TOTAL_ITEMS_PER_PAGE;
         const skip = (page - 1) * pageSize;
@@ -24,26 +27,7 @@ class AdminUserService {
         return viewUser;
     };
 
-    getAdminandStaff = async (page: number) => {
-        const pageSize = TOTAL_ITEMS_PER_PAGE;
-        const skip = (page - 1) * pageSize;
 
-        return await prisma.users.findMany({
-            where: {
-                roles: {
-                    name: {
-                        in: ["STAFF", "ADMIN"],
-                    },
-                },
-            },
-            skip,
-            take: pageSize,
-            include: {
-                roles: true,
-                orders: true,
-            },
-        });
-    };
 
     countTotalUserPagesByRole = async (role: string) => {
         const pageSize = TOTAL_ITEMS_PER_PAGE;
@@ -66,6 +50,36 @@ class AdminUserService {
         const totalPages = Math.ceil(totalItems / pageSize);
         return totalPages;
     };
+
+    // end user phan customer
+
+
+    // user phan staff
+    getAdminandStaff = async (page: number) => {
+        const pageSize = TOTAL_ITEMS_PER_PAGE;
+        const skip = (page - 1) * pageSize;
+
+        const staffs = await prisma.users.findMany({
+            where: {
+                roles: {
+                    name: {
+                        in: ["STAFF", "ADMIN"],
+                    },
+                },
+            },
+            skip,
+            take: pageSize,
+            include: {
+                roles: true,
+                orders: true,
+                staff_detail: true
+            },
+        });
+        return staffs
+    };
+
+    // end user phan staff
+
 
     getAllRoles = async () => {
         const roles = await prisma.roles.findMany();
@@ -203,6 +217,7 @@ class AdminUserService {
 
         return updateStaff;
     };
+
 }
 
 export default new AdminUserService();

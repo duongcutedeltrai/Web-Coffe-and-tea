@@ -55,3 +55,35 @@ function previewAvatar(input) {
         reader.readAsDataURL(input.files[0]);
     }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    initTabs()
+})
+
+function initTabs() {
+    const tabButtons = document.querySelectorAll(".tab-btn")
+
+    tabButtons.forEach((btn) => {
+        btn.addEventListener("click", (event) => {
+            const tabName = btn.getAttribute("data-tab")
+            switchTab(tabName, event)
+        })
+    })
+}
+
+function switchTab(tabName, event) {
+    // Bỏ active ở tất cả tab
+    document.querySelectorAll(".tab-btn").forEach((btn) =>
+        btn.classList.remove("active")
+    )
+    document.querySelectorAll(".tab-content").forEach((content) =>
+        content.classList.remove("active")
+    )
+
+    // Thêm active cho tab được chọn
+    event.target.classList.add("active")
+    const targetTab = document.getElementById(tabName + "Tab")
+    if (targetTab) {
+        targetTab.classList.add("active")
+    }
+}

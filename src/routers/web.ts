@@ -14,7 +14,7 @@ const webRouter = (app: Express) => {
     app.use("/api/admin", productRouteAPI);
     app.use("/admin", categoryRoute);
     app.use("/admin", userRoute);
-    app.use("/", homeRouter);
+    app.use("/admin", homeRouter);
     // app.use("/api/admin", categoryRouteAPI);
     // app.use("/", router);
 };

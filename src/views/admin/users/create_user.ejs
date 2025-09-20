@@ -62,7 +62,7 @@
 
                         <select name="gender" class="form-input" class="form-select">
                             <% genderOptions.forEach((gen,index)=> { %>
-                                <option value="<%-gen.value %>" <%=gen.value===users.gender ? 'selected' : '' %>
+                                <option value="<%-gen.value %>" <%=gen.value===staffs.gender ? 'selected' : '' %>
                                     >
                                     <%- gen.name %>
                                 </option>

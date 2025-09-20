@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MIRA - Whiskas Dry Adult Dewasa 7+</title>
+    <link rel="stylesheet" href="/admin/css/style.css" />
+    <link rel="stylesheet" href="/admin/css/users/user.css" />
+    <link rel="stylesheet" href="/admin/css/users/addUser.css" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <div class="container">
+        <%- include('../layout/sidebar.ejs'); -%>
+            <%- include('../layout/header.ejs'); -%>
+
+                <!-- Main Content -->
+                <main class="main-content">
+
+                    <!-- Stats Section -->
+                    <h1 class="title">Quản lý Khách hàng</h1>
+                    <section class="stats-section">
+                        <div class="stat-card red">
+                            <div class="stat-header">
+                                <div class="stat-title">Tổng khách hàng</div>
+                                <div class="stat-icon" style="background: #e53e3e">
+                                    <i class="fa-solid fa-user"></i>
+                                </div>
+                            </div>
+                            <div class="stat-value">1,247</div>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                +12 từ tháng trước
+                            </div>
+                        </div>
+
+                        <div class="stat-card blue">
+                            <div class="stat-header">
+                                <div class="stat-title">Khách hàng VIP</div>
+                                <div class="stat-icon" style="background: #3182ce">
+                                    <i class="fas fa-crown"></i>
+                                </div>
+                            </div>
+                            <div class="stat-value">89</div>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                +5 VIP mới
+                            </div>
+                        </div>
+
+                        <div class="stat-card orange">
+                            <div class="stat-header">
+                                <div class="stat-title">Đơn hàng tháng này</div>
+                                <div class="stat-icon" style="background: #dd6b20">
+                                    <i class="fas fa-shopping-bag"></i>
+                                </div>
+                            </div>
+                            <div class="stat-value">3,456</div>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                +18% so với tháng trước
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Filters Section -->
+                    <section class="filters-section">
+                        <div class="filters-section_header">
+                            <div class="filters-header">
+                                <h3>Bộ lọc và tìm kiếm</h3>
+                                <p>Tìm kiếm và lọc khách hàng theo các tiêu chí</p>
+                            </div>
+                        </div>
+
+                        <div class="filters-row">
+                            <div class="filter-group">
+                                <label>Tìm kiếm</label>
+                                <div class="search-wrapper">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                    <input type="text" class="search-input"
+                                        placeholder="Tìm kiếm theo tên, email hoặc số điện thoại..." />
+
+                                    <div class="search-member">
+                                        <button class="btn btn-primary">
+                                            Tìm kiếm
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="filter-group">
+                                <label>Trạng thái</label>
+                                <select class="filter-select">
+                                    <option>Tất cả trạng thái</option>
+                                    <option>Hoạt động</option>
+                                    <option>Bị khóa</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label>Ngày tham gia</label>
+                                <select class="filter-select">
+                                    <option>Tất cả thời gian</option>
+                                    <option>7 ngày qua</option>
+                                    <option>30 ngày qua</option>
+                                    <option>3 tháng qua</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-member">
+                                <button class="btn btn-primary">Lọc</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Customer Table -->
+                    <section class="table-section">
+                        <div class="table-header">
+                            <h3 class="table-title">Danh sách khách hàng</h3>
+                            <div style="display: flex; gap: 10px">
+                                <button class="btn btn-secondary">
+                                    <i class="fas fa-download"></i>
+                                    Xuất Excel
+                                </button>
+                            </div>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="customer-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tên</th>
+                                        <th>email</th>
+                                        <th>Giới tính</th>
+                                        <th>Tổng chi tiêu</th>
+                                        <th>Đơn hàng</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="customerTableBody">
+                                    <% customers.forEach(function (customer) { %>
+                                        <tr onclick="window.location= '/admin/customer/customer-detail/<%= customer.user_id %>'"
+                                            style="cursor: pointer">
+                                            <td>
+                                                <%= customer.username %>
+                                            </td>
+                                            <td>
+                                                <%= customer.email %>
+                                            </td>
+
+                                            <td>
+                                                <%= customer.gender %>
+                                            </td>
+
+                                            <td>
+                                                <% const total=customer.orders.reduce((sum, order)=> sum +
+                                                    order.total_amount, 0);
+                                                    %> <%= new Intl.NumberFormat('vi-VN', { style: 'currency' ,
+                                                        currency: 'VND' }).format(total) %>
+                                            </td>
+                                            <td>
+                                                <%= customer.orders.length %>
+                                            </td>
+
+                                            <td>
+                                                <div style="
+                                                display: flex;
+                                                gap: 20px;
+                                                position: relative;
+                                                left: 30px;
+                                            ">
+                                                    <% if (customer.status==="ACTIVE" ) { %>
+                                                        <form
+                                                            action="/admin/customer/lock-customer/<%= customer.user_id %>"
+                                                            method="post">
+                                                            <button type="submit" class="btn btn-warning btn-lock">
+                                                                Khóa
+                                                            </button>
+                                                        </form>
+                                                        <% } else { %>
+                                                            <form
+                                                                action="/admin/customer/unlock-customer/<%= customer.user_id %>"
+                                                                method="post">
+                                                                <button type="submit"
+                                                                    class="btn btn-success btn-unlock">
+                                                                    Mở khóa
+                                                                </button>
+                                                            </form>
+                                                            <% } %>
+                                                                <form
+                                                                    action="/admin/delete-customer/<%= customer.user_id %>"
+                                                                    method="post">
+                                                                    <button type="submit" class="btn btn-danger">
+                                                                        Xóa
+                                                                    </button>
+                                                                </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        <ul class="pagination">
+                            <li>
+                                <a class="<%= pageCustomer === 1 || totalPagesCustomer === 1 ? 'disabled' : '' %>"
+                                    href="/admin/user?pageCustomer=<%= pageCustomer - 1 %>">&laquo; Prev</a>
+                            </li>
+
+                            <% for(let i=1; i <=totalPagesCustomer; i++) { %>
+                                <li>
+                                    <a class="<%= pageCustomer === i ? 'active' : '' %>"
+                                        href="/admin/user?pageCustomer=<%= i %>">
+                                        <%= i %>
+                                    </a>
+                                </li>
+                                <% } %>
+
+                                    <li>
+                                        <a class="<%= pageCustomer === totalPagesCustomer || totalPagesCustomer === 1 ? 'disabled' : '' %>"
+                                            href="/admin/customer?pageCustomer=<%= pageCustomer + 1 %>">Next &raquo;</a>
+                                    </li>
+                        </ul>
+                    </section>
+                </main>
+    </div>
+    <script src="/admin/js/users/users.js"></script>
+</body>
+
+</html>
