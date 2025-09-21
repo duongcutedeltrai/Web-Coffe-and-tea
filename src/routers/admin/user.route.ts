@@ -10,8 +10,8 @@ userRoute.post(
     fileUploadUserMiddleware("avatar"),
     AdminUserController.postCreateUser
 );
-userRoute.post("/delete-customer/:id", AdminUserController.postDeleteCustomer);
-userRoute.post("/delete-staff/:id", AdminUserController.postDeleteStaff);
+userRoute.post("/customer/delete-customer/:id", AdminUserController.postDeleteCustomer);
+userRoute.post("/staff/delete-staff/:id", AdminUserController.postDeleteStaff);
 
 userRoute.post("/staff/lock-staff/:id", AdminUserController.postLockStaff)
 userRoute.post("/staff/unlock-staff/:id", AdminUserController.postUnlockStaff)

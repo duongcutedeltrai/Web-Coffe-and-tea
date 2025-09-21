@@ -13,7 +13,7 @@ class AdminUserController {
 
         }
 
-        const users = await AdminUserService.getUserCustomer(
+        const customers = await AdminUserService.getUserCustomer(
             "CUSTOMER",
             currentPageCustomer
         ); //customer pagination
@@ -32,7 +32,7 @@ class AdminUserController {
             { name: "Nam", value: "woman" },
         ];
         return res.render("admin/users/view_customer.ejs", {
-            users: users,
+            customers: customers,
             roles: roles,
             totalPagesCustomer: +totalPagesCustomer,
             pageCustomer: currentPageCustomer,
@@ -54,7 +54,7 @@ class AdminUserController {
     postDeleteCustomer = async (req: Request, res: Response) => {
         const { id } = req.params;
         await AdminUserService.handleDeleteUser(+id);
-        return res.redirect("/admin/view_customer");
+        return res.redirect("/admin/customer");
     };
 
 
@@ -63,7 +63,7 @@ class AdminUserController {
             const { id } = req.params;
             await AdminUserService.handleLockUser(+id);
 
-            return res.redirect("/admin/view_customer");
+            return res.redirect("/admin/customer");
         } catch (err) {
             console.error(err);
             res.json({ success: false });
@@ -75,7 +75,7 @@ class AdminUserController {
             const { id } = req.params;
             await AdminUserService.handleUnlockUser(+id);
 
-            return res.redirect("/admin/view_customer");
+            return res.redirect("/admin/customer");
         } catch (err) {
             console.error(err);
             res.json({ success: false });
@@ -94,10 +94,10 @@ class AdminUserController {
 
         }
 
-        const users = await AdminUserService.getAdminandStaff(currentPageStaffs); //customer pagination
+        const staffs = await AdminUserService.getAdminandStaff(currentPageStaffs); //customer pagination
 
 
-        const totalPagesStaff =
+        const totalPageStaffs =
             await AdminUserService.countTotalStaffAndAdminPages();
 
 
@@ -110,10 +110,10 @@ class AdminUserController {
             { name: "Nam", value: "woman" },
         ];
         return res.render("admin/users/view_staff.ejs", {
-            users: users,
+            staffs: staffs,
             roles: roles,
-            totalPagesCustomer: +totalPagesStaff,
-            pageCustomer: currentPageStaffs,
+            totalPageStaffs: +totalPageStaffs,
+            pageStaff: currentPageStaffs,
             optionRoles: optionRoles,
             genderOptions: genderOptions,
         });
@@ -152,7 +152,7 @@ class AdminUserController {
             avatar
         );
         //success
-        return res.redirect("/admin/view_staff");
+        return res.redirect("/admin/staff");
     };
 
 
@@ -175,7 +175,7 @@ class AdminUserController {
     postDeleteStaff = async (req: Request, res: Response) => {
         const { id } = req.params;
         await AdminUserService.handleDeleteUser(+id);
-        return res.redirect("/admin/view_staff");
+        return res.redirect("/admin/staff");
     };
 
     postLockStaff = async (req: Request, res: Response) => {
@@ -183,7 +183,7 @@ class AdminUserController {
             const { id } = req.params;
             await AdminUserService.handleLockUser(+id);
 
-            return res.redirect("/admin/view_staff");
+            return res.redirect("/admin/staff");
         } catch (err) {
             console.error(err);
             res.json({ success: false });
@@ -195,7 +195,7 @@ class AdminUserController {
             const { id } = req.params;
             await AdminUserService.handleUnlockUser(+id);
 
-            return res.redirect("/admin/view_staff");
+            return res.redirect("/admin/staff");
         } catch (err) {
             console.error(err);
             res.json({ success: false });
