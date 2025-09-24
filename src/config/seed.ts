@@ -3,7 +3,9 @@ import { prisma } from "./client";
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
+
 const initDatabase = async () => {
+
     const countUser = await prisma.users.count();
     const countRole = await prisma.roles.count();
     const countOrder = await prisma.orders.count();
@@ -15,6 +17,7 @@ const initDatabase = async () => {
 
 
 
+
     if (countRole == 0) {
         await prisma.roles.createMany({
             data: [
@@ -23,14 +26,16 @@ const initDatabase = async () => {
                     description: "ADMIN full quyen",
                 },
                 {
+                    name: "CUSTOMER",
+                    description: "Customer thong thuong",
+                },
+
+                {
                     name: "STAFF",
                     description: "Staff Dat mon",
                 },
 
-                {
-                    name: "CUSTOMER",
-                    description: "Customer thong thuong",
-                },
+
             ],
         });
     }
@@ -42,6 +47,13 @@ const initDatabase = async () => {
             },
         });
 
+        const adminRole = await prisma.roles.findFirst({
+            where: {
+                name: "ADMIN",
+            },
+        });
+
+
         const staffRole = await prisma.roles.findFirst({
             where: {
                 name: "STAFF",
@@ -51,16 +63,6 @@ const initDatabase = async () => {
         if (customerRole) {
             await prisma.users.createMany({
                 data: [
-                    {
-                        email: "duonghaitt311@gmail.com",
-                        username: "phamanhduong",
-                        password: "123456",
-                        phone: "111111",
-                        role_id: customerRole.role_id,
-                        point: 40,
-                        gender: "nam",
-                    },
-
                     {
                         email: "duonghaitt3112@gmail.com",
                         username: "phamanhduong",
@@ -74,149 +76,27 @@ const initDatabase = async () => {
             });
         }
 
-        if (staffRole) {
+        if (adminRole) {
             await prisma.users.createMany({
                 data: [
                     {
-                        email: "staff1@gmail.com",
+                        email: "admin@gmail.com",
                         username: "duong",
                         password: "123456",
                         phone: "111111",
-                        role_id: staffRole.role_id,
-                        gender: "nam",
-                    },
-                    {
-                        email: "staf2f@gmail.com",
-                        username: "duong",
-                        password: "123456",
-                        phone: "111111",
-                        role_id: staffRole.role_id,
-                        gender: "nam",
-                    },
-
-                    {
-                        email: "staf24f@gmail.com",
-                        username: "duong",
-                        password: "123456",
-                        phone: "111111",
-                        role_id: staffRole.role_id,
-                        gender: "nam",
-                    },
-
-                    {
-                        email: "staf32f@gmail.com",
-                        username: "duong",
-                        password: "123456",
-                        phone: "111111",
-                        role_id: staffRole.role_id,
-                        gender: "nam",
-                    },
-
-                    {
-                        email: "staf2323f@gmail.com",
-                        username: "duong",
-                        password: "123456",
-                        phone: "111111",
-                        role_id: staffRole.role_id,
-                        gender: "nam",
-                    },
-
-                    {
-                        email: "sta2323ff@gmail.com",
-                        username: "duong",
-                        password: "123456",
-                        phone: "111111",
-                        role_id: staffRole.role_id,
-                        gender: "nam",
-                    },
-
-                    {
-                        email: "sta23232ff@gmail.com",
-                        username: "duong",
-                        password: "123456",
-                        phone: "111111",
-                        role_id: staffRole.role_id,
-                        gender: "nam",
-                    },
-
-                    {
-                        email: "staf23232f@gmail.com",
-                        username: "duong",
-                        password: "123456",
-                        phone: "111111",
-                        role_id: staffRole.role_id,
-                        gender: "nam",
-                    },
-
-                    {
-                        email: "staf32323232f@gmail.com",
-                        username: "duong",
-                        password: "123456",
-                        phone: "111111",
-                        role_id: staffRole.role_id,
+                        role_id: adminRole.role_id,
                         gender: "nam",
                     },
                 ],
             });
         }
-    }
 
-    if (countOrder == 0) {
-        const userID = await prisma.users.findFirst({
-            where: {
-                email: "duonghaitt311@gmail.com",
-            },
-        });
-
-        if (userID) {
-            await prisma.orders.createMany({
-                data: [
-                    {
-                        user_id: userID.user_id,
-                        total_amount: 20000000,
-                        delivery_address: "acascs",
-                        receiver_name: "Pham Anh Duong",
-                        receiver_phone: "1111",
-                    },
-
-                    {
-                        user_id: userID.user_id,
-                        total_amount: 20000000,
-                        delivery_address: "acascs",
-                        receiver_name: "Pham Anh Duong",
-                        receiver_phone: "1111",
-                    },
-                ],
-            });
-        }
-    }
-
-    if (countOrderDetail == 0) {
-        const product = await prisma.products.findFirst({
-            where: {
-                name: "PHÊ XỈU VANI",
-            },
-        });
-        const order = await prisma.orders.findFirst();
-
-        if (product && order) {
-            await prisma.order_details.createMany({
-                data: [
-                    {
-                        order_id: order.order_id,
-                        product_id: product.product_id,
-                        quantity: 4,
-                        price: 12000,
-                    },
-                ],
-            });
-        }
-    }
+    };
 
     if (countPointHistory == 0) {
         const user = await prisma.users.findFirst({
             where: {
-                email: "duonghaitt311@gmail.com",
+                email: "duonghaitt3112@gmail.com",
             },
         });
 
@@ -234,25 +114,20 @@ const initDatabase = async () => {
 
     if (countStaffDetail == 0) {
         const user = await prisma.users.findFirst({
-            where: {
-                email: "staff1@gmail.com",
-            },
+            where: { email: 'staff1@gmail.com' },
         });
 
         if (user) {
-            await prisma.staff_detail.createMany({
-                data: [
-                    {
-                        user_id: user.user_id,
-                        position: "Pha chế",
-                        salary: 5000000,
-                        shift: "Ca sáng",
-                    },
-                ]
+            await prisma.staff_detail.create({
+                data: {
+                    user_id: user.user_id,
+                    position: "Pha chế",
+                    salary: 5000000,
+                    shift: "Ca sáng",
+                },
             });
         }
     }
-
     if (countCaterogies == 0) {
         await prisma.$executeRawUnsafe(
             `ALTER TABLE categories AUTO_INCREMENT = 1`
@@ -882,6 +757,50 @@ const initDatabase = async () => {
         }
     }
 
+    if (countOrder == 0) {
+        const userID = await prisma.users.findFirst({
+            where: {
+                email: "duonghaitt3112@gmail.com",
+            },
+        });
+
+        if (userID) {
+            await prisma.orders.createMany({
+                data: [
+                    {
+                        user_id: userID.user_id,
+                        total_amount: 20000000,
+                        delivery_address: "acascs",
+                        receiver_name: "Pham Anh Duong",
+                        receiver_phone: "1111",
+                    },
+                ],
+            });
+        }
+    }
+
+    if (countOrderDetail == 0) {
+        const product = await prisma.products.findFirst({
+            where: {
+                name: "PHÊ XỈU VANI",
+            },
+        });
+        const order = await prisma.orders.findFirst();
+
+        if (product && order) {
+            await prisma.order_details.createMany({
+                data: [
+                    {
+                        order_id: order.order_id,
+                        product_id: product.product_id,
+                        quantity: 4,
+                        price: 12000,
+                    },
+                ],
+            });
+        }
+    }
+
     if (
         countRole !== 0 &&
         countUser !== 0 &&
@@ -891,9 +810,9 @@ const initDatabase = async () => {
         countPointHistory !== 0 &&
         countCaterogies !== 0
     ) {
-        console.log(">>> ALREADY INIT DATA...");
     }
-};
+}
+
 const hashPassword = async (myPlaintextPassword) => {
     const pass = await bcrypt.hash(myPlaintextPassword, saltRounds);
     return pass;
@@ -905,6 +824,6 @@ const comparePassword = async (
 ) => {
     return await bcrypt.compare(myPlaintextPassword, hashPass);
 };
-
 export { initDatabase, hashPassword, comparePassword };
+
 // const myPlaintextPassword = "s0//P4$$w0rD";

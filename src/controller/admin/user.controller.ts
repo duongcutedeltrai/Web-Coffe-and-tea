@@ -25,7 +25,6 @@ class AdminUserController {
 
         const roles = await AdminUserService.getAllRoles(); // lấy tất cả role
 
-        const optionRoles = await AdminUserService.getOptionRole();
 
         const genderOptions = [
             { name: "Nữ", value: "man" },
@@ -36,7 +35,6 @@ class AdminUserController {
             roles: roles,
             totalPagesCustomer: +totalPagesCustomer,
             pageCustomer: currentPageCustomer,
-            optionRoles: optionRoles,
             genderOptions: genderOptions,
         });
     };
@@ -81,10 +79,29 @@ class AdminUserController {
             res.json({ success: false });
         }
     };
+
+    getCustomerSearch = async (req: Request, res: Response) => {
+        try {
+            const username = req.query.username?.toString().trim() || "";
+            const email = req.query.username?.toString().trim() || "";
+            const { pageCustomer } = req.query;
+            let currentPageCustomer = +pageCustomer ? +pageCustomer : 1;
+
+            if (currentPageCustomer <= 0) {
+                currentPageCustomer = 1;
+            }
+
+
+            const customers = await AdminUserService.handleSearchCustomer(+currentPageCustomer, username, email)
+            res.json(customers)
+        } catch (err) {
+            res.status(401).json("có lỗi xảy ra")
+        }
+    };
     // end user phan customer
 
 
-    // user phan admin 
+    // user phan admin phan staff
     getAdminStaffPage = async (req: Request, res: Response) => {
         const { pageStaff } = req.query;
 
@@ -103,18 +120,17 @@ class AdminUserController {
 
         const roles = await AdminUserService.getAllRoles(); // lấy tất cả role
 
-        const optionRoles = await AdminUserService.getOptionRole();
 
         const genderOptions = [
-            { name: "Nữ", value: "man" },
-            { name: "Nam", value: "woman" },
+            { name: "Nữ", value: "Nữ" },
+            { name: "Nam", value: "Nam" },
         ];
+
         return res.render("admin/users/view_staff.ejs", {
             staffs: staffs,
             roles: roles,
             totalPageStaffs: +totalPageStaffs,
             pageStaff: currentPageStaffs,
-            optionRoles: optionRoles,
             genderOptions: genderOptions,
         });
     };
@@ -132,24 +148,28 @@ class AdminUserController {
             username,
             email,
             phone,
-            roleId,
-            gender,
             birthday,
             address,
+            gender,
             password,
+            position,
+            salary
         } = req.body;
         const file = req.file;
         const avatar = file?.filename ?? null;
+
+
         await AdminUserService.handleCreateUser(
             username,
             email,
             phone,
-            roleId,
-            gender,
             birthday,
             address,
+            gender,
             password,
-            avatar
+            avatar,
+            position,
+            +salary
         );
         //success
         return res.redirect("/admin/staff");
@@ -202,12 +222,27 @@ class AdminUserController {
         }
     };
 
-    // end user phan admin 
+    getSearchStaff = async (req: Request, res: Response) => {
+        try {
+
+            const username = req.query.username?.toString().trim() || "";
+            const email = req.query.email?.toString().trim() || "";
+
+            const { pageStaff } = req.query;
+            let currentPageStaffs = +pageStaff ? +pageStaff : 1;
+            if (currentPageStaffs <= 0) {
+                currentPageStaffs = 1
+            }
+
+            const staffs = await AdminUserService.handleSearchStaff(currentPageStaffs, username, email)
+            res.json(staffs);
+        } catch (err) {
+            res.status(500).json({ error: "Có lỗi xảy ra" });
+        }
+    };
 
 
-
-
-
+    // end user phan admin phan staff
 
 
 }

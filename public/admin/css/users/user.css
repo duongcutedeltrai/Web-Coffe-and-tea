@@ -201,6 +201,7 @@ body {
 .search-input {
     padding-left: 45px;
     position: relative;
+    width: 350px;
 }
 
 .search-wrapper {
@@ -601,42 +602,47 @@ body {
 /* pagination */
 /* Pagination container */
 .pagination {
-    display: flex;
-    justify-content: center;
-    margin: 20px 0;
+
     list-style: none;
     padding: 0;
+    margin: 20px 0;
+    gap: 6px;
+    transform: translateX(calc(100% - 60%));
+
 }
 
+
+
 .pagination li {
-    margin: 0 5px;
+    display: inline;
 }
 
 .pagination li a {
-    display: block;
-    padding: 8px 12px;
-    text-decoration: none;
-    color: #000;
+    display: inline-block;
+    padding: 8px 14px;
     border: 1px solid #ddd;
     border-radius: 5px;
-    transition: all 0.3s;
+    text-decoration: none;
+    color: #000;
+    transition: 0.3s;
 }
 
 .pagination li a:hover {
-    background-color: #b22830;
-    color: #fff;
+    background: #f0f0f0;
 }
 
 .pagination li a.active {
-    background-color: #b22830;
+    background: #b22222;
+    /* đỏ đậm */
     color: #fff;
-    pointer-events: none;
+    border-color: #b22222;
 }
 
 .pagination li a.disabled {
-    color: #ccc;
     pointer-events: none;
-    border-color: #ddd;
+    color: #aaa;
+    border-color: #eee;
+    background: #f9f9f9;
 }
 
 /* Animations */

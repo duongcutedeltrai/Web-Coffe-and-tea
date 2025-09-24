@@ -19,6 +19,7 @@ userRoute.post("/staff/unlock-staff/:id", AdminUserController.postUnlockStaff)
 userRoute.post("/customer/lock-customer/:id", AdminUserController.postLockCustomer)
 userRoute.post("/customer/unlock-customer/:id", AdminUserController.postUnlockCustomer)
 
+userRoute.post("/staff/update-staff", fileUploadUserMiddleware("avatar"), AdminUserController.postUpdateStaff)
 
 userRoute.get(
     "/customer/customer-detail/:id",
@@ -29,7 +30,8 @@ userRoute.get(
     AdminUserController.getViewDetailStaffAdminPage
 );
 
-// userRoute.get("/staff/search", AdminUserController.getSearchStaff)
+userRoute.get("/staff/search", AdminUserController.getSearchStaff)
+userRoute.get("/customer/search", AdminUserController.getCustomerSearch)
 
 
 

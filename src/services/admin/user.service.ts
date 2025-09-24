@@ -2,6 +2,8 @@ import { TOTAL_ITEMS_PER_PAGE } from "../../config/constant";
 import { prisma } from "../../config/client";
 import { Prisma } from "@prisma/client";
 import { name } from "ejs";
+import { includes } from "zod";
+import { create } from "node:domain";
 
 class AdminUserService {
 
@@ -63,7 +65,7 @@ class AdminUserService {
             where: {
                 roles: {
                     name: {
-                        in: ["STAFF", "ADMIN"],
+                        in: ["STAFF"],
                     },
                 },
             },
@@ -86,26 +88,17 @@ class AdminUserService {
         return roles;
     };
 
-    getOptionRole = async () => {
-        return await prisma.roles.findMany({
-            where: {
-                name: {
-                    in: ["ADMIN", "STAFF"],
-                },
-            },
-        });
-    };
-
     handleCreateUser = async (
         username: string,
         email: string,
         phone: string,
-        roleId: number,
-        gender: string,
         birthday: string,
         address: string,
+        gender: string,
         password: string,
-        avatar: string
+        avatar: string,
+        position?: string,
+        salary?: number
     ) => {
         try {
             const parsedBirthday = birthday ? new Date(birthday) : null;
@@ -114,16 +107,20 @@ class AdminUserService {
                     username,
                     email,
                     phone,
-                    gender,
                     birthday: parsedBirthday,
                     address,
+                    gender,
                     password,
                     avatar,
-                    roles: {
-                        connect: { role_id: +roleId },
-                    },
+                    role_id: +15,
+                    staff_detail: {
+                        create: {
+                            salary: salary ?? 0,
+                            position: position ?? "chua co",
+                        },
+                    }
                 },
-                include: { roles: true },
+                include: { roles: true, staff_detail: true },
             });
 
             return newUser;
@@ -217,6 +214,71 @@ class AdminUserService {
 
         return updateStaff;
     };
+
+    handleSearchStaff = async (pageStaff: number, username: string, email: string) => {
+        const pageSize = TOTAL_ITEMS_PER_PAGE;
+        const skip = (pageStaff - 1) * pageSize
+
+        const where: any = {
+            role_id: { in: [15] }
+        };
+
+        if (username || email) {
+            where.OR = [];
+            if (username) where.OR.push({ username: { contains: username } });
+            if (email) where.OR.push({ email: { contains: email } });
+        }
+
+
+        const searchStaff = await prisma.users.findMany({
+            where,
+            skip,
+            take: pageSize,
+            include: {
+                roles: true,
+                staff_detail: true
+            },
+            orderBy: {
+                user_id: "asc"
+            }
+        });
+
+
+        return searchStaff;
+    }
+
+    handleSearchCustomer = async (pageCustomer: number, username: string, email: string) => {
+        const pageSize = TOTAL_ITEMS_PER_PAGE;
+        const skip = (pageCustomer - 1) * pageSize
+
+        const where: any = {
+            role_id: { in: [14] }
+        };
+
+        if (username || email) {
+            where.OR = [];
+            if (username) where.OR.push({ username: { contains: username } });
+            if (email) where.OR.push({ email: { contains: email } });
+        }
+
+
+        const searchCustomer = await prisma.users.findMany({
+            where,
+            skip,
+            take: pageSize,
+            include: {
+                roles: true,
+                staff_detail: true
+            },
+            orderBy: {
+                user_id: "asc"
+            }
+        });
+
+
+        return searchCustomer;
+    }
+
 
 }
 
