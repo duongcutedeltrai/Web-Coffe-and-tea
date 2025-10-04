@@ -9,8 +9,7 @@ html {
 
 body {
   font-family: "Inter", sans-serif;
-  background: url("https://scontent-hkg1-2.xx.fbcdn.net/v/t39.30808-6/481706959_1045724690911257_2699527036090553896_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=86c6b0&_nc_ohc=HgQctRQMLV4Q7kNvwEWXzmd&_nc_oc=Adn_Ae66LqJ9eBHoKGC7ldoP3rC9LKuhec9ABsuN9R3zaDtqfUQ9yu6VBcPUodl7O6EIrqFbYg8ish17Iz0-eDlB&_nc_zt=23&_nc_ht=scontent-hkg1-2.xx&_nc_gid=-tQQhJ9xsQnVAfyh9-ouRQ&oh=00_Afbs9TK6SAUWOXisMZ6-o-3nfiEDQEOnOc7s4_bdRgRk9w&oe=68CCC873")
-    no-repeat center center / cover;
+  background: url("/images/client/bg.jpg") no-repeat center center / cover;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -266,6 +265,11 @@ body {
   opacity: 0;
   transform: translateY(-30px);
   transition: all 500ms ease;
+}
+#registerForm:not(.hidden) .submit-btn {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.4s;
 }
 #forgotPasswordForm:not(.hidden) .submit-btn {
   opacity: 1;

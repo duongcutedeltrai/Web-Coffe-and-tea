@@ -12,8 +12,13 @@ const mailConfig = {
 };
 
 export const mailService = {
-  async sendMail(emailTo, subject, text) {
-    console.log(mailConfig);
+  async sendMail(
+    emailTo: string,
+    subject: string,
+    html: string,
+    isHtml = false
+  ) {
+    //console.log(mailConfig);
     const transporter = nodemailer.createTransport(mailConfig);
 
     transporter.sendMail(
@@ -21,7 +26,7 @@ export const mailService = {
         from: process.env.SMTP_USER,
         to: emailTo,
         subject,
-        text,
+        html,
       },
       (err, info) => {
         if (err) {

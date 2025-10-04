@@ -10,15 +10,18 @@ document.addEventListener("DOMContentLoaded", () => {
     } else switchToForgotPassword();
   }
 });
-const loginImageUrl =
-  "https://scontent-hkg1-2.xx.fbcdn.net/v/t39.30808-6/484831242_1057200206430372_431870730670613622_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=127cfc&_nc_ohc=mIQHCt5ERCEQ7kNvwFR0Gyl&_nc_oc=AdnxefWlksEnF0qblYf1HJ9lkg5Or7a0UjFQ6MW8le8GnRn_d1jgDOjmjr0dN1yxg5yNRsNm-xSHs8fGRopEpEMk&_nc_zt=23&_nc_ht=scontent-hkg1-2.xx&_nc_gid=TdH3iDlTxRtWhFFHcAH-jg&oh=00_Afb82DBShDeNbOHHyrTWDEgMOJXy-DfdWHnXvBMK4-mmuA&oe=68CCAA99";
+// const loginImageUrl =
+//   "https://scontent-hkg1-2.xx.fbcdn.net/v/t39.30808-6/484831242_1057200206430372_431870730670613622_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=127cfc&_nc_ohc=mIQHCt5ERCEQ7kNvwFR0Gyl&_nc_oc=AdnxefWlksEnF0qblYf1HJ9lkg5Or7a0UjFQ6MW8le8GnRn_d1jgDOjmjr0dN1yxg5yNRsNm-xSHs8fGRopEpEMk&_nc_zt=23&_nc_ht=scontent-hkg1-2.xx&_nc_gid=TdH3iDlTxRtWhFFHcAH-jg&oh=00_Afb82DBShDeNbOHHyrTWDEgMOJXy-DfdWHnXvBMK4-mmuA&oe=68CCAA99";
 
-const registerImageUrl =
-  "https://scontent-hkg1-2.xx.fbcdn.net/v/t39.30808-6/518279644_1153587333458325_8776620748699647719_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=127cfc&_nc_ohc=Ammb4ICfS6kQ7kNvwEyVbd8&_nc_oc=AdlrMEbymNLxMLVRu4-DnQbxB_IDCiMhnQoqkNl937hNeTodN4u4OUJx9oxVpM3e3TRthDwTXKxkXNRkF_JcUikI&_nc_zt=23&_nc_ht=scontent-hkg1-2.xx&_nc_gid=IpLYseFP-eQ44Ovb2UIG5A&oh=00_AfbE-OjZX24rjzbQhcUq7-rW-QH-VpAdZzT70EtJLuEkBw&oe=68CCC507";
+// const registerImageUrl =
+//   "https://scontent-hkg1-2.xx.fbcdn.net/v/t39.30808-6/518279644_1153587333458325_8776620748699647719_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=127cfc&_nc_ohc=Ammb4ICfS6kQ7kNvwEyVbd8&_nc_oc=AdlrMEbymNLxMLVRu4-DnQbxB_IDCiMhnQoqkNl937hNeTodN4u4OUJx9oxVpM3e3TRthDwTXKxkXNRkF_JcUikI&_nc_zt=23&_nc_ht=scontent-hkg1-2.xx&_nc_gid=IpLYseFP-eQ44Ovb2UIG5A&oh=00_AfbE-OjZX24rjzbQhcUq7-rW-QH-VpAdZzT70EtJLuEkBw&oe=68CCC507";
 
-const forgotPasswordImageUrl =
-  "https://scontent-hkg1-2.xx.fbcdn.net/v/t39.30808-6/481706959_1045724690911257_2699527036090553896_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=86c6b0&_nc_ohc=HgQctRQMLV4Q7kNvwEWXzmd&_nc_oc=Adn_Ae66LqJ9eBHoKGC7ldoP3rC9LKuhec9ABsuN9R3zaDtqfUQ9yu6VBcPUodl7O6EIrqFbYg8ish17Iz0-eDlB&_nc_zt=23&_nc_ht=scontent-hkg1-2.xx&_nc_gid=-tQQhJ9xsQnVAfyh9-ouRQ&oh=00_Afbs9TK6SAUWOXisMZ6-o-3nfiEDQEOnOc7s4_bdRgRk9w&oe=68CCC873";
+// const forgotPasswordImageUrl =
+//   "https://scontent-hkg1-2.xx.fbcdn.net/v/t39.30808-6/481706959_1045724690911257_2699527036090553896_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=86c6b0&_nc_ohc=HgQctRQMLV4Q7kNvwEWXzmd&_nc_oc=Adn_Ae66LqJ9eBHoKGC7ldoP3rC9LKuhec9ABsuN9R3zaDtqfUQ9yu6VBcPUodl7O6EIrqFbYg8ish17Iz0-eDlB&_nc_zt=23&_nc_ht=scontent-hkg1-2.xx&_nc_gid=-tQQhJ9xsQnVAfyh9-ouRQ&oh=00_Afbs9TK6SAUWOXisMZ6-o-3nfiEDQEOnOc7s4_bdRgRk9w&oe=68CCC873";
 
+const loginImageUrl = "/images/client/bgLogin.jpg";
+const registerImageUrl = "/images/client/bgRegister.jpg";
+const forgotPasswordImageUrl = "/images/client/bgForgotPassword.jpg";
 function switchImage(newImageUrl) {
   const backgroundImage = document.querySelector(".background-image");
 
@@ -91,6 +94,7 @@ function switchToForgotPassword() {
   const forgotPasswordForm = document.getElementById("forgotPasswordForm");
 
   switchImage(forgotPasswordImageUrl);
+  window.history.pushState({}, "", "/auth/forgot-password");
 
   // Add register mode class for sliding animation (reuse same animation)
   container.classList.add("register-mode");

@@ -6,6 +6,8 @@ const authRoute = express.Router();
 authRoute.get("/login", AuthController.getLoginPage);
 authRoute.get("/register", AuthController.getRegisterPage);
 authRoute.get("/home", authMiddleware, AuthController.getHomePage);
+authRoute.get("/forgot-password", AuthController.getForgotPasswordPage);
+authRoute.get("/reset-password", AuthController.getResetPasswordPage);
 
 authRoute.post("/login", AuthController.login);
 authRoute.post("/register", AuthController.register);

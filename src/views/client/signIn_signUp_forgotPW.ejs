@@ -153,13 +153,7 @@
                   </svg>
                 </button>
               </div>
-              <button
-                type="submit"
-                class="submit-btn"
-                onclick="switchToLogin()"
-              >
-                Submit
-              </button>
+              <button type="submit" class="submit-btn">Submit</button>
             </form>
 
             <div class="divider">
@@ -223,9 +217,13 @@
             <h2>Reset password</h2>
             <p class="subtitle">Enter your email to reset password</p>
 
-            <form class="auth-form">
+            <form
+              class="auth-form"
+              action="/auth/forgot-password"
+              method="POST"
+            >
               <div class="input-group">
-                <input type="email" placeholder="Email" required />
+                <input type="email" placeholder="Email" name="email" required />
               </div>
               <button type="submit" class="submit-btn">Send Reset Link</button>
             </form>
@@ -243,7 +241,7 @@
       <!-- Image Section -->
       <div class="image-section" id="imageSection">
         <img
-          src="https://scontent-hkg1-2.xx.fbcdn.net/v/t39.30808-6/484831242_1057200206430372_431870730670613622_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=127cfc&_nc_ohc=mIQHCt5ERCEQ7kNvwFR0Gyl&_nc_oc=AdnxefWlksEnF0qblYf1HJ9lkg5Or7a0UjFQ6MW8le8GnRn_d1jgDOjmjr0dN1yxg5yNRsNm-xSHs8fGRopEpEMk&_nc_zt=23&_nc_ht=scontent-hkg1-2.xx&_nc_gid=TdH3iDlTxRtWhFFHcAH-jg&oh=00_Afb82DBShDeNbOHHyrTWDEgMOJXy-DfdWHnXvBMK4-mmuA&oe=68CCAA99"
+          src="/images/client/bg.jpg"
           alt="Background"
           class="background-image"
         />

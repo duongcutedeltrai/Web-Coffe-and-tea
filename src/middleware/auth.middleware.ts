@@ -24,13 +24,13 @@ export function authMiddleware(
     return res.redirect("/auth/login");
   }
 }
-// export const roleMiddleware =
-//   (...roles: string[]) =>
-//   (req: Request, res: Response, next: NextFunction) => {
-//     if (!req.user || !roles.includes(req.user.role)) {
-//       //return res.status(403).render("client/403.ejs", { message: "Permission denied" });
+export const roleMiddleware =
+  (...roles: string[]) =>
+  (req: Request, res: Response, next: NextFunction) => {
+    if (!(req as any).user || !roles.includes((req as any).user.role_id)) {
+      //return res.status(403).render("client/403.ejs", { message: "Permission denied" });
 
-//       return res.status(403).json({ message: "Permission denied" });
-//     }
-//     next();
-//   };
+      return res.status(403).json({ message: "Permission denied" });
+    }
+    next();
+  };

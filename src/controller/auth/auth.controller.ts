@@ -15,12 +15,26 @@ class AuthController {
     console.log(user);
     return res.render("client/home.ejs", { user });
   }
+  async getForgotPasswordPage(req: Request, res: Response) {
+    return res.render("client/signIn_signUp_forgotPW.ejs", {
+      show: "forgot-password",
+    });
+  }
+  async getResetPasswordPage(req: Request, res: Response) {
+    try {
+      const { token } = req.query;
+      const user = await AuthService.validateResetToken(token as string);
+      return res.render("client/resetPassword.ejs", { token, user });
+    } catch (error) {
+      console.error("Reset password page error:", error.message);
+      return res.render("client/404_page.ejs");
+    }
+  }
 
   async login(req: Request, res: Response) {
     try {
       const { email, password } = req.body;
       const token = await AuthService.login(email, password);
-
       res.cookie("token", token, { httpOnly: true });
       return res.redirect("/auth/home");
     } catch (error) {
@@ -39,9 +53,8 @@ class AuthController {
         email: req.body.email,
         password: req.body.password,
       };
-      console.log(newUser);
       const user = await AuthService.register(newUser);
-      return user;
+      return res.redirect("/auth/login");
     } catch (error) {
       return res.status(401).json({
         message: error.message,
@@ -57,8 +70,11 @@ class AuthController {
   async forgotPassword(req: Request, res: Response) {
     try {
       const { email } = req.body;
-      const token = await AuthService.forgotPassword(email);
-      return res.status(200).json({ token });
+      await AuthService.forgotPassword(email);
+      return res.send(
+        `<div>Chúng tôi đã gửi một email hướng dẫn đặt lại mật khẩu. </div>
+        <div>Vui lòng kiểm tra hộp thư đến (và cả thư rác) để tiếp tục.</div>`
+      );
     } catch (error) {
       console.error("Forgot password error:", error.message);
       return res.status(401).json({
@@ -70,8 +86,8 @@ class AuthController {
   async resetPassword(req: Request, res: Response) {
     try {
       const { token, newPassword } = req.body;
-      const result = await AuthService.resetPassword(token, newPassword);
-      return res.status(200).json({ message: "Password reset successful" });
+      await AuthService.resetPassword(newPassword, token);
+      return res.redirect("/auth/login");
     } catch (error) {
       console.error("Reset password error:", error.message);
       return res.status(401).json({
