@@ -44,7 +44,6 @@
 
 
                         <div class="form-group">
-                            <label class="form-label">Vai trò công việc *</label>
                             <select class="form-input" name="position" required>
                                 <option value="">Chọn vai trò</option>
                                 <option value="Pha chế">Pha chế</option>
@@ -90,6 +89,18 @@
                         <input name="salary" type="text" class="form-input" placeholder="Nhập Lương đầy đủ">
                     </div>
                 </div>
+                <div class="form-group">
+                    <label class="form-label">Ca làm việc :</label>
+                    <select name="shiftId" class="form-input" required>
+                        <option value="">Chọn ca làm việc</option>
+                        <% workShifts.forEach((shift)=> { %>
+                            <option value="<%= shift.shift_id %>">
+                                <%= shift.name %>
+                            </option>
+                            <% }) %>
+                    </select>
+                </div>
+
 
                 <div class="form-group">
                     <label class="form-label">Địa chỉ</label>

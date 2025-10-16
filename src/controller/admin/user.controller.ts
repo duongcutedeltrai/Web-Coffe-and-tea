@@ -119,6 +119,7 @@ class AdminUserController {
 
 
         const roles = await AdminUserService.getAllRoles(); // lấy tất cả role
+        const workShifts = await AdminUserService.getAllShift();
 
 
         const genderOptions = [
@@ -132,14 +133,22 @@ class AdminUserController {
             totalPageStaffs: +totalPageStaffs,
             pageStaff: currentPageStaffs,
             genderOptions: genderOptions,
+            workShifts: workShifts,
         });
     };
 
     getViewDetailStaffAdminPage = async (req: Request, res: Response) => {
         const { id } = req.params;
         const user = await AdminUserService.getDetailCustomerById(+id);
+        const roleOptions = [
+            { name: "Pha chế", value: "Pha chế" },
+            { name: "Phục vụ", value: "Phục vụ" },
+            { name: "Bảo vệ", value: "Bảo vệ" },
+            { name: "Lao công", value: "Lao công" },
+        ];
         return res.render("admin/users/detail_staff.ejs", {
             user: user,
+            roleOptions: roleOptions
         });
     };
 
@@ -153,7 +162,8 @@ class AdminUserController {
             gender,
             password,
             position,
-            salary
+            salary,
+            shiftId
         } = req.body;
         const file = req.file;
         const avatar = file?.filename ?? null;
@@ -169,7 +179,8 @@ class AdminUserController {
             password,
             avatar,
             position,
-            +salary
+            +salary,
+            +shiftId
         );
         //success
         return res.redirect("/admin/staff");
@@ -177,9 +188,10 @@ class AdminUserController {
 
 
     postUpdateStaff = async (req: Request, res: Response) => {
-        const { id, username, email, password, phone, address } = req.body;
+        const { id, username, email, password, phone, address, oldAvatar } = req.body;
         const file = req.file;
-        const avatar = file?.filename ?? null;
+        const avatar = file?.filename ?? oldAvatar;
+
         await AdminUserService.handleUpdateStaffById(
             id,
             username,
@@ -240,6 +252,36 @@ class AdminUserController {
             res.status(500).json({ error: "Có lỗi xảy ra" });
         }
     };
+
+
+    getStaffRevenueAPI = async (req: Request, res: Response) => {
+
+        try {
+            const { staffId, period = "month" } = req.query;
+            if (!staffId) return res.status(400).json({ error: "Missing staffId" });
+
+            const data = await AdminUserService.getStaffRevenue(+staffId, period as string);
+            return res.json(data);
+        } catch (err) {
+            console.error("Error fetching staff revenue API:", err);
+            return res.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+
+    getStaffRevenue = async (req: Request, res: Response) => {
+        try {
+            const { staffId, period = "month" } = req.query;
+            if (!staffId) return res.status(400).send("Missing staffId");
+
+            const data = await AdminUserService.getStaffRevenue(+staffId, period as string);
+            return res.render("admin/users/detail_staff.ejs", {
+                data,
+            });
+        } catch (err) {
+            console.error("Error rendering staff revenue:", err);
+            return res.status(500).send("Internal Server Error");
+        }
+    }
 
 
     // end user phan admin phan staff

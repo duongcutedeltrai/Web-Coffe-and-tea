@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
         integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css">
 </head>
 
 <body>
@@ -22,7 +25,8 @@
 
                 <!-- Main Content -->
                 <main class="main-content">
-                    <%- include('create_user.ejs', { roles: roles }); -%>
+                    <%- include('create_user.ejs', { roles: roles, staffs: staffs, workShifts: workShifts,
+                        genderOptions: genderOptions }); -%>
 
                         <!-- Stats Section -->
                         <h1 class="title" style="margin-bottom: 20px;">Quản lý Nhân viên</h1>
@@ -47,38 +51,6 @@
 
                                 </div>
 
-                                <div class="filter-group">
-                                    <label>Vai trò</label>
-                                    <select class="filter-select">
-                                        <option>Tất cả vai trò</option>
-                                        <option>Quản lý</option>
-                                        <option>Pha Chế</option>
-                                        <option>Tiếp thực</option>
-                                        <option>Phục vụ</option>
-                                        <option>Bếp chính</option>
-                                    </select>
-                                </div>
-                                <div class="filter-group">
-                                    <label>Trạng thái</label>
-                                    <select class="filter-select">
-                                        <option>Tất cả trạng thái</option>
-                                        <option>Hoạt động</option>
-                                        <option>Bị khóa</option>
-                                    </select>
-                                </div>
-                                <div class="filter-group">
-                                    <label>Ngày tham gia</label>
-                                    <select class="filter-select">
-                                        <option>Tất cả thời gian</option>
-                                        <option>7 ngày qua</option>
-                                        <option>30 ngày qua</option>
-                                        <option>3 tháng qua</option>
-                                    </select>
-                                </div>
-
-                                <div class="filter-member">
-                                    <button class="btn btn-primary">Lọc</button>
-                                </div>
                             </div>
                         </section>
 
@@ -87,7 +59,7 @@
                             <div class="table-header">
                                 <div class="tab-buttons">
                                     <button class="tab-btn active" data-tab="all">Tất cả nhân viên</button>
-                                    <button class="tab-btn" data-tab="schedule">Lịch làm việc</button>
+                                    <button class="tab-btn" data-tab="calendar">Lịch làm việc</button>
                                 </div>
                                 <div style="display: flex; gap: 10px">
                                     <button class="btn btn-secondary">
@@ -174,7 +146,85 @@
                                 </table>
                             </div>
 
-                            <div class="tab-content" id="scheduleTab"></div>
+                            <div class="tab-content" id="calendarTab">
+                                <div class="legend">
+                                    <div class="legend-item">
+                                        <div class="legend-color shift-morning"></div>
+                                        <span>Ca sáng (7h-15h)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color shift-afternoon"></div>
+                                        <span>Ca chiều (14h-22h)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color shift-off"></div>
+                                        <span>'Ca Tối (22h-06h)</span>
+                                    </div>
+                                </div>
+
+                                <div class="schedule-card">
+                                    <div class="card-header">
+                                        <h2 class="card-title">Lịch Làm Việc Hàng Tuần</h2>
+                                    </div>
+                                    <div class="responsive-table">
+                                        <table class="schedule-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Nhân viên</th>
+                                                    <th>Thứ Hai</th>
+                                                    <th>Thứ Ba</th>
+                                                    <th>Thứ Tư</th>
+                                                    <th>Thứ Năm</th>
+                                                    <th>Thứ Sáu</th>
+                                                    <th>Thứ Bảy</th>
+                                                    <th>Chủ Nhật</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% staffs.forEach(function (staff) { %>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="employee-info">
+                                                                <div>
+                                                                    <img class="avatar"
+                                                                        src="<%= staff.avatar ? '/images/users/' + staff.avatar : '/images/users/avatar-face.jpg' %>"
+                                                                        alt="Avatar">
+                                                                </div>
+                                                                <div class="employee-details">
+                                                                    <div class="employee-name">
+                                                                        <%= staff.username %>
+                                                                    </div>
+                                                                    <div class="employee-role">
+                                                                        <%= staff.staff_detail.position %>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <% staff.staff_detail.staff_schedules.forEach(day=> { %>
+                                                            <td>
+                                                                <div class="shift-cell 
+<%= day.work_shifts.name === 'Sáng (07h-15h)' ? 'shift-morning' 
+  : day.work_shifts.name === 'Chiều (14h-22h)' ? 'shift-afternoon' 
+  : 'shift-off' %>">
+                                                                    <%= day.work_shifts.name==='Sáng (07h-15h)'
+                                                                        ? 'Sáng (07h-15h)' :
+                                                                        day.work_shifts.name==='Chiều (14h-22h)'
+                                                                        ? 'Chiều (14h-22h)' : 'Tối (22h-06h)' %>
+                                                                </div>
+                                                            </td>
+                                                            <% }) %>
+
+
+
+                                                    </tr>
+                                                    <% }) %>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
 
                             <!-- Pagination -->
 
@@ -205,6 +255,7 @@
     </div>
     <script src="/admin/js/users/users.js"></script>
     <script src="/admin/js/users/staffs.js"></script>
+    <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
 </body>
 
 </html>

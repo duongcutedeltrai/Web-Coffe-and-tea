@@ -3,7 +3,6 @@ import webRouter from "./routers/web";
 
 // import getConection from "./config/database";
 import { initDatabase } from "./config/seed";
-import { z } from "zod";
 
 const app = express();
 const PORT = process.env.PORT || 3000;

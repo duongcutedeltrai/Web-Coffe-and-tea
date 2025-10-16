@@ -90,9 +90,11 @@ model order_details {
 model order_status_history {
   order_status_history_id Int                         @id @default(autoincrement())
   order_id                Int
+  staff_id                Int
   status                  order_status_history_status
   changed_at              DateTime                    @default(now()) @db.DateTime(0)
   orders                  orders                      @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction, map: "order_status_history_ibfk_1")
+  staff                   users                       @relation(fields: [staff_id], references: [user_id])
 
   @@index([order_id], map: "order_id")
 }
@@ -100,6 +102,7 @@ model order_status_history {
 model orders {
   order_id             Int                    @id @default(autoincrement())
   user_id              Int
+  staff_id             Int?
   orderDate            DateTime               @default(now()) @db.DateTime(0)
   status               orders_status          @default(pending)
   total_amount         Int
@@ -109,9 +112,11 @@ model orders {
   order_details        order_details[]
   order_status_history order_status_history[]
   users                users?                 @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction, map: "orders_ibfk_1")
+  staff                staff_detail?          @relation(fields: [staff_id], references: [staff_id], onDelete: Cascade, onUpdate: NoAction)
   payment              payment[]
 
   @@index([user_id], map: "user_id")
+  @@index([staff_id], map: "staff_id")
 }
 
 model payment {
@@ -181,7 +186,7 @@ model promotions {
 
 model roles {
   role_id     Int     @id @default(autoincrement())
-  name        String  @db.VarChar(50)
+  name        String  @unique @db.VarChar(50)
   description String  @db.VarChar(255)
   users       users[]
 }
@@ -201,14 +206,15 @@ model users {
   role_id       Int
   auth_provider users_auth_provider? @default(system)
 
-  membership    membership_level?
-  discount_rate Int?              @default(0)
-  cart          cart[]
-  point_history point_history[]
-  staff_detail  staff_detail?
-  feedback      feedback[]
-  orders        orders[]
-  roles         roles             @relation(fields: [role_id], references: [role_id], onDelete: NoAction, onUpdate: NoAction, map: "users_ibfk_1")
+  membership           membership_level?
+  discount_rate        Int?                   @default(0)
+  cart                 cart[]
+  point_history        point_history[]
+  staff_detail         staff_detail?
+  feedback             feedback[]
+  roles                roles                  @relation(fields: [role_id], references: [role_id], onDelete: NoAction, onUpdate: NoAction, map: "users_ibfk_1")
+  order_status_history order_status_history[]
+  orders               orders[]
 
   @@index([role_id], map: "role_id")
   @@fulltext([username, email])
@@ -232,11 +238,34 @@ model staff_detail {
   position  String   @db.VarChar(100)
   hire_date DateTime @default(now()) // ngày vào làm
   salary    Int?
-  shift     String?  @db.VarChar(50) //ca làm 
 
-  users users @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  users           users             @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  staff_schedules staff_schedules[]
+  orders          orders[]
 
   @@index([user_id])
+}
+
+model work_shifts {
+  shift_id Int    @id @default(autoincrement())
+  name     String @unique @db.VarChar(100) // Ví dụ: "Sáng (7h-15h)", "Chiều (14h-22h)"
+
+  staff_schedules staff_schedules[]
+}
+
+model staff_schedules {
+  staff_schedule_id Int             @id @default(autoincrement())
+  staff_id          Int
+  day_of_week       Int
+  shift_id          Int?
+  status            schedule_status @default(WORK)
+
+  staff_detail staff_detail @relation(fields: [staff_id], references: [staff_id], onDelete: Cascade)
+  work_shifts  work_shifts? @relation(fields: [shift_id], references: [shift_id])
+
+  @@unique([staff_id, day_of_week])
+  @@index([staff_id])
+  @@index([shift_id])
 }
 
 enum membership_level {
@@ -298,4 +327,9 @@ enum users_auth_provider {
   google
   facebook
   apple
+}
+
+enum schedule_status {
+  WORK
+  OFF
 }

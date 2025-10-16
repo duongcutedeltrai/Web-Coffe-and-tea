@@ -7,6 +7,7 @@ const router = express.Router();
 import categoryRoute from "./admin/category.route";
 import userRoute from "./admin/user.route";
 import homeRouter from "./admin/home.route";
+import statisticsRouter from "./admin/statistics.route";
 
 const webRouter = (app: Express) => {
 
@@ -15,6 +16,7 @@ const webRouter = (app: Express) => {
     app.use("/admin", categoryRoute);
     app.use("/admin", userRoute);
     app.use("/admin", homeRouter);
+    app.use("/admin", statisticsRouter)
     // app.use("/api/admin", categoryRouteAPI);
     // app.use("/", router);
 };

@@ -30,10 +30,16 @@ function openChartModal() {
     const modal = document.getElementById("chartModal");
     modal.classList.add("show");
     document.body.style.overflow = "hidden";
-    setTimeout(() => {
-        updateChart("monthly"); // default
-        myChart.resize();
-    }, 50);
+
+    const staffId = document.body.getAttribute("data-staff-id");
+
+    // ✅ Set tab mặc định là "month"
+    document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+    const defaultTab = document.querySelector('.tab[data-period="month"]');
+    defaultTab.classList.add("active");
+
+    // ✅ Gọi vẽ biểu đồ khi modal mở
+    renderStaffRevenueChart(staffId, "month");
 }
 function closeChartModal() {
     const modal = document.getElementById("chartModal");
@@ -41,87 +47,7 @@ function closeChartModal() {
     document.body.style.overflow = "auto";
 }
 
-// Chart
-const ctx = document.getElementById("myChart").getContext("2d");
-const chartData = {
-    daily: {
-        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-        data: [300, 200, 1500, 70, 50, 220, 60],
-    },
-    weekly: {
-        labels: ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4"],
-        data: [1200, 1900, 800, 2200],
-    },
-    monthly: {
-        labels: ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-        data: [3500, 4200, 3900, 4500, 4800, 5000],
-    },
-};
-let myChart = new Chart(ctx, {
-    type: "bar",
-    data: {
-        labels: [],
-        datasets: [
-            {
-                label: "Doanh số",
-                data: [],
-                backgroundColor: "rgba(183,28,28,0.6)",
-                borderRadius: 8,
-            },
-        ],
-    },
-    options: {
-        scales: {
-            y: {
-                ticks: {
-                    callback: (val) =>
-                        val >= 1000000
-                            ? val / 1000000 + "M"
-                            : val >= 1000
-                            ? val / 1000 + "k"
-                            : val,
-                },
-            },
-        },
-    },
-});
-function updateChart(type) {
-    myChart.data.labels = chartData[type].labels;
-    myChart.data.datasets[0].data = chartData[type].data;
-    myChart.update();
-}
 
-// Chart modal tabs
-document.querySelectorAll("#chartModal .tab").forEach((tab) => {
-    tab.addEventListener("click", () => {
-        updateChart(tab.getAttribute("data-type"));
-        document
-            .querySelectorAll("#chartModal .tab")
-            .forEach((t) => t.classList.remove("active"));
-        tab.classList.add("active");
-    });
-});
-
-// Close modal on background click
-document.getElementById("updateModal").addEventListener("click", (e) => {
-    if (e.target === e.currentTarget) closeUpdateModal();
-});
-document.getElementById("chartModal").addEventListener("click", (e) => {
-    if (e.target === e.currentTarget) closeChartModal();
-});
-
-// Close modal when clicking outside
-document.getElementById("updateModal").addEventListener("click", function (e) {
-    if (e.target === this) {
-        closeUpdateModal();
-    }
-});
-
-document.getElementById("chartModal").addEventListener("click", function (e) {
-    if (e.target === this) {
-        closeChartModal();
-    }
-});
 
 // Go back functionality
 function goBack() {
@@ -134,57 +60,18 @@ function goBack() {
 }
 
 // Add some interactive effects
-document.addEventListener("DOMContentLoaded", function () {
-    // Add hover effects to info cards
-    const infoCards = document.querySelectorAll(".info-card");
-    infoCards.forEach((card) => {
-        card.addEventListener("mouseenter", function () {
-            this.style.transform = "translateY(-5px) scale(1.02)";
-        });
+document.addEventListener("DOMContentLoaded", () => {
+    const tabs = document.querySelectorAll(".tab");
+    const staffId = document.body.getAttribute("data-staff-id");
 
-        card.addEventListener("mouseleave", function () {
-            this.style.transform = "translateY(0) scale(1)";
+    tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+            tabs.forEach(t => t.classList.remove("active"));
+            tab.classList.add("active");
+            const period = tab.getAttribute("data-period");
+            renderStaffRevenueChart(staffId, period);
         });
     });
-
-    // // Add click animation to buttons
-    // const buttons = document.querySelectorAll('.btn');
-    // buttons.forEach(button => {
-    //     button.addEventListener('click', function () {
-    //         this.style.transform = 'scale(0.95)';
-    //         setTimeout(() => {
-    //             this.style.transform = '';
-    //         }, 150);
-    //     });
-    // });
-
-    // // Lấy username trực tiếp từ EJS, fallback nếu rỗng
-    // let username = "<%= user.username %>".trim();
-    // if (!username) {
-    //     username = "Nguyễn Văn An"; // Fallback giá trị mẫu nếu EJS không render đúng
-    //     console.warn('Username từ EJS rỗng, sử dụng fallback.');
-    // }
-
-    // const customerName = document.getElementById("customerName");
-    // customerName.textContent = ""; // reset để chạy typewriter
-
-    // let i = 0;
-    // function typeWriter() {
-    //     if (i < username.length) {
-    //         customerName.textContent += username[i];
-    //         i++;
-    //         setTimeout(typeWriter, 100);
-    //     } else {
-    //         console.log('Typewriter hoàn tất:', customerName.textContent);
-    //     }
-    // }
-
-    // // Luôn chạy typewriter nếu có username
-    // if (username) {
-    //     typeWriter();
-    // } else {
-    //     console.error('Không có username để chạy typewriter.');
-    // }
 });
 
 // Keyboard shortcuts
@@ -229,3 +116,78 @@ function previewAvatar(input) {
         preview.src = "/images/users/avatar-face.jpg";
     }
 }
+
+
+// Chart
+// ===== Fetch API cho dữ liệu doanh thu =====
+async function fetchStaffRevenue(staffId, period = "month") {
+    try {
+        const res = await fetch(`/admin/staff-revenue/api?staffId=${staffId}&period=${period}`);
+        if (!res.ok) {
+            throw new Error("Failed to fetch staff revenue");
+        }
+        const data = await res.json();
+        if (!data.labels || !data.revenues) {
+            throw new Error("Invalid data format");
+        }
+        return data;
+    } catch (error) {
+        console.error("❌ Error fetching staff revenue:", error);
+        return { labels: [], revenues: [] }; // Trả về dữ liệu rỗng nếu lỗi
+    }
+}
+
+// ===== Vẽ biểu đồ doanh thu nhân viên =====
+async function renderStaffRevenueChart(staffId, period = "month") {
+    try {
+        const data = await fetchStaffRevenue(staffId, period);
+        const ctx = document.getElementById("staffRevenueChart").getContext("2d");
+
+        if (window.staffChart) {
+            window.staffChart.destroy();
+        }
+
+        window.staffChart = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: data.labels,
+                datasets: [
+                    {
+                        label: `Doanh thu (${period})`,
+                        data: data.revenues,
+                        borderColor: "#4CAF50",
+                        backgroundColor: "rgba(76, 175, 80, 0.2)",
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 5,
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `Doanh thu nhân viên (${period})`,
+                    },
+                    legend: {
+                        display: true,
+                    },
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                    },
+                },
+                animation: {
+                    duration: 1000,
+                    easing: "easeOutQuart",
+                },
+            },
+        });
+    } catch (error) {
+        console.error("❌ Error rendering chart:", error);
+    }
+}
+
+// Chart modal tabs

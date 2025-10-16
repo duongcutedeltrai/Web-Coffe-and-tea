@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MIRA - Whiskas Dry Adult Dewasa 7+</title>
+    <link rel="stylesheet" href="/admin/css/style.css" />
+    <link rel="stylesheet" href="/admin/css/statistics/statistics.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+</head>
+
+<body>
+    <div class="container">
+        <%- include('../layout/sidebar.ejs'); -%>
+            <%- include('../layout/header.ejs'); -%>
+
+                <!-- Main Content -->
+                <main class="main-content">
+                    <div class="page-header">
+                        <h1>Doanh Thu</h1>
+                        <p>Phân tích tình hình kinh doanh của bạn hàng tháng</p>
+                    </div>
+
+                    <div class="content-grid">
+                        <div class="left-column">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div>
+                                        <h3>Biểu đồ đặt hàng</h3>
+                                    </div>
+                                    <div class="time-toggles">
+                                        <button class="toggle-btn" data-period="week">Tuần</button>
+                                        <button class="toggle-btn active" data-period="month">Tháng</button>
+                                        <button class="toggle-btn" data-period="year">Năm</button>
+                                    </div>
+                                </div>
+                                <div class="stats-row">
+                                    <div class="stat-item">
+                                        <div class="stat-value">267%</div>
+                                        <div class="stat-label">Tăng lên</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-value">
+                                            <%= data.totalOrders %>
+                                        </div>
+                                        <div class="stat-label">Tổng đơn hàng</div>
+                                    </div>
+                                </div>
+                                <canvas id="orderChart" class="chart-canvas"></canvas>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <div>
+                                        <h3>Các món lên xu hướng</h3>
+                                    </div>
+                                    <!-- <div class="time-toggles">
+                                        <button class="toggle-btn" data-period="week">Tuần</button>
+                                        <button class="toggle-btn active" data-period="month">Tháng</button>
+                                        <button class="toggle-btn" data-period="year">Năm</button>
+                                    </div> -->
+                                </div>
+                                <div class="trending-list">
+                                    <% data.trendingProducts.forEach((p, index)=> { %>
+                                        <div class="trending-item">
+                                            <div class="item-rank">#<%= index + 1 %>
+                                            </div>
+                                            <img src="/images/products/<%= p.image %>" alt="<%= p.name %>"
+                                                class="item-image">
+                                            <div class="item-info">
+                                                <div class="item-name">
+                                                    <%= p.name %>
+                                                </div>
+                                                <div class="item-category">
+                                                    <%= p.category %>
+                                                </div>
+                                            </div>
+                                            <div class="item-stats">
+                                                <span class="trend-value <%= p.growth > 0 ? 'positive' : 'negative' %>">
+                                                    <%= p.sold %>
+                                                </span>
+                                                <span
+                                                    class="trend-percent <%= p.growth > 0 ? 'positive' : 'negative' %>">
+                                                    <%= p.growth> 0 ? '+' : '' %><%= p.growth %>%
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <% }) %>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="right-column">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div>
+                                        <h3>Mặt hàng bán chạy</h3>
+                                    </div>
+                                    <!-- <div class="time-toggles">
+                                        <button class="toggle-btn" data-period="week">Tuần</button>
+                                        <button class="toggle-btn active" data-period="month">Tháng</button>
+                                        <button class="toggle-btn" data-period="year">Năm</button>
+                                    </div> -->
+                                </div>
+                                <div class="best-sellers-list">
+                                    <% data.topProducts.forEach((p, index)=> { %>
+                                        <div class="seller-item">
+                                            <div class="item-rank">#<%= index + 1 %>
+                                            </div>
+                                            <img src="/images/products/<%= p.image %>" alt="<%= p.name %>"
+                                                class="seller-image">
+
+                                            <div class="seller-info">
+                                                <div class="seller-name">
+                                                    <%= p.name %>
+                                                </div>
+                                            </div>
+                                            <div class="seller-price">
+                                                <%= p.sold %> SP
+                                            </div>
+                                        </div>
+                                        <% }) %>
+                                </div>
+                            </div>
+
+
+                            <div class="card" style="height: 100%;">
+                                <div class="card-header">
+                                    <div>
+                                        <h3>Thống kê doanh thu</h3>
+                                    </div>
+                                    <div class="time-toggles">
+                                        <button class="toggle-btn" data-period="week">Tuần</button>
+                                        <button class="toggle-btn active" data-period="month">Tháng</button>
+                                        <button class="toggle-btn" data-period="year">Năm</button>
+                                    </div>
+                                </div>
+                                <canvas id="revenueChart" class="chart-canvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="card favorites-card">
+                        <div class="card-header">
+                            <div>
+                                <h3>Những món yêu thích nhất</h3>
+                            </div>
+                            <!-- <div class="time-toggles">
+                                <button class="toggle-btn" data-period="week">Tuần</button>
+                                <button class="toggle-btn active" data-period="month">Tháng</button>
+                                <button class="toggle-btn" data-period="year">Năm</button>
+                            </div> -->
+                        </div>
+                        <div class="favorites-grid">
+
+                            <% data.topProducts.forEach((p, index)=> { %>
+                                <div class="favorite-item">
+                                    <img src="/images/products/<%= p.image %>" alt="<%= p.name %>"
+                                        class="favorite-image">
+                                    <div class="favorite-info">
+                                        <div class="favorite-name">
+                                            <%= p.name %>
+                                        </div>
+                                    </div>
+                                    <button class="favorite-btn">Xem chi tiết</button>
+                                </div>
+                                <% }) %>
+                        </div>
+                    </div>
+                </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/admin/js/statistics/statistics.js"></script>
+</body>
+
+</html>

@@ -1,9 +1,12 @@
 import { TOTAL_ITEMS_PER_PAGE } from "../../config/constant";
 import { prisma } from "../../config/client";
 import { Prisma } from "@prisma/client";
-import { name } from "ejs";
-import { includes } from "zod";
-import { create } from "node:domain";
+import { hashPassword } from "../../config/seed";
+import {
+    startOfMonth, endOfMonth, subMonths,
+    startOfWeek, endOfWeek, subWeeks,
+    startOfYear, endOfYear, subYears
+} from "date-fns";
 
 class AdminUserService {
 
@@ -74,7 +77,16 @@ class AdminUserService {
             include: {
                 roles: true,
                 orders: true,
-                staff_detail: true
+                staff_detail: {
+                    include: {
+                        staff_schedules: {
+                            include: {
+                                work_shifts: true
+                            }
+                        }
+                    }
+                },
+
             },
         });
         return staffs
@@ -98,10 +110,12 @@ class AdminUserService {
         password: string,
         avatar: string,
         position?: string,
-        salary?: number
+        salary?: number,
+        shiftId?: number
     ) => {
         try {
             const parsedBirthday = birthday ? new Date(birthday) : null;
+            const defaultPassword = await hashPassword(password)
             const newUser = await prisma.users.create({
                 data: {
                     username,
@@ -110,17 +124,38 @@ class AdminUserService {
                     birthday: parsedBirthday,
                     address,
                     gender,
-                    password,
+                    password: defaultPassword,
                     avatar,
-                    role_id: +15,
+                    role_id: +6,
                     staff_detail: {
                         create: {
                             salary: salary ?? 0,
                             position: position ?? "chua co",
+                            staff_schedules: {
+                                create: Array.from({ length: 7 }, (_, i) => ({
+                                    day_of_week: i + 1,
+                                    shift_id: shiftId,
+                                    status: "WORK"
+                                }))
+                            }
                         },
-                    }
+
+                    },
+
                 },
-                include: { roles: true, staff_detail: true },
+                include: {
+                    roles: true,
+                    staff_detail: {
+                        include: {
+                            staff_schedules: {
+                                include: {
+                                    work_shifts: true
+                                }
+                            }
+                        }
+                    }
+
+                },
             });
 
             return newUser;
@@ -135,6 +170,11 @@ class AdminUserService {
             throw err;
         }
     };
+
+    getAllShift = async () => {
+        const shifts = await prisma.work_shifts.findMany();
+        return shifts;
+    }
 
     handleDeleteUser = async (id: number) => {
         return await prisma.users.delete({
@@ -198,6 +238,7 @@ class AdminUserService {
         address: string,
         avatar: string
     ) => {
+        const defaultPassword = await hashPassword(password)
         const updateStaff = await prisma.users.update({
             where: {
                 user_id: +id,
@@ -205,7 +246,7 @@ class AdminUserService {
             data: {
                 email: email,
                 username: username,
-                password: password,
+                password: defaultPassword,
                 phone: phone,
                 address: address,
                 ...(avatar !== undefined && { avatar: avatar }),
@@ -220,7 +261,7 @@ class AdminUserService {
         const skip = (pageStaff - 1) * pageSize
 
         const where: any = {
-            role_id: { in: [15] }
+            role_id: { in: [6] }
         };
 
         if (username || email) {
@@ -252,7 +293,7 @@ class AdminUserService {
         const skip = (pageCustomer - 1) * pageSize
 
         const where: any = {
-            role_id: { in: [14] }
+            role_id: { in: [5] }
         };
 
         if (username || email) {
@@ -279,6 +320,102 @@ class AdminUserService {
         return searchCustomer;
     }
 
+
+    getStaffRevenue = async (userId: number, period: string) => {
+        const staff = await prisma.staff_detail.findUnique({
+            where: { user_id: userId },
+        });
+
+        if (!staff) {
+            throw new Error("Không tìm thấy thông tin staff cho user này");
+        }
+        let start: Date;
+        let end: Date;
+        let labels: string[] = [];
+        let revenues: number[] = [];
+
+        // Xác định khoảng thời gian dựa trên "period"
+        const count = 6; // Số mốc thời gian gần nhất
+
+        if (period === "week") {
+            for (let i = count - 1; i >= 0; i--) {
+                const startOfWeekRange = startOfWeek(subWeeks(new Date(), i), { weekStartsOn: 1 });
+                const endOfWeekRange = endOfWeek(subWeeks(new Date(), i), { weekStartsOn: 1 });
+
+                const orders = await prisma.orders.findMany({
+                    where: {
+                        staff: {
+                            user_id: userId,
+                        },
+                        orderDate: {
+                            gte: startOfWeekRange,
+                            lte: endOfWeekRange,
+                        },
+                    },
+                    select: {
+                        total_amount: true,
+                    },
+                });
+
+                const totalRevenue = orders.reduce((sum, order) => sum + Number(order.total_amount), 0);
+                labels.push(`${startOfWeekRange.getDate()}/${startOfWeekRange.getMonth() + 1} - ${endOfWeekRange.getDate()}/${endOfWeekRange.getMonth() + 1}`);
+                revenues.push(totalRevenue);
+            }
+        } else if (period === "year") {
+            for (let i = count - 1; i >= 0; i--) {
+                const startOfYearRange = startOfYear(subYears(new Date(), i));
+                const endOfYearRange = endOfYear(subYears(new Date(), i));
+
+                const orders = await prisma.orders.findMany({
+                    where: {
+                        staff: {
+                            user_id: userId,
+                        },
+                        orderDate: {
+                            gte: startOfYearRange,
+                            lte: endOfYearRange,
+                        },
+                    },
+                    select: {
+                        total_amount: true,
+                    },
+                });
+
+                const totalRevenue = orders.reduce((sum, order) => sum + Number(order.total_amount), 0);
+                labels.push(`${startOfYearRange.getFullYear()}`);
+                revenues.push(totalRevenue);
+            }
+        } else { // Mặc định là "month"
+            for (let i = count - 1; i >= 0; i--) {
+                const startOfMonthRange = startOfMonth(subMonths(new Date(), i));
+                const endOfMonthRange = endOfMonth(subMonths(new Date(), i));
+
+                const orders = await prisma.orders.findMany({
+                    where: {
+                        staff: {
+                            user_id: userId,
+                        },
+                        orderDate: {
+                            gte: startOfMonthRange,
+                            lte: endOfMonthRange,
+                        },
+                    },
+                    select: {
+                        total_amount: true,
+                    },
+                });
+
+                const totalRevenue = orders.reduce((sum, order) => sum + Number(order.total_amount), 0);
+                labels.push(`${startOfMonthRange.getMonth() + 1}/${startOfMonthRange.getFullYear()}`);
+                revenues.push(totalRevenue);
+            }
+        }
+
+        return {
+            labels,
+            revenues,
+        };
+    };
 
 }
 

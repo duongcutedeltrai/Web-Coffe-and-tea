@@ -12,8 +12,9 @@ const initDatabase = async () => {
     const countProduct = await prisma.products.count();
     const countOrderDetail = await prisma.order_details.count();
     const countPointHistory = await prisma.point_history.count();
-    const countStaffDetail = await prisma.staff_detail.count();
     const countCaterogies = await prisma.categories.count();
+    const countStaffSchedule = await prisma.staff_schedules.count();
+    const countWorkShift = await prisma.work_shifts.count();
 
 
 
@@ -66,7 +67,7 @@ const initDatabase = async () => {
                     {
                         email: "duonghaitt3112@gmail.com",
                         username: "phamanhduong",
-                        password: "123456",
+                        password: await hashPassword("123456"),
                         phone: "111111",
                         role_id: customerRole.role_id,
                         point: 40,
@@ -82,7 +83,7 @@ const initDatabase = async () => {
                     {
                         email: "admin@gmail.com",
                         username: "duong",
-                        password: "123456",
+                        password: await hashPassword("123456"),
                         phone: "111111",
                         role_id: adminRole.role_id,
                         gender: "nam",
@@ -108,23 +109,6 @@ const initDatabase = async () => {
                         change: 20,
                     },
                 ],
-            });
-        }
-    }
-
-    if (countStaffDetail == 0) {
-        const user = await prisma.users.findFirst({
-            where: { email: 'staff1@gmail.com' },
-        });
-
-        if (user) {
-            await prisma.staff_detail.create({
-                data: {
-                    user_id: user.user_id,
-                    position: "Pha chế",
-                    salary: 5000000,
-                    shift: "Ca sáng",
-                },
             });
         }
     }
@@ -757,63 +741,115 @@ const initDatabase = async () => {
         }
     }
 
-    if (countOrder == 0) {
-        const userID = await prisma.users.findFirst({
-            where: {
-                email: "duonghaitt3112@gmail.com",
-            },
+    if (countOrder === 0) {
+        const user = await prisma.users.findFirst();
+        const staffDetail = await prisma.staff_detail.findMany();
+
+        const products = await prisma.products.findMany({
+            take: 10,
         });
 
-        if (userID) {
-            await prisma.orders.createMany({
-                data: [
-                    {
-                        user_id: userID.user_id,
-                        total_amount: 20000000,
-                        delivery_address: "acascs",
-                        receiver_name: "Pham Anh Duong",
-                        receiver_phone: "1111",
-                    },
-                ],
+        const randomDate = (start: Date, end: Date) =>
+            new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+
+        const ordersData = [];
+        const orderDetailsData = [];
+
+        for (let i = 0; i < 50; i++) {
+            const date = randomDate(new Date("2024-01-01"), new Date("2025-10-01"));
+            const total = Math.floor(Math.random() * 500000 + 200000);
+            const randomStaffId = staffDetail[Math.floor(Math.random() * staffDetail.length)];
+
+            const order = await prisma.orders.create({
+                data: {
+                    user_id: user.user_id,
+                    total_amount: total,
+                    delivery_address: "123 Coffee Street",
+                    receiver_name: "Khách hàng " + i,
+                    receiver_phone: "0900000" + i,
+                    orderDate: date,
+                    staff_id: randomStaffId?.staff_id ?? null
+                },
             });
+
+            // Thêm 2–3 sản phẩm cho mỗi đơn
+            for (let j = 0; j < 3; j++) {
+                const prod = products[Math.floor(Math.random() * products.length)];
+                const quantity = Math.floor(Math.random() * 5) + 1;
+
+                orderDetailsData.push({
+                    order_id: order.order_id,
+                    product_id: prod.product_id,
+                    quantity,
+                    price: 40000 + Math.floor(Math.random() * 30000),
+                });
+            }
+        }
+
+        await prisma.order_details.createMany({
+            data: orderDetailsData,
+        });
+    }
+
+
+    if (countWorkShift == 0) {
+        await prisma.work_shifts.createMany({
+            data: [
+                {
+                    name: "Sáng (07h-15h)",
+                },
+                {
+                    name: "Chiều (14h-22h)",
+                },
+                {
+                    name: "Tối (22h-06h)",
+                },
+            ],
+        })
+    }
+
+    if (countStaffSchedule === 0) {
+        const staffs = await prisma.staff_detail.findMany();
+        const shifts = await prisma.work_shifts.findMany();
+
+        const data = [];
+
+        staffs.forEach((staff, index) => {
+            const assignShift = shifts[index % shifts.length];
+            for (let day = 1; day <= 7; day++) {
+                data.push({
+                    staff_id: staff.staff_id,
+                    day_of_week: day,
+                    shift_id: assignShift.shift_id
+                })
+            }
+        });
+
+        if (data.length > 0) {
+            await prisma.staff_schedules.createMany({
+                data
+            })
         }
     }
 
-    if (countOrderDetail == 0) {
-        const product = await prisma.products.findFirst({
-            where: {
-                name: "PHÊ XỈU VANI",
-            },
-        });
-        const order = await prisma.orders.findFirst();
 
-        if (product && order) {
-            await prisma.order_details.createMany({
-                data: [
-                    {
-                        order_id: order.order_id,
-                        product_id: product.product_id,
-                        quantity: 4,
-                        price: 12000,
-                    },
-                ],
-            });
-        }
-    }
 
     if (
         countRole !== 0 &&
         countUser !== 0 &&
         countProduct !== 0 &&
         countOrderDetail !== 0 &&
-        countStaffDetail !== 0 &&
+
         countPointHistory !== 0 &&
-        countCaterogies !== 0
+        countCaterogies !== 0 &&
+        countStaffSchedule !== 0 &&
+        countWorkShift !== 0
     ) {
+        console.log("<<<<<< ALREADY INIT DATA")
     }
 }
 
-const hashPassword = async (myPlaintextPassword) => {
+const hashPassword = async (myPlaintextPassword: string) => {
     const pass = await bcrypt.hash(myPlaintextPassword, saltRounds);
     return pass;
 };

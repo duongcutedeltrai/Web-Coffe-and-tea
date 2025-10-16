@@ -33,10 +33,13 @@
                                     <i class="fa-solid fa-user"></i>
                                 </div>
                             </div>
-                            <div class="stat-value">1,247</div>
-                            <div class="stat-change positive">
-                                <i class="fas fa-arrow-up"></i>
-                                +12 từ tháng trước
+                            <div class="stat-value">
+                                <%= customers.length %>
+
+                            </div>
+                            <div class="stat-change positive" style="display: flex; justify-content: center;">
+                                <!-- <i class="fas fa-arrow-up"></i> -->
+                                tổng số khách hàng tính cho đến hiện nay
                             </div>
                         </div>
 
@@ -47,24 +50,43 @@
                                     <i class="fas fa-crown"></i>
                                 </div>
                             </div>
-                            <div class="stat-value">89</div>
-                            <div class="stat-change positive">
-                                <i class="fas fa-arrow-up"></i>
-                                +5 VIP mới
+                            <div class="stat-value">
+
+                                <% const vipCustomer=customers.filter(customer=> {
+                                    const total=customer.orders.reduce((sum, order)=> sum +
+                                    order.total_amount, 0);
+
+                                    return total >= 10000000;
+                                    })
+                                    %>
+
+                                    <%= vipCustomer.length %>
+                            </div>
+                            <div class="stat-change positive" style="text-align: center;">
+                                <!-- <i class="fas fa-arrow-up"></i> -->
+                                Số lượng khách hàng mua sản phẩm với tổng số lượng trên 10 triệu
                             </div>
                         </div>
 
                         <div class="stat-card orange">
                             <div class="stat-header">
-                                <div class="stat-title">Đơn hàng tháng này</div>
+                                <div class="stat-title">Tổng chi tiêu toàn bộ khách hàng</div>
                                 <div class="stat-icon" style="background: #dd6b20">
                                     <i class="fas fa-shopping-bag"></i>
                                 </div>
                             </div>
-                            <div class="stat-value">3,456</div>
-                            <div class="stat-change positive">
-                                <i class="fas fa-arrow-up"></i>
-                                +18% so với tháng trước
+                            <div class="stat-value">
+                                <% customers.forEach(function (customer) { %>
+                                    <% const total=customer.orders.reduce((sum, order)=> sum +
+                                        order.total_amount, 0);
+                                        %> <%= new Intl.NumberFormat('vi-VN', { style: 'currency' , currency: 'VND'
+                                            }).format(total) %>
+                                            <% }) %>
+
+                            </div>
+                            <div class="stat-change positive" style="display: flex; justify-content: center;">
+                                <!-- <i class="fas fa-arrow-up"></i> -->
+                                Tổng chi tiêu toàn bộ khách hàng từ trước tới nay
                             </div>
                         </div>
                     </section>
@@ -88,28 +110,6 @@
 
 
                                 </div>
-                            </div>
-
-                            <div class="filter-group">
-                                <label>Trạng thái</label>
-                                <select class="filter-select">
-                                    <option>Tất cả trạng thái</option>
-                                    <option>Hoạt động</option>
-                                    <option>Bị khóa</option>
-                                </select>
-                            </div>
-                            <div class="filter-group">
-                                <label>Ngày tham gia</label>
-                                <select class="filter-select">
-                                    <option>Tất cả thời gian</option>
-                                    <option>7 ngày qua</option>
-                                    <option>30 ngày qua</option>
-                                    <option>3 tháng qua</option>
-                                </select>
-                            </div>
-
-                            <div class="filter-member">
-                                <button class="btn btn-primary">Lọc</button>
                             </div>
                         </div>
                     </section>

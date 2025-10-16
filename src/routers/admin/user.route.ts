@@ -33,6 +33,9 @@ userRoute.get(
 userRoute.get("/staff/search", AdminUserController.getSearchStaff)
 userRoute.get("/customer/search", AdminUserController.getCustomerSearch)
 
+userRoute.get("/staff-revenue", AdminUserController.getStaffRevenue);
+userRoute.get("/staff-revenue/api", AdminUserController.getStaffRevenueAPI);
+
 
 
 export default userRoute;

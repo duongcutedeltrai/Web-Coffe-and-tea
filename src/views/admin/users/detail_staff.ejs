@@ -12,6 +12,7 @@
         integrity="sha512-2SwdPD6INVr   V/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png" />
+    <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
 </head>
 
 <body>
@@ -307,6 +308,9 @@
                                 <div class="avatar-upload">
                                     <img src="<%= user.avatar ? '/images/users/' + user.avatar : '/images/users/avatar-face.jpg' %>"
                                         alt="staff Avatar" class="avatar-preview" id="avatarPreview" />
+
+                                    <input type="hidden" name="oldAvatar" value="<%= user.avatar %>">
+
                                     <div class="avatarFileLimit">
                                         <input type="file" id="avatarInput" accept="image/*" style="display: none"
                                             name="avatar" onchange="previewAvatar(this)" />
@@ -328,20 +332,19 @@
                                     <div class="form-group">
                                         <label class="form-label">Họ và tên *</label>
                                         <input type="text" class="form-input" name="username"
-                                            value="<%= user.username %>" required />
+                                            value="<%= user.username %>" disabled />
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label">Email *</label>
                                         <input type="email" class="form-input" name="email" value="<%= user.email %>"
-                                            required />
+                                            disabled />
                                     </div>
                                 </div>
 
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label class="form-label">Số điện thoại *</label>
-                                        <input type="tel" class="form-input" name="phone" value="<%= user.phone %>"
-                                            required />
+                                        <input type="tel" class="form-input" name="phone" value="<%= user.phone %>" />
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label">Giới tính</label>
@@ -369,13 +372,35 @@
                                     </div>
                                 </div>
 
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Vai trò</label>
+                                        <select name="position" class="form-control">
+                                            <% roleOptions.forEach((role, index)=> { %>
+                                                <option value="<%- role.value %>"
+                                                    <%=role.value===user.staff_detail.position ? 'selected' : '' %>>
+                                                    <%- role.name %>
+                                                </option>
+                                                <% }) %>
+                                        </select>
+
+
+
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Lương </label>
+                                        <input type="text" class="form-input" name="salary"
+                                            value="<%= user.staff_detail?.salary %>" />
+                                    </div>
+                                </div>
+
                                 <div class="form-group">
                                     <label class="form-label">Địa chỉ</label>
                                     <input type="text" class="form-input" name="address" value="<%= user.address %>" />
                                 </div>
 
                                 <button type="submit" class="btn-save">
-                                    <span id="saveText">💾 Lưu thay đổi</span>
+                                    <span id="saveText">Lưu thay đổi</span>
 
                                 </button>
                             </form>
@@ -385,23 +410,26 @@
     </div>
 
     <!-- chart modal -->
-    <div id="chartModal" class="modal">
-        <div class="card">
-            <div class="card-header">
-                <h2 class="cart--title">Doanh số sản phẩm</h2>
-                <div class="tabs">
-                    <div class="tab" data-type="daily">Daily</div>
-                    <div class="tab" data-type="weekly">Weekly</div>
-                    <div class="tab" data-type="monthly">Monthly</div>
+
+    <body data-staff-id="<%= user.user_id %>">
+        <div id="chartModal" class="modal">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="cart--title">Doanh số sản phẩm</h2>
+                    <div class="tabs">
+                        <div class="tab active" data-period="week">Weekly</div>
+                        <div class="tab" data-period="month">Monthly</div>
+                        <div class="tab" data-period="year">Yearly</div>
+                    </div>
+                    <button class="close-btn" onclick="closeChartModal()">&times;</button>
                 </div>
-                <button class="close-btn" onclick="closeChartModal()">
-                    &times;
-                </button>
+                <canvas id="staffRevenueChart"></canvas>
             </div>
-            <canvas id="myChart" height="150"></canvas>
         </div>
-    </div>
+    </body>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
     <script src="/admin/js/users/user_details.js"></script>
 </body>
 
