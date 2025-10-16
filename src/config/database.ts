@@ -9,10 +9,10 @@ const connectionDB = async () => {
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    // host:"shinkansen.proxy.rlwy.net",
-    // user:"root" ,
-    // password:"cqAPIvdFQlxmqaqmVSvzHgZMXROCmKbH",
-    // database:"db_coffeetea",
+    // host: "shinkansen.proxy.rlwy.net",
+    // user: "root",
+    // password: "cqAPIvdFQlxmqaqmVSvzHgZMXROCmKbH",
+    // database: "db_coffeetea",
   });
 };
 

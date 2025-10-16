@@ -63,9 +63,10 @@ CREATE TABLE `inventory` (
 -- CreateTable
 CREATE TABLE `order_details` (
     `order_detail_id` INTEGER NOT NULL AUTO_INCREMENT,
-    `order_id` INTEGER NOT NULL,
+    `order_id` VARCHAR(191) NOT NULL,
     `product_id` INTEGER NOT NULL,
     `quantity` INTEGER NOT NULL,
+    `size` VARCHAR(20) NULL,
     `price` DECIMAL(10, 2) NOT NULL,
 
     INDEX `order_id`(`order_id`),
@@ -76,8 +77,8 @@ CREATE TABLE `order_details` (
 -- CreateTable
 CREATE TABLE `order_status_history` (
     `order_status_history_id` INTEGER NOT NULL AUTO_INCREMENT,
-    `order_id` INTEGER NOT NULL,
-    `status` ENUM('pending', 'paid', 'shipped', 'completed', 'canceled') NOT NULL,
+    `order_id` VARCHAR(50) NOT NULL,
+    `status` ENUM('pending', 'ready', 'shipped', 'completed', 'canceled') NOT NULL,
     `changed_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     INDEX `order_id`(`order_id`),
@@ -86,14 +87,19 @@ CREATE TABLE `order_status_history` (
 
 -- CreateTable
 CREATE TABLE `orders` (
-    `order_id` INTEGER NOT NULL AUTO_INCREMENT,
-    `user_id` INTEGER NOT NULL,
+    `order_id` VARCHAR(50) NOT NULL,
+    `user_id` INTEGER NULL,
     `orderDate` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
-    `status` ENUM('pending', 'paid', 'shipped', 'completed', 'canceled') NOT NULL DEFAULT 'pending',
-    `total_amount` INTEGER NOT NULL,
+    `status` ENUM('pending', 'ready', 'shipped', 'completed', 'canceled') NOT NULL DEFAULT 'pending',
     `delivery_address` VARCHAR(255) NOT NULL,
     `receiver_name` VARCHAR(100) NOT NULL,
     `receiver_phone` VARCHAR(20) NOT NULL,
+    `order_type` ENUM('DINE_IN', 'TAKE_AWAY', 'DELIVERY') NOT NULL DEFAULT 'DINE_IN',
+    `order_source` ENUM('STAFF', 'CUSTOMER') NOT NULL DEFAULT 'STAFF',
+    `promotion_id` INTEGER NULL,
+    `original_amount` DECIMAL(10, 2) NOT NULL,
+    `discount_amount` DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    `final_amount` DECIMAL(10, 2) NOT NULL,
 
     INDEX `user_id`(`user_id`),
     PRIMARY KEY (`order_id`)
@@ -102,7 +108,7 @@ CREATE TABLE `orders` (
 -- CreateTable
 CREATE TABLE `payment` (
     `payment_id` INTEGER NOT NULL AUTO_INCREMENT,
-    `order_id` INTEGER NOT NULL,
+    `order_id` VARCHAR(50) NOT NULL,
     `method` ENUM('cod', 'banking', 'momo', 'paypal') NOT NULL,
     `status` ENUM('pending', 'success', 'failed') NOT NULL DEFAULT 'pending',
     `total_amount` INTEGER NOT NULL,
@@ -157,9 +163,31 @@ CREATE TABLE `promotions` (
     `discount_percent` DECIMAL(5, 2) NOT NULL,
     `start_date` DATE NOT NULL,
     `end_date` DATE NOT NULL,
+    `min_order_amount` DECIMAL(10, 2) NULL,
+    `max_usage_count` INTEGER NULL,
+    `current_usage` INTEGER NOT NULL DEFAULT 0,
+    `is_for_new_user` BOOLEAN NOT NULL DEFAULT false,
+    `applicable_membership` ENUM('BRONZE', 'SILVER', 'GOLD', 'DIAMOND') NULL,
+    `is_active` BOOLEAN NOT NULL DEFAULT true,
 
     UNIQUE INDEX `code`(`code`),
     PRIMARY KEY (`promotion_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `promotion_usage` (
+    `usage_id` INTEGER NOT NULL AUTO_INCREMENT,
+    `promotion_id` INTEGER NOT NULL,
+    `order_id` VARCHAR(191) NOT NULL,
+    `user_id` INTEGER NULL,
+    `user_phone` VARCHAR(20) NULL,
+    `used_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
+
+    INDEX `promotion_usage_promotion_id_idx`(`promotion_id`),
+    INDEX `promotion_usage_order_id_idx`(`order_id`),
+    INDEX `promotion_usage_user_id_idx`(`user_id`),
+    UNIQUE INDEX `promotion_usage_promotion_id_user_id_key`(`promotion_id`, `user_id`),
+    PRIMARY KEY (`usage_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -177,7 +205,7 @@ CREATE TABLE `users` (
     `email` VARCHAR(255) NOT NULL,
     `username` VARCHAR(255) NOT NULL,
     `password` VARCHAR(255) NOT NULL,
-    `phone` VARCHAR(255) NOT NULL,
+    `phone` VARCHAR(255) NULL,
     `address` VARCHAR(255) NULL,
     `avatar` VARCHAR(255) NULL,
     `gender` VARCHAR(45) NULL,
@@ -266,6 +294,15 @@ ALTER TABLE `promotion_products` ADD CONSTRAINT `promotion_products_ibfk_1` FORE
 
 -- AddForeignKey
 ALTER TABLE `promotion_products` ADD CONSTRAINT `promotion_products_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products`(`product_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE `promotion_usage` ADD CONSTRAINT `promotion_usage_promotion_id_fkey` FOREIGN KEY (`promotion_id`) REFERENCES `promotions`(`promotion_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `promotion_usage` ADD CONSTRAINT `promotion_usage_order_id_fkey` FOREIGN KEY (`order_id`) REFERENCES `orders`(`order_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `promotion_usage` ADD CONSTRAINT `promotion_usage_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `users` ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles`(`role_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;

@@ -1,116 +1,118 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Inter", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
 }
 
 body {
-    font-family: "Inter", sans-serif;
-    background-color: #ffffff;
+  font-family: "Inter", sans-serif;
+  background-color: #ffffff;
 }
 a {
-    text-decoration: none;
-    color: black;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  text-decoration: none;
+  color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 /* Sidebar */
 .sidebar {
-    width: 260px;
-    background: #b22830;
-    color: white;
-    padding: 20px 0;
-    position: fixed;
-    height: 100vh;
-    overflow-y: auto;
+  width: 260px;
+  background: #b22830;
+  color: white;
+  padding: 20px 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 .logo {
-    text-align: center;
-    padding: 20px;
-    font-size: 24px;
-    font-weight: bold;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  padding: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .search-box {
-    padding: 20px;
+  padding: 20px;
 }
 
 .search-box input {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 25px;
-    outline: none;
-    font-size: 14px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 25px;
+  outline: none;
+  font-size: 14px;
 }
 
 .menu {
-    padding: 0;
+  padding: 0;
 }
 
 .menu-item {
-    display: flex;
-    align-items: center;
-    padding: 15px 25px;
-    color: white;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    border-left: 4px solid transparent;
+  display: flex;
+  align-items: center;
+  padding: 15px 25px;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
 }
 
 .menu-item:hover,
 .menu-item.active {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-left-color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-left-color: white;
 }
 
 .menu-item span {
-    margin-left: 15px;
-    font-size: 14px;
+  margin-left: 15px;
+  font-size: 14px;
 }
 
 /* header */
 .header {
-    position: fixed;
-    background: white;
-    color: #fff;
-    background-color: #b22830;
-    padding: 25px 30px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    right: 0;
-    left: 260px;
-    z-index: 1000;
+  position: fixed;
+  background: white;
+  color: #fff;
+  background-color: #b22830;
+  padding: 25px 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  right: 0;
+  left: 260px;
+  z-index: 1000;
 }
 .breadcrumb {
-    color: #fffefe;
-    font-size: 14px;
+  color: #fffefe;
+  font-size: 14px;
 }
 
 .header-actions {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .notification {
-    width: 24px;
-    height: 24px;
-    background: #ffffff;
-    border-radius: 50%;
-    cursor: pointer;
+  width: 24px;
+  height: 24px;
+  background: #ffffff;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
 .user-avatar {
-    width: 32px;
-    height: 32px;
-    background: #ffffff;
-    border-radius: 50%;
-    cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background: #ffffff;
+  border-radius: 50%;
+  cursor: pointer;
 }

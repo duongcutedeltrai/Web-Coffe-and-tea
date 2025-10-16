@@ -79,9 +79,10 @@ model inventory {
 
 model order_details {
   order_detail_id Int      @id @default(autoincrement())
-  order_id        Int
+  order_id        String
   product_id      Int
   quantity        Int
+   size            String?  @db.VarChar(20)
   price           Decimal  @db.Decimal(10, 2)
   orders          orders   @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction, map: "order_details_ibfk_1")
   products        products @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "order_details_ibfk_2")
@@ -92,7 +93,7 @@ model order_details {
 
 model order_status_history {
   order_status_history_id Int                         @id @default(autoincrement())
-  order_id                Int
+  order_id                String                      @db.VarChar(50)
   status                  order_status_history_status
   changed_at              DateTime                    @default(now()) @db.DateTime(0)
   orders                  orders                      @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction, map: "order_status_history_ibfk_1")
@@ -101,11 +102,10 @@ model order_status_history {
 }
 
 model orders {
-  order_id             Int                    @id @default(autoincrement())
-  user_id              Int
+  order_id             String                  @id @db.VarChar(50)
+  user_id              Int?
   orderDate            DateTime               @default(now()) @db.DateTime(0)
   status               orders_status          @default(pending)
-  total_amount         Int
   delivery_address     String                 @db.VarChar(255)
   receiver_name        String                 @db.VarChar(100)
   receiver_phone       String                 @db.VarChar(20)
@@ -114,13 +114,20 @@ model orders {
   users                users?                 @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction, map: "orders_ibfk_1")
 
   payment              payment[]
+  order_type           OrderType              @default(DINE_IN)
+  order_source         OrderSource            @default(STAFF)
 
+  promotion_id       Int?
+  original_amount    Decimal              @db.Decimal(10, 2)  // Giá gốc
+  discount_amount    Decimal              @default(0)         @db.Decimal(10, 2) // Tiền giảm
+  final_amount       Decimal              @db.Decimal(10, 2)  // Giá cuối = original - discount
   @@index([user_id], map: "user_id")
+  promotion_usage    promotion_usage[]
 }
 
 model payment {
   payment_id       Int            @id @default(autoincrement())
-  order_id         Int
+  order_id         String         @db.VarChar(50)
   method           payment_method
   status           payment_status @default(pending)
   total_amount     Int
@@ -141,8 +148,6 @@ model products {
   quantity           Int                  @default(-1)
 
   //price              Decimal              @db.Decimal(10, 2)
-
-
   cart_details       cart_details[]
   feedback           feedback[]
   inventory          inventory[]
@@ -184,12 +189,39 @@ model promotions {
   promotion_id       Int                  @id @default(autoincrement())
   code               String               @unique(map: "code") @db.VarChar(50)
   description        String?              @db.VarChar(255)
-
   discount_percent   Decimal              @db.Decimal(5, 2)
-
   start_date         DateTime             @db.Date
   end_date           DateTime             @db.Date
+
+  //Điều kiện áp dụng
+  min_order_amount   Decimal?             @db.Decimal(10, 2)  // Đơn tối thiểu
+  max_usage_count    Int?                 // Số lần dùng giới hạn (null = không giới hạn)
+  current_usage      Int                  @default(0)        // Đã dùng bao nhiêu lần
+  is_for_new_user    Boolean              @default(false)    // Chỉ dùng cho KH mới?
+  applicable_membership membership_level? // Chỉ cho thành viên nào?
+
+  is_active          Boolean              @default(true) 
+
   promotion_products promotion_products[]
+  promotion_usage    promotion_usage[] 
+}
+
+model promotion_usage {
+  usage_id     Int         @id @default(autoincrement())
+  promotion_id Int
+  order_id     String
+  user_id      Int?
+  user_phone   String?     @db.VarChar(20)
+  used_at      DateTime    @default(now()) @db.DateTime(0)
+  
+  promotions   promotions  @relation(fields: [promotion_id], references: [promotion_id], onDelete: NoAction)
+  orders       orders      @relation(fields: [order_id], references: [order_id], onDelete: NoAction)
+  users        users?      @relation("UserPromotionUsage", fields: [user_id], references: [user_id], onDelete: NoAction)
+  
+  @@index([promotion_id])
+  @@index([order_id])
+  @@index([user_id])
+  @@unique([promotion_id, user_id])  
 }
 
 model roles {
@@ -204,7 +236,7 @@ model users {
   email    String      @unique(map: "email") @db.VarChar(255)
   username String      @db.VarChar(255)
   password String      @db.VarChar(255)
-  phone    String?      @db.VarChar(255)
+  phone    String?      @db.VarChar(255) @unique(map: "phone")
   address  String?     @db.VarChar(255)
   avatar   String?     @db.VarChar(255)
   gender   String?     @db.VarChar(45)
@@ -222,6 +254,7 @@ model users {
   staff_detail  staff_detail?
   feedback      feedback[]
   orders        orders[]
+  promotion_usage promotion_usage[] @relation("UserPromotionUsage")
   roles         roles                @relation(fields: [role_id], references: [role_id], onDelete: NoAction, onUpdate: NoAction, map: "users_ibfk_1")
 
   @@index([role_id], map: "role_id")
@@ -278,7 +311,7 @@ enum product_size {
 
 enum order_status_history_status {
   pending
-  paid
+  ready
   shipped
   completed
   canceled
@@ -304,7 +337,7 @@ enum user_status {
 
 enum orders_status {
   pending
-  paid
+  ready
   shipped
   completed
   canceled
@@ -315,4 +348,15 @@ enum users_auth_provider {
   google
   facebook
   apple
+}
+
+enum OrderType {
+  DINE_IN      // tại quán, khách uống tại chỗ
+  TAKE_AWAY    // mang đi
+  DELIVERY     // giao hàng
+}
+
+enum OrderSource {
+  STAFF        // nhân viên tạo tại quầy
+  CUSTOMER     // khách tự đặt online
 }

@@ -7,30 +7,31 @@ const upload = multer();
 const categoryRoute = express.Router();
 
 categoryRoute.get("/categories", AdminCategoryController.getCategoriesPage);
+categoryRoute.get("/categories/data", AdminCategoryController.getCategoryData);
 //create
 categoryRoute.get(
-    "/categories/create",
-    AdminCategoryController.getCreateCategoriesPage
+  "/categories/create",
+  AdminCategoryController.getCreateCategoriesPage
 );
 categoryRoute.post(
-    "/categories/create",
-    fileUploadCategoriesMiddleware("groupImage"),
-    AdminCategoryController.createNewCategory
+  "/categories/create",
+  fileUploadCategoriesMiddleware("groupImage"),
+  AdminCategoryController.createNewCategory
 );
 //update
 categoryRoute.get(
-    "/categories/update/:id",
-    AdminCategoryController.getUpdateCategoriesPage
+  "/categories/update/:id",
+  AdminCategoryController.getUpdateCategoriesPage
 );
 categoryRoute.post(
-    "/categories/update/:id",
-    fileUploadCategoriesMiddleware("groupImage"),
-    AdminCategoryController.updateCategory
+  "/categories/update/:id",
+  fileUploadCategoriesMiddleware("groupImage"),
+  AdminCategoryController.updateCategory
 );
 
 categoryRoute.post(
-    "/categories/delete/:id",
-    AdminCategoryController.deleteCategory
+  "/categories/delete/:id",
+  AdminCategoryController.deleteCategory
 );
 
 export default categoryRoute;

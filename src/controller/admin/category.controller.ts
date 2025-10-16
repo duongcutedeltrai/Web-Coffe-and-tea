@@ -12,6 +12,11 @@ class AdminCategoryController {
   async getCreateCategoriesPage(req: Request, res: Response) {
     return res.render("admin/categories/create_category.ejs");
   }
+
+  async getCategoryData(req: Request, res: Response) {
+    const allCategories = await AdminCategoryService.getAllCategories();
+    return res.json(allCategories);
+  }
   async createNewCategory(req: Request, res: Response) {
     try {
       const data = {
