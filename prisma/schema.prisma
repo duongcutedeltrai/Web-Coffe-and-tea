@@ -174,9 +174,10 @@ model price_product {
 
 
 model promotion_products {
-  promotion_product_id Int        @id @default(autoincrement())
-  promotion_id         Int
+  promotion_product_id String        @id @default(uuid())
+  promotion_id         String
   product_id           Int
+  size                 String?    @db.VarChar(10)
   promotions           promotions @relation(fields: [promotion_id], references: [promotion_id], onDelete: NoAction, onUpdate: NoAction, map: "promotion_products_ibfk_1")
   products             products   @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "promotion_products_ibfk_2")
 
@@ -186,7 +187,7 @@ model promotion_products {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model promotions {
-  promotion_id       Int                  @id @default(autoincrement())
+  promotion_id       String                  @id 
   code               String               @unique(map: "code") @db.VarChar(50)
   description        String?              @db.VarChar(255)
   discount_percent   Decimal              @db.Decimal(5, 2)
@@ -198,7 +199,7 @@ model promotions {
   max_usage_count    Int?                 // Số lần dùng giới hạn (null = không giới hạn)
   current_usage      Int                  @default(0)        // Đã dùng bao nhiêu lần
   is_for_new_user    Boolean              @default(false)    // Chỉ dùng cho KH mới?
-  applicable_membership membership_level? // Chỉ cho thành viên nào?
+  applicable_membership Json? 
 
   is_active          Boolean              @default(true) 
 
@@ -208,7 +209,7 @@ model promotions {
 
 model promotion_usage {
   usage_id     Int         @id @default(autoincrement())
-  promotion_id Int
+  promotion_id String
   order_id     String
   user_id      Int?
   user_phone   String?     @db.VarChar(20)

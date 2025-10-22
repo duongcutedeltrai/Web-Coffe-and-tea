@@ -1,5 +1,112 @@
+import { da, id } from "zod/v4/locales";
 import { prisma } from "../../config/client";
 class PromotionService {
+  async createPromotion(data: any) {
+    try {
+      const promotionData: any = {
+        code: data.code,
+        promotion_id: data.promotion_id,
+        description: data.description || null,
+        discount_percent: data.discount_percent || null,
+        min_order_amount: data.min_order_amount || null,
+        start_date: new Date(data.start_date),
+        end_date: new Date(data.end_date),
+        is_active: data.is_active || true,
+        is_for_new_user: data.is_for_new_user || false,
+        applicable_membership: data.applicable_membership || null,
+        max_usage_count: data.max_usage_count || null,
+      };
+
+      await prisma.promotions.create({
+        data: promotionData,
+      });
+
+      await prisma.promotion_products.createMany({
+        data: data.applicable_products.map((item: any) => ({
+          promotion_id: data.promotion_id,
+          product_id: item.productId,
+          size: item.size,
+        })),
+      });
+      return promotionData;
+    } catch (error) {
+      console.error("Error creating promotion:", error);
+      throw new Error("Failed to create promotion");
+    }
+  }
+
+  async getAllPromotions() {
+    try {
+      const promotions = await prisma.promotions.findMany({
+        include: {
+          promotion_products: true,
+          promotion_usage: true,
+        },
+      });
+      return promotions;
+    } catch (error) {
+      console.error("Error fetching promotions:", error);
+      return [];
+    }
+  }
+
+  async getPromotionById(promotionId: string) {
+    try {
+      const promotion = await prisma.promotions.findUnique({
+        where: { promotion_id: promotionId },
+        include: {
+          promotion_products: true,
+          promotion_usage: true,
+        },
+      });
+      return promotion;
+    } catch (error) {
+      console.error("Error fetching promotion by ID:", error);
+      return null;
+    }
+  }
+
+  async updatePromotion(promotionId: string, data: any) {
+    try {
+      // 1. Cập nhật bảng chính
+      const updated = await prisma.promotions.update({
+        where: { promotion_id: promotionId },
+        data: {
+          code: data.code,
+          description: data.description || null,
+          discount_percent: data.discount_percent || null,
+          min_order_amount: data.min_order_amount || null,
+          start_date: new Date(data.start_date),
+          end_date: new Date(data.end_date),
+          is_active: data.is_active ?? true,
+          is_for_new_user: data.is_for_new_user || false,
+          applicable_membership: data.applicable_membership || null,
+          max_usage_count: data.max_usage_count || null,
+        },
+      });
+
+      // 2. Cập nhật sản phẩm áp dụng
+      await prisma.promotion_products.deleteMany({
+        where: { promotion_id: promotionId },
+      });
+
+      if (data.applicable_products !== "all") {
+        await prisma.promotion_products.createMany({
+          data: data.applicable_products.map((item: any) => ({
+            promotion_id: promotionId,
+            product_id: item.productId,
+            size: item.size,
+          })),
+        });
+      }
+
+      return updated;
+    } catch (error) {
+      console.error("Error updating promotion:", error);
+      throw new Error("Failed to update promotion");
+    }
+  }
+
   async validatePromotion(
     code: string,
     orderAmount: number,
@@ -128,7 +235,7 @@ class PromotionService {
   ) {
     return await prisma.promotion_usage.create({
       data: {
-        promotion_id: promotionId,
+        promotion_id: promotionId.toString(),
         order_id: orderId,
         user_id: userId,
         user_phone: phone,

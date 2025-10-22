@@ -1,85 +1,6 @@
-// Sample promotion data
-let promotions = [
-  {
-    id: 1,
-    code: "SUMMER2024",
-    description: "Giảm giá mùa hè cho tất cả đồ uống",
-    start_date: "2024-06-01T00:00",
-    end_date: "2024-08-31T23:59",
-    discount_percent: 20,
-    min_order_amount: 100000,
-    max_usage_count: 500,
-    current_usage: 234,
-    is_for_new_user: false,
-    applicable_membership: ["bronze", "silver", "gold", "platinum"],
-    applicable_products: "all", // Added applicable_products field
-  },
-  {
-    id: 2,
-    code: "NEWUSER50",
-    description: "Ưu đãi đặc biệt cho khách hàng mới",
-    start_date: "2024-01-01T00:00",
-    end_date: "2024-12-31T23:59",
-    discount_percent: 50,
-    min_order_amount: 50000,
-    max_usage_count: 1000,
-    current_usage: 456,
-    is_for_new_user: true,
-    applicable_membership: ["bronze"],
-    applicable_products: "all",
-  },
-  {
-    id: 3,
-    code: "VIP30",
-    description: "Ưu đãi dành riêng cho thành viên VIP",
-    start_date: "2024-01-01T00:00",
-    end_date: "2024-12-31T23:59",
-    discount_percent: 30,
-    min_order_amount: 200000,
-    max_usage_count: 200,
-    current_usage: 89,
-    is_for_new_user: false,
-    applicable_membership: ["gold", "platinum"],
-    applicable_products: [1, 2, 3, 4, 5, 6], // Specific coffee products
-  },
-  {
-    id: 4,
-    code: "FLASH15",
-    description: "Flash sale cuối tuần - Giảm ngay 15%",
-    start_date: "2024-12-20T00:00",
-    end_date: "2024-12-22T23:59",
-    discount_percent: 15,
-    min_order_amount: 0,
-    max_usage_count: 300,
-    current_usage: 178,
-    is_for_new_user: false,
-    applicable_membership: ["bronze", "silver", "gold", "platinum"],
-    applicable_products: "all",
-  },
-];
-
-const productCatalog = [
-  { id: 1, name: "Espresso", price: 45000, category: "coffee" },
-  { id: 2, name: "Americano", price: 50000, category: "coffee" },
-  { id: 3, name: "Cappuccino", price: 55000, category: "coffee" },
-  { id: 4, name: "Latte", price: 55000, category: "coffee" },
-  { id: 5, name: "Mocha", price: 60000, category: "coffee" },
-  { id: 6, name: "Caramel Macchiato", price: 65000, category: "coffee" },
-  { id: 7, name: "Trà xanh", price: 40000, category: "tea" },
-  { id: 8, name: "Trà đào", price: 45000, category: "tea" },
-  { id: 9, name: "Trà sữa", price: 50000, category: "tea" },
-  { id: 10, name: "Trà chanh", price: 40000, category: "tea" },
-  { id: 11, name: "Bánh croissant", price: 35000, category: "pastry" },
-  { id: 12, name: "Bánh muffin", price: 30000, category: "pastry" },
-  { id: 13, name: "Bánh tiramisu", price: 45000, category: "pastry" },
-  { id: 14, name: "Bánh cheesecake", price: 50000, category: "pastry" },
-  { id: 15, name: "Sandwich", price: 55000, category: "food" },
-  { id: 16, name: "Salad", price: 60000, category: "food" },
-];
-
 let selectedProducts = [];
 let currentProductCategory = "all";
-
+let promotions = [];
 let currentEditingId = null;
 
 // Format currency
@@ -154,77 +75,201 @@ function toggleProductSelection() {
   }
 }
 
+let productsCatalog = [];
+let categoriesCatalog = [];
+
+async function fetchProductsCatalog() {
+  try {
+    const [productsResponse, categoriesResponse] = await Promise.all([
+      fetch("/api/admin/products/data"),
+      fetch("/admin/categories/data"),
+    ]);
+    productsCatalog = await productsResponse.json();
+    categoriesCatalog = await categoriesResponse.json();
+    renderProductSelection();
+    return { productsCatalog, categoriesCatalog };
+  } catch (error) {
+    console.error("Error fetching products catalog:", error);
+    return { productsCatalog: [], categoriesCatalog: [] };
+  }
+}
+
+let selectedCategory = "all";
+
 function renderProductSelection() {
-  // Render category buttons (orders-style)
+  // Render category buttons
   const categoriesContainer = document.querySelector(".product-categories");
   if (categoriesContainer) {
-    // derive unique categories from productCatalog
-    const cats = Array.from(
-      new Set(productCatalog.map((p) => p.category || "other"))
-    );
     const allButton = `
-      <button class="category-btn ${
-        currentProductCategory === "all" ? "active" : ""
-      }" data-category="all" onclick="filterProductsByCategory('all')">Tất cả</button>
+      <button 
+        class="category-btn ${selectedCategory === "all" ? "active" : ""}" 
+        onclick="filterProductsByCategory('all')"
+      >
+        Tất cả
+      </button>
     `;
-    const catButtons = cats
+
+    const categoryButtons = categoriesCatalog
       .map(
-        (c) => `
-          <button class="category-btn ${
-            currentProductCategory === c ? "active" : ""
-          }" data-category="${c}" onclick="filterProductsByCategory('${c}')">${getCategoryText(
-          c
-        )}</button>
-        `
+        (cat) => `
+        <button 
+          class="category-btn ${
+            selectedCategory == cat.category_id ? "active" : ""
+          }" 
+          onclick="filterProductsByCategory(${cat.category_id})"
+        >
+          ${cat.name}
+        </button>
+      `
       )
       .join("");
-    categoriesContainer.innerHTML = allButton + catButtons;
+
+    categoriesContainer.innerHTML = allButton + categoryButtons;
   }
 
-  // Render products grid similar to orders
+  // Render products grid
   const grid = document.getElementById("productSelectionGrid");
-  const searchTerm =
+  const searchQuery =
     document.getElementById("productSearchInput")?.value.toLowerCase() || "";
 
-  const filtered = productCatalog.filter((product) => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm);
+  const filteredProducts = productsCatalog.filter((product) => {
+    const matchesSearch = product.name.toLowerCase().includes(searchQuery);
     const matchesCategory =
-      currentProductCategory === "all" ||
-      product.category === currentProductCategory;
+      selectedCategory === "all" || product.category_id === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
   if (!grid) return;
-  if (filtered.length === 0) {
-    grid.innerHTML =
-      '<p style="text-align: center; color: #6c757d; padding: 2rem;">Không tìm thấy sản phẩm</p>';
+
+  if (filteredProducts.length === 0) {
+    grid.innerHTML = `
+      <div class="product-selection-empty">
+        <div class="product-selection-empty-icon">📦</div>
+        <div class="product-selection-empty-title">Không tìm thấy sản phẩm</div>
+        <div class="product-selection-empty-text">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</div>
+      </div>
+    `;
     updateSelectedProductsSummary();
     return;
   }
 
-  grid.innerHTML = filtered
+  grid.innerHTML = filteredProducts
     .map((product) => {
-      const checked = selectedProducts.includes(product.id) ? "checked" : "";
+      const isSelected = selectedProducts.some(
+        (p) => p.productId === product.product_id
+      );
+      const selectedProductData = selectedProducts.find(
+        (p) => p.productId === product.product_id
+      );
+      const selectedSize =
+        selectedProductData?.size || product.price_product[0]?.size || "M";
+
+      // Tìm category name
+      const category = categoriesCatalog.find(
+        (c) => c.category_id === product.category_id
+      );
+      const categoryName = category ? category.name : "Khác";
+
+      // Tìm giá theo size đã chọn
+      const selectedPriceItem =
+        product.price_product.find((p) => p.size === selectedSize) ||
+        product.price_product[0];
+      const displayPrice = selectedPriceItem ? selectedPriceItem.price : 0;
+      //size
+      let sizeButtonsHTML = "";
+      if (
+        Array.isArray(product.price_product) &&
+        product.price_product.length > 1
+      ) {
+        // Có nhiều size
+        sizeButtonsHTML = `
+        <div class="product-card-sizes">
+              ${product.price_product
+                .map(
+                  (priceItem) => `
+                  <button 
+                    type="button"
+                    class="size-btn ${
+                      selectedSize === priceItem.size ? "active" : ""
+                    }"
+                    data-size="${priceItem.size}"
+                    data-price="${priceItem.price}"
+                    onclick="event.stopPropagation(); selectProductSize(${
+                      product.product_id
+                    }, '${priceItem.size}', ${priceItem.price})"
+                    ${!isSelected ? "disabled" : ""}
+                  >
+                    ${priceItem.size}
+                  </button>
+                `
+                )
+                .join("")}
+             
+                 <button 
+                    type="button"
+                    class="size-btn size-btn-all ${
+                      selectedSize === "all" ? "active" : ""
+                    }"
+                    onclick="event.stopPropagation(); selectProductSize(${
+                      product.product_id
+                    }, 'all', ${displayPrice})"
+                   ${!isSelected ? "disabled" : ""}
+                  >
+                   Tất cả
+                 </button>
+            </div>`;
+      } else if (
+        Array.isArray(product.price_product) &&
+        product.price_product.length === 1
+      ) {
+        // Chỉ có 1 size
+        const onlyItem = product.price_product[0];
+        sizeButtonsHTML = `
+    <div class="product-card-sizes single-size">
+      <span class="size-static">${onlyItem.size}</span>
+    </div>`;
+      }
+
       return `
-        <div class="product-card" data-product-id="${
-          product.id
-        }" onclick="toggleProductSelection_item(${product.id})">
-          <div class="product-card-overlay"></div>
+        <div class="product-card ${
+          isSelected ? "selected" : ""
+        }" data-product-id="${product.product_id}">
           <div class="product-card-content">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-              <input type="checkbox" id="product-${
-                product.id
-              }" ${checked} onclick="event.stopPropagation(); toggleProductSelection_item(${
-        product.id
-      });">
-              <div class="product-card-name">${product.name}</div>
+            <!-- Header với checkbox và tên -->
+            <div class="product-card-header">
+              <input 
+                type="checkbox" 
+                id="product-${product.product_id}" 
+                ${isSelected ? "checked" : ""}
+                onchange="toggleProductCheckbox(${product.product_id}, event)"
+              >
+              <div class="product-card-info">
+                <label 
+                  for="product-${product.product_id}" 
+                  class="product-card-name"
+                >
+                  ${product.name}
+                </label>
+                <div class="product-card-category">${categoryName}</div>
+              </div>
             </div>
-            <div class="product-card-category">${getCategoryText(
-              product.category
-            )}</div>
-            <div class="product-card-price">${formatCurrency(
-              product.price
-            )}</div>
+
+            <!-- Description (optional) -->
+            ${
+              product.description
+                ? `
+              <div class="product-card-description">${product.description}</div>
+            `
+                : ""
+            }
+
+            <!-- Size Selection -->
+            ${sizeButtonsHTML}
+
+            <!-- Price -->
+            <div class="product-card-price">
+              ${formatCurrency(displayPrice)}
+            </div>
           </div>
         </div>
       `;
@@ -234,60 +279,94 @@ function renderProductSelection() {
   updateSelectedProductsSummary();
 }
 
-function toggleProductSelection_item(productId) {
-  const checkbox = document.getElementById(`product-${productId}`);
-  checkbox.checked = !checkbox.checked;
-
-  if (checkbox.checked) {
-    if (!selectedProducts.includes(productId)) {
-      selectedProducts.push(productId);
-    }
-  } else {
-    selectedProducts = selectedProducts.filter((id) => id !== productId);
+// Hàm toggle checkbox
+function toggleProductCheckbox(productId, event) {
+  if (event) {
+    event.stopPropagation();
   }
 
+  const product = productsCatalog.find((p) => p.product_id === productId);
+  if (!product) return;
+
+  const existingIndex = selectedProducts.findIndex(
+    (p) => p.productId === productId
+  );
+
+  if (existingIndex === -1) {
+    // Thêm sản phẩm với size và giá mặc định (size đầu tiên)
+    const defaultPriceItem = product.price_product[0];
+    selectedProducts.push({
+      productId: productId,
+      size: defaultPriceItem.size,
+      price: defaultPriceItem.price,
+    });
+  } else {
+    // Xóa sản phẩm
+    selectedProducts.splice(existingIndex, 1);
+  }
+  updateSelectedProductsSummary();
   renderProductSelection();
 }
 
+function selectProductSize(productId, size, price) {
+  const productIndex = selectedProducts.findIndex(
+    (p) => p.productId === productId
+  );
+
+  const hasMultipleSizes =
+    Array.isArray(productsCatalog[productId].price_product) &&
+    productsCatalog[productId].price_product.length > 1;
+  if (productIndex === -1) {
+    // Nếu chưa chọn mà click size => tự động thêm
+    selectedProducts.push({ productId, size, price });
+  } else {
+    if (!hasMultipleSizes) return;
+    if (size === "all") {
+      // Nếu chọn "Tất cả" => gán size = "all"
+      selectedProducts[productIndex].size = "all";
+      selectedProducts[productIndex].price = price;
+    } else {
+      // Cập nhật size cụ thể
+      selectedProducts[productIndex].size = size;
+      selectedProducts[productIndex].price = price;
+    }
+  }
+
+  updateSelectedProductsSummary();
+  renderProductSelection();
+}
+
+// Cập nhật summary
 function updateSelectedProductsSummary() {
   const summary = document.getElementById("selectedProductsSummary");
-  summary.innerHTML = `<span>Đã chọn: <strong>${selectedProducts.length}</strong> sản phẩm</span>`;
+  if (summary) {
+    const totalProducts = selectedProducts.length;
+    summary.innerHTML = `
+      <span>Đã chọn: <strong>${totalProducts}</strong> sản phẩm</span>
+    `;
+  }
 }
 
+// Hàm lọc theo category
 function filterProductsByCategory(category) {
-  currentProductCategory = category;
-
-  document
-    .querySelectorAll(".product-categories .category-btn")
-    .forEach((btn) => {
-      btn.classList.remove("active");
-    });
-  const selector = document.querySelector(
-    `.product-categories .category-btn[data-category="${category}"]`
-  );
-  if (selector) selector.classList.add("active");
-
+  selectedCategory = category;
   renderProductSelection();
 }
 
-function getCategoryText(category) {
-  const categoryMap = {
-    coffee: "Cà phê",
-    tea: "Trà",
-    pastry: "Bánh ngọt",
-    food: "Đồ ăn",
-  };
-  return categoryMap[category] || category;
-}
-
-function getProductNames(productIds) {
-  if (productIds === "all") return "Tất cả sản phẩm";
-  if (!Array.isArray(productIds) || productIds.length === 0)
+function getProductNames(applicableProducts) {
+  console.log("applicableProducts:", applicableProducts);
+  if (!applicableProducts || applicableProducts === "all")
     return "Tất cả sản phẩm";
 
-  const names = productIds.map((id) => {
-    const product = productCatalog.find((p) => p.id === id);
-    return product ? product.name : "";
+  if (!Array.isArray(applicableProducts) || applicableProducts.length === 0)
+    return "Tất cả sản phẩm";
+
+  const names = applicableProducts.map((item) => {
+    const productId =
+      typeof item === "object" ? item.productId || item.product_id : item;
+
+    const product = productsCatalog.find((p) => p.product_id === productId);
+    return product ? product.name : `#${productId}`;
   });
 
   if (names.length > 3) {
@@ -300,11 +379,26 @@ function getProductNames(productIds) {
 }
 
 // Render promotions
-function renderPromotions() {
+async function fetchPromotions() {
+  try {
+    const response = await fetch("/admin/data/promotions");
+    const data = await response.json();
+    if (data.success) {
+      return data.data;
+    }
+  } catch (error) {
+    console.error("Error fetching promotions:", error);
+  }
+  return [];
+}
+
+async function renderPromotions() {
   const container = document.getElementById("promotionsContainer");
   const searchTerm = document.getElementById("searchInput").value.toLowerCase();
   const statusFilter = document.getElementById("statusFilter").value;
   const membershipFilter = document.getElementById("membershipFilter").value;
+  promotions = await fetchPromotions();
+  console.log(promotions);
 
   const filtered = promotions.filter((promotion) => {
     const matchesSearch =
@@ -340,12 +434,12 @@ function renderPromotions() {
         .join("");
 
       const applicableProductsHtml =
-        promotion.applicable_products !== "all"
+        promotion.promotion_products !== "all"
           ? `
                 <div class="promotion-applicable-products">
                     <div class="label">Sản phẩm áp dụng:</div>
                     <div class="products-list">${getProductNames(
-                      promotion.applicable_products
+                      promotion.promotion_products
                     )}</div>
                 </div>
             `
@@ -417,6 +511,7 @@ function renderPromotions() {
 
 // Open create promotion drawer
 function openCreatePromotionDrawer() {
+  window.history.pushState({}, "", `/admin/promotions/create`);
   currentEditingId = null;
   selectedProducts = []; // Reset selected products
   document.getElementById("drawerTitle").textContent = "Tạo khuyến mãi mới";
@@ -433,20 +528,44 @@ function openCreatePromotionDrawer() {
 function closePromotionDrawer() {
   document.getElementById("promotionDrawerOverlay").classList.remove("active");
   document.getElementById("promotionDrawer").classList.remove("active");
+  window.history.pushState({}, "", "/admin/promotions");
+}
+
+function formatDateForInput(dateString) {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+
+  // Lấy thời gian local, không có Z
+  const offset = date.getTimezoneOffset();
+  const localDate = new Date(date.getTime() - offset * 60 * 1000);
+
+  // Cắt đến phút (yyyy-MM-ddThh:mm)
+  return localDate.toISOString().slice(0, 16);
 }
 
 // Edit promotion
 function editPromotion(id) {
-  const promotion = promotions.find((p) => p.id === id);
+  const promotion = promotions.find(
+    (p) => p.id === id || p.promotion_id === id
+  );
+  console.log("promotion:", promotion);
   if (!promotion) return;
-
-  currentEditingId = id;
+  window.history.pushState(
+    { promotionId: id },
+    "",
+    `/admin/promotions/update/${promotion.promotion_id}`
+  );
+  currentEditingId = promotion.promotion_id;
   document.getElementById("drawerTitle").textContent = "Chỉnh sửa khuyến mãi";
   document.getElementById("promotionId").value = promotion.id;
   document.getElementById("promotionCode").value = promotion.code;
   document.getElementById("promotionDescription").value = promotion.description;
-  document.getElementById("startDate").value = promotion.start_date;
-  document.getElementById("endDate").value = promotion.end_date;
+  document.getElementById("startDate").value = formatDateForInput(
+    promotion.start_date
+  );
+  document.getElementById("endDate").value = formatDateForInput(
+    promotion.end_date
+  );
   document.getElementById("discountPercent").value = promotion.discount_percent;
   document.getElementById("minOrderAmount").value =
     promotion.min_order_amount || "";
@@ -492,9 +611,21 @@ function deletePromotion(id) {
 }
 
 // View promotion details
-function viewPromotionDetails(id) {
-  const promotion = promotions.find((p) => p.id === id);
-  if (!promotion) return;
+async function viewPromotionDetails(id) {
+  let promotion = promotions.find((p) => p.id === id || p.promotion_id === id);
+  console.log("Viewing promotion:", promotion);
+  if (!promotion) {
+    const res = await fetch(`/admin/data/promotions/${id}`);
+    const data = await res.json();
+    if (data.success) {
+      promotion = data.data;
+    } else {
+      alert("Không tìm thấy khuyến mãi!");
+      return;
+    }
+  }
+  const newUrl = `/admin/promotions/${promotion.promotion_id}`;
+  window.history.pushState({ promotionId: id }, "", newUrl);
 
   const status = getPromotionStatus(promotion);
   const membershipText = promotion.applicable_membership
@@ -596,12 +727,11 @@ function viewPromotionDetails(id) {
 // Close promotion details
 function closePromotionDetails() {
   document.getElementById("promotionDetailsOverlay").classList.remove("active");
+  window.history.pushState({}, "", "/admin/promotions");
 }
 
 // Handle form submission
-document.getElementById("promotionForm").addEventListener("submit", (e) => {
-  e.preventDefault();
-
+async function submitPromotions() {
   const selectedMemberships = Array.from(
     document.getElementById("applicableMembership").selectedOptions
   ).map((option) => option.value);
@@ -635,27 +765,62 @@ document.getElementById("promotionForm").addEventListener("submit", (e) => {
       selectedMemberships.length > 0
         ? selectedMemberships
         : ["bronze", "silver", "gold", "platinum"],
-    applicable_products: applicableProducts, // Added applicable products
+    applicable_products: applicableProducts,
   };
 
   if (currentEditingId) {
     // Update existing promotion
-    const index = promotions.findIndex((p) => p.id === currentEditingId);
-    if (index !== -1) {
-      promotions[index] = { ...promotions[index], ...promotionData };
+    console.log("Updating promotion:", currentEditingId, promotionData);
+    try {
+      const response = await fetch(
+        `/admin/data/promotions/update/${currentEditingId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(promotionData),
+        }
+      );
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to update promotion");
+      }
+
+      alert("Cập nhật khuyến mãi thành công!");
+      closePromotionDrawer();
+      await renderPromotions();
+    } catch (error) {
+      console.error("❌ Error updating promotion:", error);
+      alert("Có lỗi xảy ra khi cập nhật khuyến mãi: " + error.message);
     }
   } else {
     // Create new promotion
     const newPromotion = {
-      id: Date.now(),
+      promotion_id: crypto.randomUUID(),
       ...promotionData,
     };
     promotions.unshift(newPromotion);
+    try {
+      const response = await fetch("/admin/data/promotions/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newPromotion),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to create promotion");
+      }
+      alert("Tạo khuyến mãi thành công!");
+      closePromotionDrawer();
+      renderPromotions();
+    } catch (error) {
+      console.error("Error creating promotion:", error);
+      alert("Có lỗi xảy ra khi tạo khuyến mãi: " + error.message);
+    }
   }
-
-  closePromotionDrawer();
-  renderPromotions();
-});
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   const productSearchInput = document.getElementById("productSearchInput");
@@ -694,4 +859,59 @@ document.querySelectorAll(".menu-item").forEach((item) => {
 });
 
 // Initialize
-renderPromotions();
+document.addEventListener("DOMContentLoaded", async () => {
+  await fetchProductsCatalog();
+  await renderPromotions();
+  // Phân tích đường dẫn
+  const pathParts = window.location.pathname.split("/");
+  const lastPart = pathParts[pathParts.length - 1];
+  const secondLast = pathParts[pathParts.length - 2];
+  if (lastPart === "create") {
+    openCreatePromotionDrawer();
+    return;
+  }
+
+  if (secondLast === "update") {
+    const promotionId = lastPart;
+
+    try {
+      const res = await fetch(`/admin/data/promotions/${promotionId}`);
+      const data = await res.json();
+      if (data.success && data.data) {
+        // Thêm vào danh sách promotions tạm thời
+        promotions = [data.data];
+
+        editPromotion(data.data.promotion_id || data.data.id);
+
+        window.history.replaceState(
+          {},
+          "",
+          `/admin/promotions/update/${promotionId}`
+        );
+      } else {
+        alert("❌ Không tìm thấy khuyến mãi cần chỉnh sửa");
+      }
+    } catch (err) {
+      console.error("Error loading promotion for update:", err);
+      alert("Lỗi khi tải dữ liệu khuyến mãi để chỉnh sửa");
+    }
+    return;
+  }
+
+  if (lastPart && lastPart !== "promotions") {
+    const promotionId = lastPart;
+
+    try {
+      const res = await fetch(`/admin/data/promotions/${promotionId}`);
+      const data = await res.json();
+      if (data.success && data.data) {
+        promotions = [data.data];
+        viewPromotionDetails(data.data.id || data.data.promotion_id);
+      } else {
+        alert("Không tìm thấy thông tin khuyến mãi");
+      }
+    } catch (err) {
+      console.error("Error loading promotion details:", err);
+    }
+  }
+});

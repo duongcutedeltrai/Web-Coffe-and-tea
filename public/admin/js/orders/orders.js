@@ -631,30 +631,31 @@ function renderProductsGrid() {
           <div class="product-card-category">${product.category_id}</div>
 
           <div class="product-card-sizes">
-            ${["M", "L", "XL"]
-              .map(
-                (size) => `
-                  <button 
-                    class="size-btn${
-                      (
-                        product.selectedSize
-                          ? product.selectedSize === size
-                          : size === "M"
-                      )
-                        ? " active"
-                        : ""
-                    }"
-                    data-size="${size}"
-                    data-product-id="${product.product_id}"
-                    onclick="event.stopPropagation(); selectProductSize(${
-                      product.product_id
-                    }, '${size}')"
-                  >
-                    ${size}
-                  </button>`
-              )
-              .join("")}
-          </div>
+  ${product.price_product
+    .map(
+      (priceItem) => `
+        <button 
+          class="size-btn${
+            (
+              product.selectedSize
+                ? product.selectedSize === priceItem.size
+                : priceItem.size === "M"
+            )
+              ? " active"
+              : ""
+          }"
+          data-size="${priceItem.size}"
+          data-price="${priceItem.price}"
+          data-product-id="${product.product_id}"
+          onclick="event.stopPropagation(); selectProductSize(${
+            product.product_id
+          }, '${priceItem.size}', ${priceItem.price})"
+        >
+          ${priceItem.size}
+        </button>`
+    )
+    .join("")}
+</div>
         </div>
       </div>
     `
