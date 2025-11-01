@@ -47,6 +47,10 @@ body {
     overflow: hidden;
 }
 
+.hidden {
+    display:none;
+}
+
 .stat-card::before {
     content: "";
     position: absolute;

@@ -119,6 +119,7 @@ class AdminUserController {
 
         const roles = await AdminUserService.getAllRoles(); // lấy tất cả role
         const workShifts = await AdminUserService.getAllShift();
+        const staffCalender = await AdminUserService.getCalanderStaff();
 
         const genderOptions = [
             { name: "Nữ", value: "Nữ" },
@@ -132,6 +133,7 @@ class AdminUserController {
             pageStaff: currentPageStaffs,
             genderOptions: genderOptions,
             workShifts: workShifts,
+            staffCalender: staffCalender,
         });
     };
 
@@ -287,8 +289,6 @@ class AdminUserController {
             return res.status(500).send("Internal Server Error");
         }
     };
-
-    
 
     // end user phan admin phan staff
 }

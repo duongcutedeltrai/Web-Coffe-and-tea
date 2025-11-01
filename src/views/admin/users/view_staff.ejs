@@ -133,7 +133,7 @@
                 <div class="tab-content" id="calendarTab">
                     <%- include('modal_calender.ejs', {
                         roles: roles,
-                        staffs: staffs,
+                        staffCalender: staffCalender,
                         workShifts: workShifts,
                         genderOptions: genderOptions
                     }) %>
@@ -172,7 +172,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <% staffs.forEach(function (staff) { %>
+                                    <% staffCalender.forEach(function (staff) { %>
                                     <tr>
                                         <td>
                                             <div class="employee-info">
