@@ -7,6 +7,7 @@
     <title>MIRA - Whiskas Dry Adult Dewasa 7+</title>
     <link rel="stylesheet" href="/admin/css/style.css" />
     <link rel="stylesheet" href="/admin/css/users/user.css" />
+    <link rel="stylesheet" href="/admin/css/users/staff_calander.css" />
     <link rel="stylesheet" href="/admin/css/users/addUser.css" />
     <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png" />
 
@@ -147,82 +148,85 @@
                             </div>
 
                             <div class="tab-content" id="calendarTab">
-                                <div class="legend">
-                                    <div class="legend-item">
-                                        <div class="legend-color shift-morning"></div>
-                                        <span>Ca sáng (7h-15h)</span>
+                                <%- include('modal_calender.ejs', { roles: roles, staffs: staffs, workShifts:
+                                    workShifts, genderOptions: genderOptions }); -%>
+                                    <div class="legend">
+                                        <div class="legend-item">
+                                            <div class="legend-color shift-morning"></div>
+                                            <span>Ca sáng (7h-15h)</span>
+                                        </div>
+                                        <div class="legend-item">
+                                            <div class="legend-color shift-afternoon"></div>
+                                            <span>Ca chiều (14h-22h)</span>
+                                        </div>
+                                        <div class="legend-item">
+                                            <div class="legend-color shift-off"></div>
+                                            <span>'Ca Tối (22h-06h)</span>
+                                        </div>
                                     </div>
-                                    <div class="legend-item">
-                                        <div class="legend-color shift-afternoon"></div>
-                                        <span>Ca chiều (14h-22h)</span>
-                                    </div>
-                                    <div class="legend-item">
-                                        <div class="legend-color shift-off"></div>
-                                        <span>'Ca Tối (22h-06h)</span>
-                                    </div>
-                                </div>
 
-                                <div class="schedule-card">
-                                    <div class="card-header">
-                                        <h2 class="card-title">Lịch Làm Việc Hàng Tuần</h2>
-                                    </div>
-                                    <div class="responsive-table">
-                                        <table class="schedule-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Nhân viên</th>
-                                                    <th>Thứ Hai</th>
-                                                    <th>Thứ Ba</th>
-                                                    <th>Thứ Tư</th>
-                                                    <th>Thứ Năm</th>
-                                                    <th>Thứ Sáu</th>
-                                                    <th>Thứ Bảy</th>
-                                                    <th>Chủ Nhật</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <% staffs.forEach(function (staff) { %>
+                                    <div class="schedule-card">
+                                        <div class="card-header">
+                                            <h2 class="card-title">Lịch Làm Việc Hàng Tuần</h2>
+                                        </div>
+                                        <div class="responsive-table">
+                                            <table class="schedule-table" data-schedule>
+                                                <thead>
                                                     <tr>
-                                                        <td>
-                                                            <div class="employee-info">
-                                                                <div>
-                                                                    <img class="avatar"
-                                                                        src="<%= staff.avatar ? '/images/users/' + staff.avatar : '/images/users/avatar-face.jpg' %>"
-                                                                        alt="Avatar">
-                                                                </div>
-                                                                <div class="employee-details">
-                                                                    <div class="employee-name">
-                                                                        <%= staff.username %>
-                                                                    </div>
-                                                                    <div class="employee-role">
-                                                                        <%= staff.staff_detail.position %>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <% staff.staff_detail.staff_schedules.forEach(day=> { %>
+                                                        <th>Nhân viên</th>
+                                                        <th>Thứ Hai</th>
+                                                        <th>Thứ Ba</th>
+                                                        <th>Thứ Tư</th>
+                                                        <th>Thứ Năm</th>
+                                                        <th>Thứ Sáu</th>
+                                                        <th>Thứ Bảy</th>
+                                                        <th>Chủ Nhật</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <% staffs.forEach(function (staff) { %>
+                                                        <tr>
                                                             <td>
-                                                                <div class="shift-cell 
+                                                                <div class="employee-info">
+                                                                    <div>
+                                                                        <img class="avatar"
+                                                                            src="<%= staff.avatar ? '/images/users/' + staff.avatar : '/images/users/avatar-face.jpg' %>"
+                                                                            alt="Avatar">
+                                                                    </div>
+                                                                    <div class="employee-details">
+                                                                        <div class="employee-name">
+                                                                            <%= staff.username %>
+                                                                        </div>
+                                                                        <div class="employee-role">
+                                                                            <%= staff.staff_detail.position %>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <% staff.staff_detail.staff_schedules.forEach(day=> { %>
+                                                                <td>
+                                                                    <div class="shift-cell 
 <%= day.work_shifts.name === 'Sáng (07h-15h)' ? 'shift-morning' 
   : day.work_shifts.name === 'Chiều (14h-22h)' ? 'shift-afternoon' 
   : 'shift-off' %>">
-                                                                    <%= day.work_shifts.name==='Sáng (07h-15h)'
-                                                                        ? 'Sáng (07h-15h)' :
-                                                                        day.work_shifts.name==='Chiều (14h-22h)'
-                                                                        ? 'Chiều (14h-22h)' : 'Tối (22h-06h)' %>
-                                                                </div>
-                                                            </td>
-                                                            <% }) %>
+
+                                                                        <%= day.work_shifts.name==='Sáng (07h-15h)'
+                                                                            ? 'Sáng (07h-15h)' :
+                                                                            day.work_shifts.name==='Chiều (14h-22h)'
+                                                                            ? 'Chiều (14h-22h)' : 'Tối (22h-06h)' %>
+                                                                    </div>
+                                                                </td>
+                                                                <% }) %>
 
 
 
-                                                    </tr>
-                                                    <% }) %>
+                                                        </tr>
+                                                        <% }) %>
 
-                                            </tbody>
-                                        </table>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
-                                </div>
 
                             </div>
 

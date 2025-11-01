@@ -1,5 +1,8 @@
+
+
 document.addEventListener("DOMContentLoaded", function () {
     initSearch()
+    calenderStaff()
 });
 
 
@@ -66,4 +69,66 @@ function initSearch() {
             console.error(err);
         }
     });
+}
+
+
+function calenderStaff() {
+    const dataOptions = document.querySelector("[data-options]");
+    const dataSchedule = document.querySelector("[data-schedule]");
+    const modalCalender = document.getElementById("modalCalender");
+    const getAllCalender = dataOptions.querySelectorAll(".shift-card");
+    const saveBtn = modalCalender.querySelector("#saveBtn");
+    const cancelBtn = modalCalender.querySelector(".btn-cancel");
+    console.log(saveBtn);
+
+    let selectedShift = null;
+
+
+
+    document.addEventListener("click", (e) => {
+        if (!modalCalender.contains(e.target) && !e.target.closest(".shift-cell")) {
+            modalCalender.setAttribute("hidden", true);
+        }
+    });
+
+    if (dataSchedule) {
+        const popupCalender = dataSchedule.querySelectorAll(".shift-cell")
+        popupCalender.forEach((calender) => {
+            calender.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Lấy vị trí ô click
+                const rect = calender.getBoundingClientRect();
+                const scrollTop = window.scrollY || document.documentElement.scrollTop;
+                const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
+
+                // Đặt modal ngay trên (hoặc cạnh) ô
+                modalCalender.style.left = `${rect.left + scrollLeft}px`;
+                modalCalender.style.top = `${rect.top + scrollTop - modalCalender.offsetHeight - 250}px`;
+
+                modalCalender.toggleAttribute("hidden");
+
+            })
+
+
+        })
+    }
+
+
+    getAllCalender.forEach((shift) => {
+        shift.addEventListener("click", () => {
+            getAllCalender.forEach(c => c.classList.remove("selected"));
+            shift.classList.add("selected");
+
+            selectedShift = shift.querySelector(".shift-name").textContent.trim();
+            saveBtn.removeAttribute("disabled");
+        });
+
+    })
+
+    cancelBtn.addEventListener("click", () => {
+        modalCalender.setAttribute("hidden", true);
+    });
+
 }

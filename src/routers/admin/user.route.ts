@@ -37,5 +37,8 @@ userRoute.get("/staff-revenue", AdminUserController.getStaffRevenue);
 userRoute.get("/staff-revenue/api", AdminUserController.getStaffRevenueAPI);
 
 
+userRoute.post("/staff/update-staff-calender/:id", AdminUserController.postUpdateStaffCalander);
+
+
 
 export default userRoute;

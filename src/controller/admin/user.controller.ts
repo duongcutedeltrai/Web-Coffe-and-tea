@@ -283,6 +283,14 @@ class AdminUserController {
         }
     }
 
+    postUpdateStaffCalander = async (req: Request, res: Response) => {
+        const { id } = req.params
+
+        const { shift_id } = req.body
+
+        return res.redirect("/admin/staff");
+    }
+
 
     // end user phan admin phan staff
 
