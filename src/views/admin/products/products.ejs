@@ -32,21 +32,12 @@
     <body>
         <div class="container">
             <%- include('../layout/sidebar.ejs'); -%> <%-
-            include('../layout/header.ejs'); -%> <%-
             include('./create_product.ejs'); -%>
             <div class="content">
                 <div class="top">
                     <div class="top-content">
                         <h1>Menu</h1>
-                        <p class="date">Thursday, 2 Feb 2021</p>
-                    </div>
-                    <div class="search-container">
-                        <i class="fas fa-search search-icon"></i>
-                        <input
-                            type="text"
-                            placeholder="Search for food, coffee, etc..."
-                            class="search-input"
-                        />
+                        <!-- <p class="date">Thursday, 2 Feb 2021</p> -->
                     </div>
                 </div>
 
@@ -70,15 +61,15 @@
                             <p class="date">Thursday, 2 Feb 2021</p>
                         </div>
                         <div class="menu-controls">
-                            <div class="filter-btn">
-                                <i class="fas fa-filter"></i>
+                            <div class="search-container">
+                                <i class="fas fa-search search-icon"></i>
+                                <input
+                                    type="text"
+                                    placeholder="Search for food, coffee, etc..."
+                                    class="search-input"
+                                    id="search"
+                                />
                             </div>
-                            <select class="order-status">
-                                <option>Order Status</option>
-                                <option>Pending</option>
-                                <option>Completed</option>
-                                <option>Cancelled</option>
-                            </select>
                             <button class="reset-filter">
                                 <i class="fas fa-redo"></i>
                                 Reset Filter
@@ -101,6 +92,7 @@
         </div>
 
         <!-- Embedded JavaScript to avoid 404 errors -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="/admin/js/products/products.js"></script>
         <script src="/admin/js/products/product_create.js"></script>
     </body>

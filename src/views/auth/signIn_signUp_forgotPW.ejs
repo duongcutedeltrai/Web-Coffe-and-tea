@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Xác thực - Phê La</title>
+        <link rel="stylesheet" href="/auth/css/signin-signup.css" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            rel="shortcut icon"
+            href="/images/favicon/favicon.ico"
+            type="image/x-icon"
+        />
+        <link
+            rel="icon"
+            href="/images/favicon/favicon.ico"
+            type="image/x-icon"
+        />
+    </head>
+
+    <body>
+        <div class="auth-container">
+            <!-- Form Section -->
+            <div class="form-section" id="formSection">
+                <div class="form-content">
+                    <div
+                        class="brand"
+                        style="
+                            display: flex;
+                            justify-content: center;
+                            margin-bottom: 25px;
+                        "
+                    >
+                        <img
+                            class="logo_nav"
+                            src="/images/logo1.png"
+                            alt=""
+                            style="
+                                width: 170px;
+                                height: auto;
+                                object-fit: cover;
+                            "
+                        />
+                    </div>
+
+                    <!-- Login Form -->
+                    <div class="form-wrapper" id="loginForm">
+                        <h2>Chào mừng bạn đã trở lại!</h2>
+                        <p class="subtitle">Đăng nhập vào tài khoản của bạn.</p>
+
+                        <form
+                            class="auth-form"
+                            action="/auth/login"
+                            method="POST"
+                        >
+                            <div class="input-group">
+                                <input
+                                    type="email"
+                                    placeholder="Nhập email..."
+                                    name="email"
+                                    value="<%= oldEmail ? oldEmail : '' %>"
+                                    class="<%= error ? 'is-invalid' : '' %>"
+                                    required
+                                />
+                            </div>
+                            <div class="input-group">
+                                <input
+                                    type="password"
+                                    placeholder="Nhập mật khẩu..."
+                                    name="password"
+                                    class="<%= error ? 'is-invalid' : '' %>"
+                                    required
+                                />
+                                <% if (error) { %>
+                                <div class="invalid-feedback">
+                                    Sai tên đăng nhập hoặc sai mật khẩu
+                                </div>
+                                <% } %>
+
+                                <button type="button" class="password-toggle">
+                                    <svg
+                                        width="20"
+                                        height="20"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                    >
+                                        <path
+                                            d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                                        ></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </button>
+                            </div>
+                            <button type="submit" class="submit-btn">
+                                Đăng Nhập
+                            </button>
+                            <div class="forgot-password">
+                                <button
+                                    class="forgot-btn"
+                                    onclick="switchToForgotPassword()"
+                                >
+                                    Quên mật khẩu?
+                                </button>
+                            </div>
+                        </form>
+
+                        <p class="switch-text">
+                            Chưa có tài khoản?
+                            <button
+                                class="switch-btn"
+                                onclick="switchToRegister()"
+                            >
+                                <!-- <button
+                class="switch-btn"
+                onclick="window.location.href='/auth/register'"
+              > -->
+                                Đăng ký
+                            </button>
+                        </p>
+                    </div>
+
+                    <!-- Register Form -->
+                    <div class="form-wrapper hidden" id="registerForm">
+                        <h2>Tạo tài khoản mới</h2>
+                        <p class="subtitle">
+                            Vui lòng điền thông tin bên dưới để đăng ký
+                        </p>
+
+                        <form class="auth-form" id="register-form">
+                            <div class="input-group">
+                                <input
+                                    type="text"
+                                    placeholder="Họ Tên"
+                                    name="username"
+                                    required
+                                />
+                            </div>
+                            <div class="input-group">
+                                <input
+                                    type="email"
+                                    placeholder="Email"
+                                    name="email"
+                                    required
+                                />
+                            </div>
+
+                            <div class="input-group">
+                                <input
+                                    type="password"
+                                    placeholder="Mật khẩu"
+                                    name="password"
+                                    required
+                                />
+                                <button type="button" class="password-toggle">
+                                    <svg
+                                        width="20"
+                                        height="20"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                    >
+                                        <path
+                                            d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                                        ></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div
+                                id="register-error"
+                                style="color: red; margin-bottom: 10px"
+                            ></div>
+                            <button type="submit" class="submit-btn">
+                                Đăng Ký
+                            </button>
+                        </form>
+
+                        <p class="switch-text">
+                            Đã có tài khoản?
+                            <button
+                                class="switch-btn"
+                                onclick="switchToLogin()"
+                            >
+                                <!-- <button
+                class="switch-btn"
+                onclick="window.location.href='/auth/login'"
+              > -->
+                                Đăng nhập
+                            </button>
+                        </p>
+
+                        <div class="terms">
+                            <a href="#">Điều khoản & điều kiện</a>
+                        </div>
+                    </div>
+                    <!-- Added Forgot Password Form -->
+                    <div class="form-wrapper hidden" id="forgotPasswordForm">
+                        <h2>Khôi phục lại mật khẩu</h2>
+                        <p class="subtitle">
+                            Vui lòng nhập email của bạn để nhận liên kết đặt lại
+                            mật khẩu.
+                        </p>
+
+                        <form
+                            class="auth-form"
+                            action="/auth/forgot-password"
+                            method="POST"
+                        >
+                            <div class="input-group">
+                                <input
+                                    type="email"
+                                    placeholder="Email"
+                                    name="email"
+                                    required
+                                />
+                            </div>
+
+                            <button type="submit" class="submit-btn">
+                                Gửi
+                            </button>
+                        </form>
+
+                        <p class="switch-text">
+                            Quay lại đăng nhập?
+                            <button
+                                class="switch-btn"
+                                onclick="switchToLogin()"
+                            >
+                                Đăng nhập
+                            </button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image Section -->
+            <div class="image-section" id="imageSection">
+                <img
+                    src="/images/auth/bg.jpg"
+                    alt="Background"
+                    class="background-image"
+                />
+            </div>
+        </div>
+
+        <script>
+            var showForm = "<%= show %>";
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            document
+                .getElementById("register-form")
+                .addEventListener("submit", async function (e) {
+                    e.preventDefault();
+
+                    const form = e.target;
+                    const data = {
+                        username: form.username.value,
+                        email: form.email.value,
+                        password: form.password.value,
+                    };
+
+                    try {
+                        const response = await fetch("/auth/register", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json", // quan trọng!
+                            },
+                            body: JSON.stringify(data),
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok) {
+                            alert(result.message || "Đăng ký thành công!");
+                            window.location.href = "/auth/login";
+                        } else {
+                            document.getElementById(
+                                "register-error"
+                            ).innerText = result.message;
+                        }
+                    } catch (err) {
+                        document.getElementById("register-error").innerText =
+                            "Lỗi hệ thống, vui lòng thử lại!";
+                    }
+                });
+        </script>
+
+        <script src="/auth/js/signin-signup.js"></script>
+    </body>
+</html>

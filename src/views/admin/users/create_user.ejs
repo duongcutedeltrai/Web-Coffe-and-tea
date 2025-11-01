@@ -43,14 +43,15 @@
                         <label class="form-label">Vai trò *</label>
 
 
-                        <select class="form-input" name="roleId" id="userRole" style="cursor: pointer;" required>
-                            <option value="">Chọn vai trò</option>
-                            <% optionRoles.forEach((optionRole)=> { %>
-                                <option value="<%= optionRole.role_id %>">
-                                    <%= optionRole.name %>
-                                </option>
-                                <% }) %>
-                        </select>
+                        <div class="form-group">
+                            <select class="form-input" name="position" required>
+                                <option value="">Chọn vai trò</option>
+                                <option value="Pha chế">Pha chế</option>
+                                <option value="Phục vụ">Phục vụ</option>
+                                <option value="Bảo vệ">Bảo vệ</option>
+                                <option value="Lao công">Lao công</option>
+                            </select>
+                        </div>
 
                     </div>
                 </div>
@@ -62,7 +63,7 @@
 
                         <select name="gender" class="form-input" class="form-select">
                             <% genderOptions.forEach((gen,index)=> { %>
-                                <option value="<%-gen.value %>" <%=gen.value===users.gender ? 'selected' : '' %>
+                                <option value="<%-gen.value %>" <%=gen.value===staffs.gender ? 'selected' : '' %>
                                     >
                                     <%- gen.name %>
                                 </option>
@@ -75,17 +76,38 @@
                     </div>
                 </div>
 
+
+                <div class="form-row">
+
+                    <div class="form-group" id="passwordGroup">
+                        <label class="form-label">Mật khẩu *</label>
+                        <input name="password" type="password" class="form-input" id="userPassword"
+                            placeholder="Tối thiểu 6 ký tự">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Lương cơ bản :</label>
+                        <input name="salary" type="text" class="form-input" placeholder="Nhập Lương đầy đủ">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ca làm việc :</label>
+                    <select name="shiftId" class="form-input" required>
+                        <option value="">Chọn ca làm việc</option>
+                        <% workShifts.forEach((shift)=> { %>
+                            <option value="<%= shift.shift_id %>">
+                                <%= shift.name %>
+                            </option>
+                            <% }) %>
+                    </select>
+                </div>
+
+
                 <div class="form-group">
                     <label class="form-label">Địa chỉ</label>
                     <input name="address" type="text" class="form-input" id="userAddress"
                         placeholder="Nhập địa chỉ đầy đủ">
                 </div>
 
-                <div class="form-group" id="passwordGroup">
-                    <label class="form-label">Mật khẩu *</label>
-                    <input name="password" type="password" class="form-input" id="userPassword"
-                        placeholder="Tối thiểu 6 ký tự">
-                </div>
 
 
                 <div class="modal-footer">

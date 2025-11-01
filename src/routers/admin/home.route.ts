@@ -1,7 +1,7 @@
 import express from "express";
 import AdminHomeController from "../../controller/admin/home.controller";
-const homeRouter = express.Router();
+const homeRoute = express.Router();
 
-homeRouter.get("", AdminHomeController.getHomeAdminPage);
+homeRoute.get("", AdminHomeController.getHomeAdminPage);
 
-export default homeRouter;
+export default homeRoute;

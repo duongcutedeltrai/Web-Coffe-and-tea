@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "module": "Commonjs",
+        "module": "commonjs",
         "esModuleInterop": true,
         "target": "es6",
         "sourceMap": true,
@@ -16,5 +16,7 @@
             "services/*": ["./src/services/*"],
             "views/*": ["./src/views/*"]
         }
-    }
+    },
+    "include": ["src"],
+    "exclude": ["node_modules", "dist"]
 }

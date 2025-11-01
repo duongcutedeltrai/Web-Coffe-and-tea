@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Phê La - Chi tiết sản phẩm</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+            rel="stylesheet"
+        />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
+        />
+        <link href="/path/to/lightbox.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+        <link rel="stylesheet" href="/client/css/style.css" />
+        <link rel="stylesheet" href="/client/css/product/product_detail.css" />
+        <link rel="stylesheet" href="/client/css/cart/cart-popup.css" />
+        <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+        />
+
+        <!-- Font-->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+            rel="stylesheet"
+        />
+
+        <!--Favicon-->
+        <link
+            rel="shortcut icon"
+            href="/images/favicon/favicon.ico"
+            type="image/x-icon"
+        />
+        <link
+            rel="icon"
+            href="/images/favicon/favicon.ico"
+            type="image/x-icon"
+        />
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <div class="splash">
+            <div class="logo">
+                <img
+                    src="https://html.awaikenthemes.com/roast/images/loader.svg"
+                    alt=""
+                />
+            </div>
+        </div>
+        <% if (!user) { %> <%- include('../layout/navbar.ejs'); -%> <% } else {
+        %> <%- include('../layout/navbar_login.ejs'); -%><% } %> <%-
+        include('../cart/cart-popup.ejs'); -%>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <div class="content">
+                    <div class="product-section">
+                        <div class="product-image">
+                            <img
+                                src="/images/products/<%= product.images %>"
+                                alt="<%= product.name %> "
+                            />
+                        </div>
+                    </div>
+
+                    <div
+                        class="product-details"
+                        data-id="<%= product.product_id %>"
+                    >
+                        <h1 class="product-title"><%= product.name %></h1>
+                        <div class="product-meta">
+                            <div class="type">
+                                <%= product.categories.name %>
+                            </div>
+                            <div class="rating">
+                                <div class="stars" style="margin-top: 7px">
+                                    <% const rating = product.average_rating ||
+                                    0; const rounded = Math.round(rating); %> <%
+                                    for (let i = 1; i <= 5; i++) { %>
+                                    <i
+                                        class="star-icon <%= i <= rounded ? 'active' : 'empty' %>"
+                                        style="width: 20px; height: 20px"
+                                    ></i
+                                    ><% } %>
+                                </div>
+                                <span class="rating-text"
+                                    ><%= product.average_rating %> (<%= total
+                                    %>)</span
+                                >
+                            </div>
+                        </div>
+
+                        <div class="price">
+                            <%=
+                            product.price_product[0].price.toLocaleString('vi-VN',
+                            { style: 'currency', currency: 'VND' }) %>
+                        </div>
+
+                        <div class="description">
+                            <%= product.description %>
+                        </div>
+
+                        <div class="size-container">
+                            <span class="label">Size:</span>
+                            <div class="sizes">
+                                <% product.price_product.forEach((sizePrice,
+                                index)=> { %>
+                                <div
+                                    class="size-option <%= index === 0 ? 'active' : '' %>"
+                                    data-size="<%= sizePrice.size %>"
+                                    data-price="<%= sizePrice.price %>"
+                                >
+                                    <%= sizePrice.size %>
+                                </div>
+                                <% }); %>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button class="btn-primary popup_update--btn">
+                                <svg
+                                    stroke="currentColor"
+                                    fill="none"
+                                    stroke-width="2"
+                                    viewBox="0 0 24 24"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    class="me-2"
+                                    height="18"
+                                    width="18"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <circle cx="8" cy="21" r="1"></circle>
+                                    <circle cx="19" cy="21" r="1"></circle>
+                                    <path
+                                        d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
+                                    ></path>
+                                </svg>
+                                Thêm Giỏ Hàng
+                            </button>
+                            <button
+                                class="pd-favorite-btn"
+                                onclick="pdToggleFavorite(this)"
+                            >
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reviews Section -->
+                <div class="reviews-section">
+                    <div class="reviews-header">
+                        <h2 class="reviews-title">Reviews and Ratings</h2>
+                    </div>
+                    <div class="rating-content">
+                        <div class="overall-rating">
+                            <div class="rating-score">
+                                <%= product.average_rating %>
+                            </div>
+                            <div class="stars">
+                                <% for (let i = 1; i <= 5; i++) { %>
+                                <i
+                                    class="star-icon <%= i <= rounded ? 'active' : 'empty' %>"
+                                ></i
+                                ><% } %>
+                            </div>
+                            <div
+                                style="
+                                    font-size: 17px;
+                                    color: #666;
+                                    margin-bottom: 12px;
+                                "
+                            >
+                                Based on <%= total %> reviews
+                            </div>
+                            <button
+                                class="btn-feedback"
+                                data-bs-toggle="modal"
+                                data-bs-target="#reviewModal"
+                            >
+                                Đánh giá
+                            </button>
+                        </div>
+                        <div class="rating-breakdown">
+                            <div class="rating-row">
+                                <div class="stars-small">
+                                    <i class="star-icon-small filled"></i>
+                                    <i class="star-icon-small filled"></i>
+                                    <i class="star-icon-small filled"></i>
+                                    <i class="star-icon-small filled"></i>
+                                    <i class="star-icon-small filled"></i>
+                                </div>
+                                <div class="rating-bar">
+                                    <div
+                                        class="rating-fill"
+                                        data-percent="<%= ratingData[4].percent %>"
+                                    ></div>
+                                </div>
+                                <span class="rating-count"
+                                    ><%= ratingData[4].count %></span
+                                >
+                            </div>
+                            <div class="rating-row">
+                                <div class="stars-small">
+                                    <i class="star-icon-small filled"></i>
+                                    <i class="star-icon-small filled"></i>
+                                    <i class="star-icon-small filled"></i>
+                                    <i class="star-icon-small filled"></i>
+                                    <i class="star-icon-small empty"></i>
+                                </div>
+                                <div class="rating-bar">
+                                    <div
+                                        class="rating-fill"
+                                        data-percent="<%= ratingData[3].percent %>"
+                                    ></div>
+                                </div>
+                                <span class="rating-count"
+                                    ><%= ratingData[3].count %></span
+                                >
+                            </div>
+                            <div class="rating-row">
+                                <div class="stars-small">
+                                    <i class="star-icon-small filled"></i>
+                                    <i class="star-icon-small filled"></i>
+                                    <i class="star-icon-small filled"></i>
+                                    <i class="star-icon-small empty"></i>
+                                    <i class="star-icon-small empty"></i>
+                                </div>
+                                <div class="rating-bar">
+                                    <div
+                                        class="rating-fill"
+                                        data-percent="<%= ratingData[2].percent %>"
+                                    ></div>
+                                </div>
+                                <span class="rating-count"
+                                    ><%= ratingData[2].count %></span
+                                >
+                            </div>
+                            <div class="rating-row">
+                                <div class="stars-small">
+                                    <i class="star-icon-small filled"></i>
+                                    <i class="star-icon-small filled"></i>
+                                    <i class="star-icon-small empty"></i>
+                                    <i class="star-icon-small empty"></i>
+                                    <i class="star-icon-small empty"></i>
+                                </div>
+                                <div class="rating-bar">
+                                    <div
+                                        class="rating-fill"
+                                        data-percent="<%= ratingData[1].percent %>"
+                                    ></div>
+                                </div>
+                                <span class="rating-count"
+                                    ><%= ratingData[1].count %></span
+                                >
+                            </div>
+                            <div class="rating-row">
+                                <div class="stars-small">
+                                    <i class="star-icon-small filled"></i>
+                                    <i class="star-icon-small empty"></i>
+                                    <i class="star-icon-small empty"></i>
+                                    <i class="star-icon-small empty"></i>
+                                    <i class="star-icon-small empty"></i>
+                                </div>
+                                <div class="rating-bar">
+                                    <div
+                                        class="rating-fill"
+                                        data-percent="<%= ratingData[0].percent %>"
+                                    ></div>
+                                </div>
+                                <span class="rating-count"
+                                    ><%= ratingData[0].count %></span
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="reviews-list">
+                        <% if (feedbacks && feedbacks.length > 0) { %> <%
+                        feedbacks.forEach(function(fb) { %>
+                        <div class="review-item">
+                            <div class="reviewer-avatar">
+                                <% if (fb.users && fb.users.avatar) { %>
+                                <img
+                                    src="<%= fb.users.avatar %>"
+                                    alt="avatar"
+                                />
+                                <% } else { %>
+                                <img
+                                    src="/images/default-avatar.png"
+                                    alt="default avatar"
+                                />
+                                <% } %>
+                            </div>
+
+                            <div class="review-content">
+                                <div class="reviewer-info">
+                                    <span class="reviewer-name">
+                                        <%= fb.users && fb.users.username ?
+                                        fb.users.username : 'Ẩn danh' %>
+                                    </span>
+                                    <span class="review-date">
+                                        <%= new
+                                        Date(fb.created_at).toLocaleDateString('vi-VN')
+                                        %>
+                                    </span>
+                                </div>
+
+                                <div class="review-rating">
+                                    <% for (let i = 0; i < fb.rating; i++) {
+                                    %>★<% } %>
+                                </div>
+
+                                <div class="review-text"><%= fb.comment %></div>
+
+                                <% let imgs = []; try { imgs =
+                                JSON.parse(fb.images || "[]"); } catch(e) {} %>
+                                <% if (imgs.length > 0) { %>
+                                <div class="review-images">
+                                    <% imgs.forEach(function(img) { %>
+                                    <div class="review-image">
+                                        <a
+                                            href="<%= img %>"
+                                            data-lightbox="feedback-<%= fb.id %>"
+                                        >
+                                            <img
+                                                src="<%= img %>"
+                                                alt="feedback image"
+                                            />
+                                        </a>
+                                    </div>
+                                    <% }) %>
+                                </div>
+                                <% } %>
+                            </div>
+                        </div>
+                        <% }) %> <% } else { %>
+                        <p>Chưa có đánh giá nào cho sản phẩm này.</p>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="modal fade"
+                id="reviewModal"
+                tabindex="-1"
+                aria-hidden="true"
+            >
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header border-0">
+                            <h4 class="modal-title text-brown">
+                                Viết đánh giá của bạn
+                            </h4>
+                            <button
+                                type="button"
+                                class="btn-close btn-close-white"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                            ></button>
+                        </div>
+                        <div class="modal-body">
+                            <div
+                                class="mb-4 d-flex gap-5 align-items-center justify-content-space-between"
+                            >
+                                <label
+                                    class="form-label text-brown fw-semibold d-block"
+                                    >Đánh giá của bạn</label
+                                >
+                                <div class="rating-stars" id="ratingStars">
+                                    <i class="star-rating" data-rating="1"></i>
+                                    <i class="star-rating" data-rating="2"></i>
+                                    <i class="star-rating" data-rating="3"></i>
+                                    <i class="star-rating" data-rating="4"></i>
+                                    <i class="star-rating" data-rating="5"></i>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label
+                                    class="form-label text-brown fw-semibold d-block"
+                                    >Nhận xét của bạn</label
+                                >
+                                <div class="d-flex gap-3">
+                                    <textarea
+                                        class="form-control"
+                                        id="reviewText"
+                                        rows="4"
+                                        placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm..."
+                                    ></textarea>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label
+                                    class="form-label text-brown fw-semibold d-block"
+                                    >Thêm hình ảnh (Tùy chọn tối đa 3
+                                    hình)</label
+                                >
+                                <div
+                                    class="d-flex flex-wrap gap-2 align-items-center justify-content-start"
+                                >
+                                    <div
+                                        id="imagePreview"
+                                        class="d-flex gap-2"
+                                    ></div>
+                                    <label class="upload-box" id="uploadLabel">
+                                        <svg
+                                            width="20"
+                                            height="20"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                        >
+                                            <path
+                                                d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+                                            ></path>
+                                            <polyline
+                                                points="17 8 12 3 7 8"
+                                            ></polyline>
+                                            <line
+                                                x1="12"
+                                                y1="3"
+                                                x2="12"
+                                                y2="15"
+                                            ></line>
+                                        </svg>
+                                        <input
+                                            type="file"
+                                            id="imageUpload"
+                                            accept="image/*"
+                                            multiple
+                                            style="display: none"
+                                        />
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="modal-footer border-0 justify-content-center"
+                        >
+                            <button
+                                type="button"
+                                class="btn btn-outline-brown"
+                                data-bs-dismiss="modal"
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                type="button"
+                                class="btn"
+                                id="submitReview"
+                                disabled
+                            >
+                                Gửi đánh giá
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <%- include('../layout/footer.ejs'); -%>
+        <script src="https://unpkg.com/@barba/core"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+        <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+        <script>
+            window.addEventListener("load", () => {
+                setTimeout(() => {
+                    document.querySelector(".splash").classList.add("hide");
+                    document.querySelector(".content").classList.add("show");
+                    document.body.style.overflow = "auto"; // cho phép scroll lại
+                }, 1000); // 3s
+            });
+        </script>
+        <script>
+            AOS.init({
+                duration: 1000, // thời gian chạy animation (ms)
+                once: true, // chỉ chạy 1 lần (khi scroll tới)
+            });
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.39/bundled/lenis.min.js"></script>
+        <script>
+            const lenis = new Lenis({
+                duration: 1.5, // tốc độ (càng lớn càng mượt, 1.2 là vừa)
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // easing
+            });
+
+            function raf(time) {
+                lenis.raf(time);
+                requestAnimationFrame(raf);
+            }
+
+            requestAnimationFrame(raf);
+        </script>
+        <script src="/path/to/lightbox.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.0/bundled/lenis.min.js"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Added jQuery library before custom script -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="/client/js/cart/cart-popup.js"></script>
+        <script src="/client/js/product/product_detail.js"></script>
+        <script type="module"></script>
+    </body>
+</html>

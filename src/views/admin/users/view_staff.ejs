@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MIRA - Whiskas Dry Adult Dewasa 7+</title>
+
+    <link rel="stylesheet" href="/admin/css/style.css" />
+    <link rel="stylesheet" href="/admin/css/users/user.css" />
+    <link rel="stylesheet" href="/admin/css/users/staff_calander.css" />
+    <link rel="stylesheet" href="/admin/css/users/addUser.css" />
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png" />
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+          integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet"
+          href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" />
+</head>
+
+<body>
+    <div class="container">
+        <%- include('../layout/sidebar.ejs'); -%>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <%- include('create_user.ejs', {
+                roles: roles,
+                staffs: staffs,
+                workShifts: workShifts,
+                genderOptions: genderOptions
+            }); -%>
+
+            <!-- Title Section -->
+            <h1 class="title" style="margin-bottom: 20px">Quản lý Nhân viên</h1>
+
+            <!-- Filters Section -->
+            <section class="filters-section">
+                <div class="filters-section_header">
+                    <div class="filters-header">
+                        <h3>Bộ lọc và tìm kiếm</h3>
+                        <p>Tìm kiếm và lọc khách hàng theo các tiêu chí</p>
+                    </div>
+                </div>
+
+                <div class="filters-row">
+                    <div class="filter-group">
+                        <label>Tìm kiếm</label>
+                        <div class="search-wrapper">
+                            <i class="fas fa-search"></i>
+                            <input type="text"
+                                   class="search-input"
+                                   id="staffSearchInput"
+                                   placeholder="Tìm kiếm theo tên, email hoặc số điện thoại..." />
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Staff Table Section -->
+            <section class="table-section">
+                <div class="table-header">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" data-tab="all">Tất cả nhân viên</button>
+                        <button class="tab-btn" data-tab="calendar">Lịch làm việc</button>
+                    </div>
+                    <div style="display: flex; gap: 10px">
+                        <button class="btn btn-secondary">
+                            <i class="fas fa-download"></i> Xuất Excel
+                        </button>
+                        <div class="filter-group">
+                            <button class="btn btn-primary" onclick="openAddModal()">
+                                <i class="fas fa-plus"></i> Thêm tài khoản
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab "All Staff" -->
+                <div class="tab-content active" id="allTab">
+                    <table class="customer-table">
+                        <thead>
+                            <tr>
+                                <th>Tên</th>
+                                <th>Email</th>
+                                <th>Vai trò</th>
+                                <th>Giới tính</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="staffTableBody">
+                            <% staffs.forEach(function (staff) { %>
+                            <tr onclick="window.location= '/admin/staff/detail_staff/<%= staff.user_id %>'"
+                                style="cursor: pointer">
+                                <td><%= staff.username %></td>
+                                <td><%= staff.email %></td>
+                                <td>
+                                    <span class="role-badge staff">
+                                        <%= staff.staff_detail?.position %>
+                                    </span>
+                                </td>
+                                <td><%= staff.gender %></td>
+                                <td>
+                                    <div style="display: flex; gap: 20px; position: relative; left: 100px;">
+                                        <% if (staff.status === "ACTIVE") { %>
+                                        <form action="/admin/staff/lock-staff/<%= staff.user_id %>" method="post">
+                                            <button type="submit" class="btn btn-warning btn-lock">Khóa</button>
+                                        </form>
+                                        <% } else { %>
+                                        <form action="/admin/staff/unlock-staff/<%= staff.user_id %>" method="post">
+                                            <button type="submit" class="btn btn-success btn-unlock">Mở khóa</button>
+                                        </form>
+                                        <% } %>
+                                        <form action="/admin/staff/delete-staff/<%= staff.user_id %>" method="post">
+                                            <button type="submit" class="btn btn-danger">Xóa</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Tab "Calendar" -->
+                <div class="tab-content" id="calendarTab">
+                    <%- include('modal_calender.ejs', {
+                        roles: roles,
+                        staffs: staffs,
+                        workShifts: workShifts,
+                        genderOptions: genderOptions
+                    }) %>
+
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color shift-morning"></div>
+                            <span>Ca sáng (7h-15h)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color shift-afternoon"></div>
+                            <span>Ca chiều (14h-22h)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color shift-off"></div>
+                            <span>Ca Tối (22h-06h)</span>
+                        </div>
+                    </div>
+
+                    <div class="schedule-card">
+                        <div class="card-header">
+                            <h2 class="card-title">Lịch Làm Việc Hàng Tuần</h2>
+                        </div>
+                        <div class="responsive-table">
+                            <table class="schedule-table" data-schedule>
+                                <thead>
+                                    <tr>
+                                        <th>Nhân viên</th>
+                                        <th>Thứ Hai</th>
+                                        <th>Thứ Ba</th>
+                                        <th>Thứ Tư</th>
+                                        <th>Thứ Năm</th>
+                                        <th>Thứ Sáu</th>
+                                        <th>Thứ Bảy</th>
+                                        <th>Chủ Nhật</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% staffs.forEach(function (staff) { %>
+                                    <tr>
+                                        <td>
+                                            <div class="employee-info">
+                                                <div>
+                                                    <img class="avatar"
+                                                         src="<%= staff.avatar ? '/images/users/' + staff.avatar : '/images/users/avatar-face.jpg' %>"
+                                                         alt="Avatar" />
+                                                </div>
+                                                <div class="employee-details">
+                                                    <div class="employee-name"><%= staff.username %></div>
+                                                    <div class="employee-role"><%= staff.staff_detail?.position %></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <% staff.staff_detail?.staff_schedules.forEach(day => { %>
+                                        <td>
+                                            <div class="shift-cell <%= 
+                                                day.work_shifts.name === 'Sáng (07h-15h)' 
+                                                ? 'shift-morning' 
+                                                : day.work_shifts.name === 'Chiều (14h-22h)' 
+                                                ? 'shift-afternoon' 
+                                                : 'shift-off' 
+                                            %>">
+                                                <%= day.work_shifts.name %>
+                                            </div>
+                                        </td>
+                                        <% }) %>
+                                    </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <ul class="pagination" id="staffPagination">
+                    <li>
+                        <a class="<%= pageStaff === 1 || totalPageStaffs === 1 ? 'disabled' : '' %>"
+                           href="/admin/staff?pageStaff=<%= pageStaff - 1 %>">&laquo; Prev</a>
+                    </li>
+
+                    <% for(let i = 1; i <= totalPageStaffs; i++) { %>
+                    <li>
+                        <a class="<%= pageStaff === i ? 'active' : '' %>"
+                           href="/admin/staff?pageStaff=<%= i %>"><%= i %></a>
+                    </li>
+                    <% } %>
+
+                    <li>
+                        <a class="<%= pageStaff === totalPageStaffs || totalPageStaffs === 1 ? 'disabled' : '' %>"
+                           href="/admin/staff?pageStaff=<%= pageStaff + 1 %>">Next &raquo;</a>
+                    </li>
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <script src="/admin/js/users/users.js"></script>
+    <script src="/admin/js/users/staffs.js"></script>
+    <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
+</body>
+</html>

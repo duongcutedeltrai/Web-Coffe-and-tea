@@ -1,14 +1,17 @@
 import { Request, Response } from "express";
-import AdminCategoryService from "../../services/admin/categories.service";
+import CategoryService from "../../services/categories.service";
 
 class AdminCategoryController {
     async getCategoriesPage(req: Request, res: Response) {
-        const allCategories = await AdminCategoryService.getAllCategories();
+        const allCategories = await CategoryService.getAllCategories();
         return res.render("admin/categories/categories.ejs", {
             categories: allCategories,
         });
     }
-
+    async getCategoryData(req: Request, res: Response) {
+        const allCategories = await CategoryService.getAllCategories();
+        return res.json(allCategories);
+    }
     async getCreateCategoriesPage(req: Request, res: Response) {
         return res.render("admin/categories/create_category.ejs");
     }
@@ -19,7 +22,7 @@ class AdminCategoryController {
                 groupDescription: req.body.groupDescription,
                 image: req.file.filename,
             };
-            await AdminCategoryService.createNewCategory(data);
+            await CategoryService.createNewCategory(data);
             return res.redirect("/admin/categories");
         } catch (error) {
             return res.status(500).json({
@@ -30,7 +33,7 @@ class AdminCategoryController {
 
     async getUpdateCategoriesPage(req: Request, res: Response) {
         const id = req.params.id;
-        const category = await AdminCategoryService.getCategoryById(Number(id));
+        const category = await CategoryService.getCategoryById(Number(id));
         return res.render("admin/categories/update_category.ejs", { category });
     }
 
@@ -42,7 +45,7 @@ class AdminCategoryController {
                 groupDescription: req.body.groupDescription,
                 images: req?.file?.filename,
             };
-            await AdminCategoryService.updateCategory(Number(id), data);
+            await CategoryService.updateCategory(Number(id), data);
             return res.redirect("/admin/categories");
         } catch (error) {
             console.error("Error updating category:", error);
@@ -55,7 +58,7 @@ class AdminCategoryController {
     async deleteCategory(req: Request, res: Response) {
         try {
             const id = req.params.id;
-            await AdminCategoryService.deleteCategory(Number(id));
+            await CategoryService.deleteCategory(Number(id));
             return res.redirect("/admin/categories");
         } catch (error) {
             return res.status(500).json({

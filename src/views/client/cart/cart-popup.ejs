@@ -1,0 +1,52 @@
+<!-- Cart Popup Overlay -->
+<div class="shopping-overlay" id="cartOverlay"></div>
+
+<!-- Cart Popup -->
+<div class="shopping-popup" id="cartPopup">
+    <div
+        class="shopping-popup-header d-flex align-items-center justify-content-between p-4 border-bottom"
+    >
+        <h2 class="shopping-popup-title mb-0">
+            Giỏ Hàng (<span id="cartCount">0</span>)
+        </h2>
+        <button class="shopping-close-btn btn btn-sm" id="closeCartBtn">
+            <i class="bi bi-x fs-4"></i>
+        </button>
+    </div>
+
+    <div
+        class="shopping-popup-body flex-grow-1 overflow-auto p-4"
+        id="cartItems"
+    >
+        <div class="shopping-empty text-center py-5">
+            <p class="text-muted">Giỏ hàng của bạn đang trống</p>
+        </div>
+    </div>
+
+    <div
+        class="shopping-popup-footer border-top p-4"
+        id="cartFooter"
+        style="display: none"
+    >
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <span
+                class="shopping-product-count text-muted small"
+                id="productCount"
+                >0 Sản Phẩm</span
+            >
+            <span
+                class="shopping-total-price h5 mb-0 fw-semibold"
+                id="totalPrice"
+                >$0</span
+            >
+        </div>
+        <div class="d-grid gap-2">
+            <button
+                class="shopping-gotocart-btn btn-outline-lg rounded-pill"
+                onclick="location.href='/cart'"
+            >
+                Xem Giỏ Hàng
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,7 +1,7 @@
 /* Categories Page Styles */
 .content {
     margin-left: 260px;
-    padding: 120px 50px 50px;
+    padding: 40px 50px 50px;
     background-color: #f8f9fa;
     min-height: calc(100vh - 80px);
 }

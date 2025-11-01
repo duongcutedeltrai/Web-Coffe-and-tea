@@ -9,6 +9,25 @@
 
     min-height: 100vh;
 }
+.top-content {
+    padding-top: 40px;
+    padding-left: 40px;
+}
+.btn-cancel {
+    background-color: #e0e0e0 !important;
+    color: #555 !important;
+}
+.top-content h1 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.date {
+    color: #666;
+    font-size: 0.9rem;
+}
 
 .content {
     opacity: 1;
@@ -16,7 +35,7 @@
     transition: 0.6s;
     width: 100%;
     height: 595px;
-    margin-top: 88px;
+    /* margin-top: 30px; */
     padding: 40px;
     display: flex;
     /* gap: 40px; */
@@ -36,6 +55,9 @@
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     margin-bottom: 30px;
+    opacity: 1;
+    transform: translateY(0px);
+    transition: 0.6s;
 }
 
 .product-image img {
@@ -102,7 +124,7 @@ h3 {
     height: 100%;
     background: rgb(242, 242, 242);
     border-radius: 0px 15px 15px 0px;
-    padding: 30px 40px;
+    padding: 30px 40px 60px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.126);
 }
 
@@ -119,6 +141,7 @@ h3 {
 }
 .type {
     color: #666;
+    margin-top: 10px;
     font-style: italic;
 }
 
@@ -135,6 +158,8 @@ h3 {
 .rating {
     border-left: 1px solid #ccc;
     padding-left: 15px;
+    gap: 12px;
+    /* padding-bottom: 5px; */
     display: flex;
     align-items: center;
 }
@@ -147,7 +172,8 @@ h3 {
 
 .rating-text {
     color: #666;
-    font-size: 14px;
+    margin-top: 3px;
+    font-size: 15px;
 }
 
 .price {
@@ -249,7 +275,7 @@ h3 {
 .action-buttons {
     margin-top: auto; /* Đẩy phần tử này sát lề dưới */
     display: flex;
-    gap: 20px;
+    gap: 40px;
     /* margin-bottom: 30px; */
 }
 

@@ -16,12 +16,7 @@
             <h1 class="form-title">Add Food</h1>
         </div>
 
-        <form
-            action="/api/admin/products"
-            method="post"
-            class="product-form"
-            enctype="multipart/form-data"
-        >
+        <form method="post" class="product-form" enctype="multipart/form-data">
             <div class="form__content">
                 <div class="form_left">
                     <label>Name <span class="bb">*</span></label>
@@ -37,29 +32,57 @@
                         name="desc"
                     ></textarea>
 
-                    <label>Price <span class="bb">*</span></label>
+                    <label class="price_label">
+                        Price
+                        <span class="bb">*</span>
+                        <button
+                            type="button"
+                            id="togglePricing"
+                            class="toggle-btn"
+                        >
+                            Giá cố định
+                        </button>
+                    </label>
                     <div class="price-group">
                         <div class="sizes__form">
                             <input
-                                name="sizeM"
                                 type="button"
                                 class="size active"
                                 id="sizeM"
+                                data-size="M"
                                 value="M"
                             />
                             <input
-                                name="sizeL"
+                                type="hidden"
+                                id="sizeM_hidden"
+                                name="sizeM"
+                                value=""
+                            />
+                            <input
                                 type="button"
                                 class="size"
                                 id="sizeL"
+                                data-size="L"
                                 value="L"
                             />
                             <input
-                                name="sizeXL"
+                                type="hidden"
+                                id="sizeL_hidden"
+                                name="sizeL"
+                                value=""
+                            />
+                            <input
                                 type="button"
                                 class="size"
                                 id="sizeXL"
+                                data-size="XL"
                                 value="XL"
+                            />
+                            <input
+                                type="hidden"
+                                id="sizeXL_hidden"
+                                name="sizeXL"
+                                value=""
                             />
                         </div>
                         <input
@@ -68,13 +91,28 @@
                             class="price-input"
                             placeholder="Nhập giá"
                         />
+                        <input
+                            type="hidden"
+                            id="Default_hidden"
+                            name="defaultPrice"
+                            value=""
+                        />
                     </div>
                     <label>Cập nhật tình trạng <span class="bb">*</span></label>
-                    <input type="text" style="display: none" name="status" />
+                    <input
+                        type="text"
+                        style="display: none"
+                        name="status"
+                        class="input__status"
+                    />
                     <div class="status-group">
-                        <div class="status-btn active">Đang bán</div>
-                        <div class="status-btn">Hết hàng</div>
-                        <div class="status-btn">Tạm ẩn</div>
+                        <div class="status-btn active" data-status="DANG_BAN">
+                            Đang bán
+                        </div>
+                        <div class="status-btn" data-status="HET">Hết hàng</div>
+                        <div class="status-btn" data-status="TAM_AN">
+                            Tạm ẩn
+                        </div>
                     </div>
                     <label>Category <span class="bb">*</span></label>
                     <select
@@ -125,12 +163,14 @@
                             type="number"
                             id="cupInput"
                             placeholder="Nhập số lượng"
+                            name="quantity"
+                            min="-1"
                         />
                         <span>Ly</span>
                     </div>
                 </div>
             </div>
-            <button class="submit-btn">Sửa thông tin</button>
+            <button type="submit" class="submit-btn">Thêm sản phẩm mới</button>
         </form>
     </div>
 </div>
