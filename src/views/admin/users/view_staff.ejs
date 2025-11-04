@@ -148,8 +148,8 @@
                             </div>
 
                             <div class="tab-content" id="calendarTab">
-                                <%- include('modal_calender.ejs', { roles: roles, staffs: staffs, workShifts:
-                                    workShifts, genderOptions: genderOptions }); -%>
+                                <%- include('modal_calender.ejs', { roles: roles, staffCalender: staffCalender,
+                                    workShifts: workShifts, genderOptions: genderOptions }); -%>
                                     <div class="legend">
                                         <div class="legend-item">
                                             <div class="legend-color shift-morning"></div>
@@ -184,7 +184,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <% staffs.forEach(function (staff) { %>
+                                                    <% staffCalender.forEach(function (staff) { %>
                                                         <tr>
                                                             <td>
                                                                 <div class="employee-info">
@@ -198,12 +198,12 @@
                                                                             <%= staff.username %>
                                                                         </div>
                                                                         <div class="employee-role">
-                                                                            <%= staff.staff_detail.position %>
+                                                                            <%= staff.staff_detail?.position %>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </td>
-                                                            <% staff.staff_detail.staff_schedules.forEach(day=> { %>
+                                                            <% staff.staff_detail?.staff_schedules.forEach(day=> { %>
                                                                 <td>
                                                                     <div class="shift-cell 
 <%= day.work_shifts.name === 'Sáng (07h-15h)' ? 'shift-morning' 

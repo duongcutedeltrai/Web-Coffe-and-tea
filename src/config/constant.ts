@@ -1,5 +1,5 @@
 
-export const TOTAL_ITEMS_PER_PAGE = 9;
+export const TOTAL_ITEMS_PER_PAGE = 2;
 export const STATUS_USER = {
     ACTIVITY: "ACTIVE",
     LOCK: "LOCKED",

@@ -113,6 +113,9 @@ class AdminUserController {
 
         const staffs = await AdminUserService.getAdminandStaff(currentPageStaffs); //customer pagination
 
+        const staffCalender = await AdminUserService.getCalenderStaff();
+
+
 
         const totalPageStaffs =
             await AdminUserService.countTotalStaffAndAdminPages();
@@ -134,6 +137,7 @@ class AdminUserController {
             pageStaff: currentPageStaffs,
             genderOptions: genderOptions,
             workShifts: workShifts,
+            staffCalender: staffCalender
         });
     };
 

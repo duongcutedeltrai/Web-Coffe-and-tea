@@ -92,6 +92,27 @@ class AdminUserService {
         return staffs
     };
 
+    getCalenderStaff = async () => {
+
+        return await prisma.users.findMany({
+            where: {
+                role_id: 6
+            },
+            include: {
+                staff_detail: {
+                    include: {
+                        staff_schedules: {
+                            include: {
+                                work_shifts: true
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
+    }
+
     // end user phan staff
 
 
