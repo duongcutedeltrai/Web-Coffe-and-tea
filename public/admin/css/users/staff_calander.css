@@ -110,7 +110,8 @@ h2 {
 }
 
 .shift-card.selected .radio-indicator::after {
-    content: '✓';
+
+    content: "✓";
     position: absolute;
     top: 50%;
     left: 50%;
@@ -122,7 +123,6 @@ h2 {
 
 
 .button-group {
-
     display: flex;
     justify-content: center;
     gap: 6px;
@@ -210,7 +210,8 @@ h2 {
     border-radius: 6px;
     padding: 6px;
     cursor: pointer;
-    transition: box-shadow .12s ease, transform .12s ease;
+
+    transition: box-shadow 0.12s ease, transform 0.12s ease;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -238,32 +239,36 @@ h2 {
 }
 
 .shift-card.evening .shift-icon {
-    background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)
+
+    background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
 }
 
 .shift-card.morning .shift-icon {
-    background: linear-gradient(135deg, #ffd89b 0%, #ffb274 100%)
+    background: linear-gradient(135deg, #ffd89b 0%, #ffb274 100%);
 }
 
 .shift-card.night .shift-icon {
-    background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%)
+    background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
 }
 
 .shift-info {
     flex: 1;
-    min-width: 0
+
+    min-width: 0;
 }
 
 .shift-name {
     font-weight: 600;
     color: #0f172a;
     font-size: 12px;
-    margin: 0 0 2px 0
+
+    margin: 0 0 2px 0;
 }
 
 .shift-time {
     color: #6b7280;
-    font-size: 11px
+
+    font-size: 11px;
 }
 
 .radio-indicator {
@@ -271,71 +276,77 @@ h2 {
     height: 12px;
     border: 2px solid #f1f5f9;
     border-radius: 50%;
-    position: relative
+
+    position: relative;
 }
 
 .shift-card.selected .radio-indicator {
     border-color: #667eea;
-    background: #667eea
+
+    background: #667eea;
 }
 
 .shift-card.selected .radio-indicator::after {
-    content: '✓';
+    content: "✓";
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     color: #fff;
     font-size: 9px;
-    font-weight: 700
+
+    font-weight: 700;
 }
 
 .button-group {
     display: flex;
-    gap: 6px
-}
 
+    gap: 6px;
+}
 
 .btn-cancel {
     background: #f7f8fa;
-    color: #374151
+    color: #374151;
 }
 
 .btn-cancel:hover {
-    background: #eef2f6
+    background: #eef2f6;
 }
 
 .btn-save {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #fff
+
+    color: #fff;
 }
 
 .btn-save:hover {
-    box-shadow: 0 3px 6px rgba(102, 126, 234, 0.12)
+    box-shadow: 0 3px 6px rgba(102, 126, 234, 0.12);
 }
 
 .btn-save:disabled {
-    opacity: .6;
-    cursor: not-allowed
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
-@media (max-width:480px) {
+@media (max-width: 480px) {
     .container-calander {
-        padding: 6px
+        padding: 6px;
     }
 
     h2 {
-        font-size: 12px
+        font-size: 12px;
     }
 
     .shift-card {
         padding: 5px;
-        gap: 5px
+
+        gap: 5px;
     }
 
     .shift-icon {
         width: 24px;
         height: 24px;
-        font-size: 11px
+
+        font-size: 11px;
     }
 }

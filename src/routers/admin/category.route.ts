@@ -7,6 +7,7 @@ const upload = multer();
 const categoryRoute = express.Router();
 
 categoryRoute.get("/categories", AdminCategoryController.getCategoriesPage);
+categoryRoute.get("/categories/data", AdminCategoryController.getCategoryData);
 //create
 categoryRoute.get(
     "/categories/create",

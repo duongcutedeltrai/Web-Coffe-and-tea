@@ -14,18 +14,30 @@ function initSearch() {
         const q = e.target.value.trim();
 
         try {
-            const res = await fetch(`/admin/customer/search?username=${encodeURIComponent(q)}&email=${encodeURIComponent(q)}`);
+
+            const res = await fetch(
+                `/admin/customer/search?username=${encodeURIComponent(
+                    q
+                )}&email=${encodeURIComponent(q)}`
+            );
             const data = await res.json();
 
             customerTableBody.innerHTML = "";
 
             data.forEach((customer) => {
                 const tr = document.createElement("tr");
-                tr.setAttribute("onclick", `window.location='/admin/customer/detail_staff/${customer.user_id}'`);
+
+                tr.setAttribute(
+                    "onclick",
+                    `window.location='/admin/customer/detail_staff/${customer.user_id}'`
+                );
                 tr.style.cursor = "pointer";
 
                 // Tính tổng tiền đơn hàng
-                const total = (customer.orders || []).reduce((sum, order) => sum + (order.total_amount || 0), 0);
+                const total = (customer.orders || []).reduce(
+                    (sum, order) => sum + (order.total_amount || 0),
+                    0
+                );
                 const totalFormatted = new Intl.NumberFormat("vi-VN", {
                     style: "currency",
                     currency: "VND",
@@ -38,19 +50,23 @@ function initSearch() {
                     <td>${customer.orders ? customer.orders.length : 0}</td>
                     <td>
                         <div style="display:flex; gap:20px; position:relative; left:100px;">
+
                             ${customer.status === "ACTIVE"
                         ? `
                                         <form action="/admin/customer/lock-staff/${customer.user_id}" method="post">
                                             <button type="submit" class="btn btn-warning btn-lock">Khóa</button>
                                         </form>
                                     `
+
                         : `
                                         <form action="/admin/customer/unlock-staff/${customer.user_id}" method="post">
                                             <button type="submit" class="btn btn-success btn-unlock">Mở khóa</button>
                                         </form>
                                     `
+
                     }
-                            <form action="/admin/customer/delete-staff/${customer.user_id}" method="post">
+                            <form action="/admin/customer/delete-staff/${customer.user_id
+                    }" method="post">
                                 <button type="submit" class="btn btn-danger">Xóa</button>
                             </form>
                         </div>

@@ -1,6 +1,7 @@
 //controller cua admin
 import { Request, Response } from "express";
-import AdminUserService from "../../services/admin/user.service";
+import AdminUserService from "../../services/user.service";
+import orderService from "../../services/order.service";
 
 class AdminUserController {
     // user phan customer
@@ -22,8 +23,9 @@ class AdminUserController {
         const totalPagesCustomer =
             await AdminUserService.countTotalUserPagesByRole("CUSTOMER");
 
-
         const roles = await AdminUserService.getAllRoles(); // lấy tất cả role
+
+        const totalAmount = await orderService.getAllOrders();
 
 
         const genderOptions = [
@@ -36,6 +38,7 @@ class AdminUserController {
             totalPagesCustomer: +totalPagesCustomer,
             pageCustomer: currentPageCustomer,
             genderOptions: genderOptions,
+            totalAmount: totalAmount,
         });
     };
 
@@ -91,15 +94,17 @@ class AdminUserController {
                 currentPageCustomer = 1;
             }
 
-
-            const customers = await AdminUserService.handleSearchCustomer(+currentPageCustomer, username, email)
-            res.json(customers)
+            const customers = await AdminUserService.handleSearchCustomer(
+                +currentPageCustomer,
+                username,
+                email
+            );
+            res.json(customers);
         } catch (err) {
-            res.status(401).json("có lỗi xảy ra")
+            res.status(401).json("có lỗi xảy ra");
         }
     };
     // end user phan customer
-
 
     // user phan admin phan staff
     getAdminStaffPage = async (req: Request, res: Response) => {
@@ -111,10 +116,9 @@ class AdminUserController {
 
         }
 
-        const staffs = await AdminUserService.getAdminandStaff(currentPageStaffs); //customer pagination
-
-        const staffCalender = await AdminUserService.getCalenderStaff();
-
+        const staffs = await AdminUserService.getAdminandStaff(
+            currentPageStaffs
+        ); //customer pagination
 
 
         const totalPageStaffs =
@@ -123,6 +127,7 @@ class AdminUserController {
 
         const roles = await AdminUserService.getAllRoles(); // lấy tất cả role
         const workShifts = await AdminUserService.getAllShift();
+        const staffCalender = await AdminUserService.getCalanderStaff();
 
 
         const genderOptions = [
@@ -137,7 +142,9 @@ class AdminUserController {
             pageStaff: currentPageStaffs,
             genderOptions: genderOptions,
             workShifts: workShifts,
-            staffCalender: staffCalender
+
+            staffCalender: staffCalender,
+
         });
     };
 
@@ -152,7 +159,8 @@ class AdminUserController {
         ];
         return res.render("admin/users/detail_staff.ejs", {
             user: user,
-            roleOptions: roleOptions
+
+            roleOptions: roleOptions,
         });
     };
 
@@ -167,7 +175,8 @@ class AdminUserController {
             password,
             position,
             salary,
-            shiftId
+
+            shiftId,
         } = req.body;
         const file = req.file;
         const avatar = file?.filename ?? null;
@@ -192,7 +201,8 @@ class AdminUserController {
 
 
     postUpdateStaff = async (req: Request, res: Response) => {
-        const { id, username, email, password, phone, address, oldAvatar } = req.body;
+        const { id, username, email, password, phone, address, oldAvatar } =
+            req.body;
         const file = req.file;
         const avatar = file?.filename ?? oldAvatar;
 
@@ -247,10 +257,15 @@ class AdminUserController {
             const { pageStaff } = req.query;
             let currentPageStaffs = +pageStaff ? +pageStaff : 1;
             if (currentPageStaffs <= 0) {
-                currentPageStaffs = 1
+
+                currentPageStaffs = 1;
             }
 
-            const staffs = await AdminUserService.handleSearchStaff(currentPageStaffs, username, email)
+            const staffs = await AdminUserService.handleSearchStaff(
+                currentPageStaffs,
+                username,
+                email
+            );
             res.json(staffs);
         } catch (err) {
             res.status(500).json({ error: "Có lỗi xảy ra" });
@@ -259,12 +274,15 @@ class AdminUserController {
 
 
     getStaffRevenueAPI = async (req: Request, res: Response) => {
-
         try {
             const { staffId, period = "month" } = req.query;
-            if (!staffId) return res.status(400).json({ error: "Missing staffId" });
+            if (!staffId)
+                return res.status(400).json({ error: "Missing staffId" });
 
-            const data = await AdminUserService.getStaffRevenue(+staffId, period as string);
+            const data = await AdminUserService.getStaffRevenue(
+                +staffId,
+                period as string
+            );
             return res.json(data);
         } catch (err) {
             console.error("Error fetching staff revenue API:", err);
@@ -272,12 +290,17 @@ class AdminUserController {
         }
     }
 
+
     getStaffRevenue = async (req: Request, res: Response) => {
         try {
             const { staffId, period = "month" } = req.query;
             if (!staffId) return res.status(400).send("Missing staffId");
 
-            const data = await AdminUserService.getStaffRevenue(+staffId, period as string);
+
+            const data = await AdminUserService.getStaffRevenue(
+                +staffId,
+                period as string
+            );
             return res.render("admin/users/detail_staff.ejs", {
                 data,
             });
@@ -285,20 +308,10 @@ class AdminUserController {
             console.error("Error rendering staff revenue:", err);
             return res.status(500).send("Internal Server Error");
         }
-    }
 
-    postUpdateStaffCalander = async (req: Request, res: Response) => {
-        const { id } = req.params
-
-        const { shift_id } = req.body
-
-        return res.redirect("/admin/staff");
-    }
-
+    };
 
     // end user phan admin phan staff
-
-
 }
 
 export default new AdminUserController();

@@ -1,7 +1,8 @@
 let chartData = {
     labels: [],
     orderData: [],
-    revenueData: []
+
+    revenueData: [],
 };
 
 let currentPeriod = "month";
@@ -23,11 +24,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function fetchStatisticsData(period = "month") {
     try {
         const response = await fetch(`/admin/statistics/api?period=${period}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
+
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
         });
 
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok)
+            throw new Error(`HTTP error! status: ${response.status}`);
 
         const data = await response.json();
         chartData.labels = data.labels || [];
@@ -57,27 +60,31 @@ function initializeRevenueChart() {
     if (revenueChartInstance) revenueChartInstance.destroy();
 
     revenueChartInstance = new Chart(canvas, {
-        type: 'line',
+
+        type: "line",
         data: {
             labels: chartData.labels,
-            datasets: [{
-                label: 'Doanh thu',
-                data: chartData.revenueData,
-                borderColor: '#22c55e',
-                backgroundColor: 'rgba(34,197,94,0.2)',
-                fill: true,
-                tension: 0.4,
-                pointBackgroundColor: '#22c55e'
-            }]
+            datasets: [
+                {
+                    label: "Doanh thu",
+                    data: chartData.revenueData,
+                    borderColor: "#22c55e",
+                    backgroundColor: "rgba(34,197,94,0.2)",
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: "#22c55e",
+                },
+            ],
         },
         options: {
             responsive: true,
             plugins: {
                 title: {
                     display: true,
-                    text: 'Biểu đồ doanh thu'
+
+                    text: "Biểu đồ doanh thu",
                 },
-                legend: { display: false }
+                legend: { display: false },
             },
             scales: {
                 x: { title: { display: false } },
@@ -87,11 +94,12 @@ function initializeRevenueChart() {
                     ticks: {
                         callback: function (value) {
                             return formatCurrency(value);
-                        }
-                    }
-                }
-            }
-        }
+
+                        },
+                    },
+                },
+            },
+        },
     });
 }
 
@@ -104,55 +112,62 @@ function initializeOrderChart() {
     if (orderChartInstance) orderChartInstance.destroy();
 
     orderChartInstance = new Chart(canvas, {
-        type: 'line',
+
+        type: "line",
         data: {
             labels: chartData.labels,
             datasets: [
                 {
-                    label: 'Đơn hàng',
+
+                    label: "Đơn hàng",
                     data: chartData.orderData,
-                    borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59,130,246,0.2)',
+                    borderColor: "#3b82f6",
+                    backgroundColor: "rgba(59,130,246,0.2)",
                     fill: true,
                     tension: 0.4,
-                    pointBackgroundColor: '#3b82f6'
-                }
-            ]
+                    pointBackgroundColor: "#3b82f6",
+                },
+            ],
         },
         options: {
             responsive: true,
             animation: {
                 duration: 1500, // thời gian chạy 1.5s
-                easing: 'easeOutQuart' // kiểu mượt
+
+                easing: "easeOutQuart", // kiểu mượt
             },
             plugins: {
                 title: {
                     display: true,
-                    text: 'Biểu đồ đặt hàng'
+
+                    text: "Biểu đồ đặt hàng",
                 },
                 legend: {
-                    display: false
-                }
+                    display: false,
+                },
             },
             scales: {
                 x: {
                     title: {
-                        display: false
-                    }
+
+                        display: false,
+                    },
                 },
                 y: {
                     beginAtZero: true,
                     title: {
-                        display: false
+
+                        display: false,
                     },
                     ticks: {
                         callback: function (value) {
                             return value;
-                        }
-                    }
-                }
-            }
-        }
+
+                        },
+                    },
+                },
+            },
+        },
     });
 }
 
@@ -175,9 +190,10 @@ function setupToggleButtons() {
     const toggleGroups = document.querySelectorAll(".time-toggles");
     toggleGroups.forEach((group) => {
         const buttons = group.querySelectorAll(".toggle-btn");
-        buttons.forEach(button => {
+
+        buttons.forEach((button) => {
             button.addEventListener("click", async () => {
-                buttons.forEach(btn => btn.classList.remove("active"));
+                buttons.forEach((btn) => btn.classList.remove("active"));
                 button.classList.add("active");
                 const period = button.getAttribute("data-period");
                 currentPeriod = period;
@@ -230,5 +246,6 @@ function setupResponsiveCharts() {
 window.StatisticsCharts = {
     refresh: initializeCharts,
     updatePeriod: updateChartData,
-    getCurrentData: () => chartData
+
+    getCurrentData: () => chartData,
 };

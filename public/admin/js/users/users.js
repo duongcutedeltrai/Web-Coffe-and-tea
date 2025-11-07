@@ -1,10 +1,9 @@
 let editingUserId = null;
 
-
 document.addEventListener("DOMContentLoaded", function () {
     // setupEventListeners();
-    initTabs()
-    initSearch()
+    initTabs();
+    initSearch();
     initFilters();
     initModalEvents();
 });
@@ -13,13 +12,15 @@ function initTabs() {
     const tabButtons = document.querySelectorAll(".tab-btn");
     const pagination = document.getElementById("staffPagination");
 
-    tabButtons.forEach(btn => {
+    tabButtons.forEach((btn) => {
         btn.addEventListener("click", () => {
             const tabName = btn.dataset.tab;
 
             // Remove active
-            tabButtons.forEach(b => b.classList.remove("active"));
-            document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+            tabButtons.forEach((b) => b.classList.remove("active"));
+            document
+                .querySelectorAll(".tab-content")
+                .forEach((c) => c.classList.remove("active"));
 
             // Add active
             btn.classList.add("active");
@@ -55,17 +56,23 @@ function initSearch() {
     }
 
     searchInput.addEventListener("input", async (e) => {
-
         const q = e.target.value.trim();
 
         try {
-            const res = await fetch(`/admin/staff/search?username=${encodeURIComponent(q)}&email=${encodeURIComponent(q)}`);
+            const res = await fetch(
+                `/admin/staff/search?username=${encodeURIComponent(
+                    q
+                )}&email=${encodeURIComponent(q)}`
+            );
             const data = await res.json();
             staffTableBody.innerHTML = "";
 
-            data.forEach(staff => {
+            data.forEach((staff) => {
                 const tr = document.createElement("tr");
-                tr.setAttribute("onclick", `window.location='/admin/staff/detail_staff/${staff.user_id}'`);
+                tr.setAttribute(
+                    "onclick",
+                    `window.location='/admin/staff/detail_staff/${staff.user_id}'`
+                );
                 tr.style.cursor = "pointer";
 
                 tr.innerHTML = `
@@ -74,7 +81,8 @@ function initSearch() {
                     <td>
                         ${staff.roles.name === "ADMIN"
                         ? `<span class="role-badge admin">Admin</span>`
-                        : `<span class="role-badge staff">${staff.staff_detail?.position || ""}</span>`
+                        : `<span class="role-badge staff">${staff.staff_detail?.position || ""
+                        }</span>`
                     }
                     </td>
                     <td>${staff.gender || ""}</td>
@@ -92,7 +100,8 @@ function initSearch() {
                                         </form>
                                     `
                     }
-                            <form action="/admin/staff/delete-staff/${staff.user_id}" method="post">
+                            <form action="/admin/staff/delete-staff/${staff.user_id
+                    }" method="post">
                                 <button type="submit" class="btn btn-danger">Xóa</button>
                             </form>
                         </div>
@@ -100,12 +109,11 @@ function initSearch() {
                 `;
 
                 staffTableBody.appendChild(tr);
-
-
             });
 
             if (data.length === 0) {
-                staffTableBody.innerHTML = "<tr><td colspan = '5'>Không có nhân viên nào </td></td>"
+                staffTableBody.innerHTML =
+                    "<tr><td colspan = '5'>Không có nhân viên nào </td></td>";
             }
         } catch (err) {
             console.error(err);
@@ -113,13 +121,12 @@ function initSearch() {
     });
 }
 
-
 function initFilters() {
     const roleFilter = document.getElementById("roleFilter");
     const statusFilter = document.getElementById("statusFilter");
     const dateFilter = document.getElementById("dateFilter");
 
-    [roleFilter, statusFilter, dateFilter].forEach(filter => {
+    [roleFilter, statusFilter, dateFilter].forEach((filter) => {
         if (filter) {
             filter.addEventListener("change", filterUsers);
         }
@@ -142,7 +149,8 @@ function openAddModal() {
     document.getElementById("modalTitle").textContent = "Thêm người dùng mới";
     document.getElementById("passwordGroup").style.display = "block";
     document.getElementById("userForm").reset();
-    document.getElementById("avatarPreview").innerHTML = '<i class="fas fa-user"></i>';
+    document.getElementById("avatarPreview").innerHTML =
+        '<i class="fas fa-user"></i>';
     document.getElementById("userModal").style.display = "block";
 }
 
@@ -157,7 +165,9 @@ function previewAvatar(input) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = function (e) {
-            document.getElementById("avatarPreview").innerHTML = `<img src="${e.target.result}" alt="Avatar preview">`;
+            document.getElementById(
+                "avatarPreview"
+            ).innerHTML = `<img src="${e.target.result}" alt="Avatar preview">`;
         };
         reader.readAsDataURL(input.files[0]);
     }
@@ -171,10 +181,3 @@ function filterUsers() {
     // TODO: logic lọc role/status/date
     console.log("Filter users triggered");
 }
-
-
-
-
-
-
-

@@ -1,0 +1,297 @@
+<div class="overlay" id="overlay">
+    <div class="popup">
+        <div class="form-header">
+            <button class="back-btn">
+                <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+                    <path d="m15 18-6-6 6-6" />
+                </svg>
+            </button>
+            <h1 class="form-title">Chỉnh sửa sản phẩm</h1>
+        </div>
+        <pre></pre>
+
+        <form class="product-form" enctype="multipart/form-data">
+            <div class="form__content">
+                <div class="form_left">
+                    <label>Tên sản phẩm <span class="bb">*</span></label>
+                    <input
+                        type="text"
+                        placeholder="Vui lòng nhập tên sản phẩm"
+                        name="name"
+                        value="<%= product.name %>"
+                    />
+
+                    <label>Mô tả sản phẩm</label>
+                    <textarea
+                        placeholder="Vui lòng nhập mô tả sản phẩm"
+                        name="desc"
+                    >
+                    <%= product.description %></textarea
+                    >
+
+                    <!-- Price form -->
+                    <div id="priceForm">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <label class="size-label">Giá Sản Phẩm</label>
+                            </div>
+                            <div class="toggle-buttons">
+                                <button
+                                    type="button"
+                                    id="defaultBtn"
+                                    class="toggle-btn"
+                                >
+                                    Giá Mặc Định
+                                </button>
+                                <button
+                                    type="button"
+                                    id="sizeBtn"
+                                    class="toggle-btn"
+                                >
+                                    Theo Size
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Default Price Section -->
+                        <div id="firstSize" style="display: none">
+                            <%= product.price_product[0].size %>
+                        </div>
+                        <div
+                            id="defaultSection"
+                            class="price-section <%= product.price_product[0].size=='DEFAULT'? '' : 'hidden' %>"
+                        >
+                            <div class="default-price-container">
+                                <div class="label">Giá sản phẩm</div>
+                                <div class="input-container">
+                                    <input
+                                        type="text"
+                                        id="defaultPrice"
+                                        name="defaultPrice"
+                                        placeholder="Nhập giá mặc định"
+                                        class="input large-input"
+                                        value="<%= (product.price_product[0] && product.price_product[0].size === 'DEFAULT') ? product.price_product[0].price : '' %>"
+                                    />
+                                </div>
+                                <p
+                                    id="defaultPriceFormatted"
+                                    class="formatted-price"
+                                ></p>
+                            </div>
+                        </div>
+
+                        <!-- Size Price Section -->
+                        <div
+                            id="sizeSection"
+                            class="price-section <%= (product.price_product[0].size == 'M'||product.price_product[0].size == 'L'||product.price_product[0].size == 'XL') ? '' : 'hidden' %>"
+                        >
+                            <div class="size-grid">
+                                <div class="size-item">
+                                    <div class="label">
+                                        Size M <span class="badge">Medium</span>
+                                    </div>
+                                    <div class="input-container">
+                                        <input
+                                            type="text"
+                                            id="sizeM"
+                                            name="sizeM"
+                                            placeholder="0"
+                                            class="input"
+                                            value="<%= (product.price_product.find(p => p.size === 'M')?.price) || '' %>"
+                                        />
+                                    </div>
+                                    <p
+                                        id="sizeMFormatted"
+                                        class="formatted-price-small"
+                                    ></p>
+                                </div>
+
+                                <div class="size-item">
+                                    <div class="label">
+                                        Size L <span class="badge">Large</span>
+                                    </div>
+                                    <div class="input-container">
+                                        <input
+                                            type="text"
+                                            id="sizeL"
+                                            name="sizeL"
+                                            placeholder="0"
+                                            class="input"
+                                            value="<%= (product.price_product.find(p => p.size === 'L')?.price) || '' %>"
+                                        />
+                                    </div>
+                                    <p
+                                        id="sizeLFormatted"
+                                        class="formatted-price-small"
+                                    ></p>
+                                </div>
+
+                                <div class="size-item">
+                                    <div class="label">
+                                        Size XL
+                                        <span class="badge">Extra Large</span>
+                                    </div>
+                                    <div class="input-container">
+                                        <input
+                                            type="text"
+                                            id="sizeXL"
+                                            name="sizeXL"
+                                            placeholder="0"
+                                            class="input"
+                                            value="<%= (product.price_product.find(p => p.size === 'XL')?.price) || '' %>"
+                                        />
+                                    </div>
+                                    <p
+                                        id="sizeXLFormatted"
+                                        class="formatted-price-small"
+                                    ></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <label>Cập nhật tình trạng <span class="bb">*</span></label>
+                    <input
+                        type="text"
+                        style="display: none"
+                        name="status"
+                        class="input__status"
+                        value="<%= product.status %>"
+                    />
+                    <div class="status-group">
+                        <div
+                            class="status-btn <%= product.status === 'DANG_BAN' ? 'active' : '' %>"
+                            data-status="DANG_BAN"
+                        >
+                            Đang bán
+                        </div>
+                        <div
+                            class="status-btn <%= product.status === 'HET' ? 'active' : '' %>"
+                            data-status="HET"
+                        >
+                            Hết hàng
+                        </div>
+                        <div
+                            class="status-btn <%= product.status === 'TAM_AN' ? 'active' : '' %>"
+                            data-status="TAM_AN"
+                        >
+                            Tạm ẩn
+                        </div>
+                    </div>
+
+                    <label>Category <span class="bb">*</span></label>
+                    <div id="CategoryProduct" style="display: none">
+                        <%= product.category_id %>
+                    </div>
+                    <select
+                        id="category"
+                        name="category"
+                        class="form-select"
+                        required
+                    >
+                        <% categories.forEach(function(cat) { %>
+                        <option value="<%= cat.category_id %>">
+                            <%= cat.name %>
+                        </option>
+                        <% }); %>
+                    </select>
+                </div>
+
+                <div class="form_right">
+                    <label>Preview images</label>
+                    <!-- Input file -->
+                    <!-- Khung upload -->
+                    <label class="upload-box" id="dropArea">
+                        <span class="plus">+</span>
+                        Drop your images here, or
+                        <span style="color: #d64a4a; text-decoration: underline"
+                            >click to browse</span
+                        >
+                        <small
+                            >1600 × 1200 (4:3) recommended, up to 5MB
+                            each.</small
+                        >
+                        <input
+                            type="file"
+                            id="fileInput"
+                            multiple
+                            accept=".png,.jpg,.jpeg"
+                            name="image"
+                        />
+                        <input
+                            type="hidden"
+                            name="old_images"
+                            value="<%= product.images %>"
+                        />
+                    </label>
+                    <div class="preview" id="preview">
+                        <% if (product.images ) { %>
+                        <div class="preview-item">
+                            <img
+                                src="/images/products/<%= product.images %>"
+                                class="preview-img"
+                            />
+                            <button type="button" class="remove-btn">
+                                <i
+                                    class="fa-duotone fa-solid fa-square-xmark"
+                                    style="
+                                        --fa-primary-color: #b42222;
+                                        --fa-secondary-color: #b42222;
+                                        --fa-secondary-opacity: 0.1;
+                                    "
+                                ></i>
+                            </button>
+                        </div>
+                        <% } else { %>
+                        <div class="preview-item">
+                            <img
+                                src="/images/products/default.png"
+                                class="preview-img"
+                            />
+                        </div>
+                        <% } %>
+                    </div>
+                    <div id="quantityBe" style="display: none">
+                        <%= product.quantity %>
+                    </div>
+                    <label class="label">Số lượng ly tối đa:</label>
+                    <div class="not_limit">
+                        <p>Cho phép không giới hạn số lượng</p>
+                        <label class="switch">
+                            <% if (product.quantity == -1) { %>
+                            <input type="checkbox" id="toggle" />
+                            <% } else { %>
+                            <input type="checkbox" id="toggle" />
+                            <% } %>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Nếu khác -1 thì hiện input với số lượng -->
+                    <div id="inputBox" class="input-wrapper">
+                        <input
+                            type="number"
+                            id="cupInput"
+                            placeholder="Nhập số lượng"
+                            name="quantity"
+                            min="-1"
+                            value="<%= product.quantity %>"
+                        />
+                        <span>Ly</span>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Sửa thông tin</button>
+        </form>
+    </div>
+</div>
+
+<!-- Xuất product ra JS -->

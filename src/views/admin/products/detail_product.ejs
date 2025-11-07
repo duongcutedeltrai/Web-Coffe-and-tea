@@ -7,7 +7,7 @@
         <link rel="stylesheet" href="/admin/css/style.css" />
         <link rel="stylesheet" href="/admin/css/products/product_detail.css" />
         <link rel="stylesheet" href="/admin/css/products/product_create.css" />
-
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <link
             rel="stylesheet"
@@ -29,22 +29,31 @@
 
             <!-- Main Content -->
             <main class="main-content">
-                <%- include('../layout/header.ejs'); -%> <%-
-                include('create_product.ejs'); -%>
+                <%- include('update_product.ejs'); -%>
+
+                <div class="top-content">
+                    <h1>Details Products</h1>
+                    <p class="date">Thursday, 2 Feb 2021</p>
+                </div>
                 <div class="content">
                     <div class="product-section">
                         <div class="product-image">
                             <img
-                                src="/images/products/Phê nâu.jpg"
-                                alt="Phe nau "
+                                src="/images/products/<%= product.images %>"
+                                alt="<%= product.name %> "
                             />
                         </div>
                     </div>
 
-                    <div class="product-details">
-                        <h1 class="product-title">Phê Nâu</h1>
+                    <div
+                        class="product-details"
+                        data-id="<%= product.product_id %>"
+                    >
+                        <h1 class="product-title"><%= product.name %></h1>
                         <div class="product-meta">
-                            <div class="type">Cà Phê</div>
+                            <div class="type">
+                                <%= product.categories.name %>
+                            </div>
                             <div class="rating">
                                 <div class="stars">★★★★☆</div>
                                 <span class="rating-text"
@@ -53,41 +62,39 @@
                             </div>
                         </div>
 
-                        <div class="price">$33.00</div>
+                        <div class="price">
+                            <%= product.price_product[0].price%>
+                        </div>
 
                         <div class="description">
-                            Gần gũi và mượt mà Từ sự kết hợp mạnh mẽ giữa
-                            Arabica Lạc Dương và Robusta Lâm Hà, thêm lớp sữa
-                            đặc ngậy ngọt, Phê Nâu mang đến trải nghiệm vị cà
-                            phê đậm đà nhưng vẫn dịu dàng. Hương thơm nhẹ nhàng,
-                            sữa tan đều nơi đầu lưỡi, tạo độ mềm và cảm giác
-                            thân thuộc như ly cà phê của tuổi thơ. Ly phê này
-                            rất thích hợp để bắt đầu một buổi chiều nhẹ nhàng,
-                            thư giãn, hay để lặng thưởng từng khoảnh khắc chill
-                            trong ngày.
+                            <%= product.description %>
                         </div>
 
                         <div class="size-container">
                             <span class="label">Size:</span>
                             <div class="sizes">
-                                <div class="size-option active">M</div>
-                                <div class="size-option">L</div>
-                                <div class="size-option">XL</div>
+                                <% product.price_product.forEach((sizePrice,
+                                index)=> { %>
+                                <div
+                                    class="size-option <%= index === 0 ? 'active' : '' %>"
+                                    data-size="<%= sizePrice.size %>"
+                                    data-price="<%= sizePrice.price %>"
+                                >
+                                    <%= sizePrice.size %>
+                                </div>
+                                <% }); %>
                             </div>
                         </div>
 
                         <div class="action-buttons">
-                            <button
-                                class="btn-primary popup_update--btn"
-                                onclick="addToCart()"
-                            >
+                            <button class="btn-primary popup_update--btn">
                                 <i
                                     class="fa-regular fa-pen-to-square"
                                     style="color: #ffffff"
                                 ></i>
                                 Sửa sản phẩm
                             </button>
-                            <button class="btn-primary" onclick="addToCart()">
+                            <button class="btn-primary delete--btn">
                                 <i
                                     class="fa-solid fa-trash"
                                     style="color: #ffffff"
@@ -260,199 +267,9 @@
                 </div>
             </main>
         </div>
-
-        <script type="module">
-            function decreaseQuantity() {
-                const input = document.getElementById("quantity");
-                const currentValue = parseInt(input.value);
-                if (currentValue > 1) {
-                    input.value = currentValue - 1;
-                }
-            }
-
-            function increaseQuantity() {
-                const input = document.getElementById("quantity");
-                const currentValue = parseInt(input.value);
-                input.value = currentValue + 1;
-            }
-
-            // Mobile menu toggle (if needed)
-            function toggleSidebar() {
-                const sidebar = document.querySelector(".sidebar");
-                sidebar.classList.toggle("active");
-            }
-
-            // Add smooth scrolling animation
-            window.addEventListener("scroll", function () {
-                const elements = document.querySelectorAll(
-                    ".product-details, .chart-section, .reviews-section"
-                );
-                elements.forEach((element) => {
-                    const elementTop = element.getBoundingClientRect().top;
-                    const elementVisible = 150;
-
-                    if (elementTop < window.innerHeight - elementVisible) {
-                        element.style.opacity = "1";
-                        element.style.transform = "translateY(0)";
-                    }
-                });
-            });
-            const sizeOptions = document.querySelectorAll(".size-option");
-
-            sizeOptions.forEach((option) => {
-                option.addEventListener("click", () => {
-                    // Bỏ active cũ
-                    sizeOptions.forEach((opt) =>
-                        opt.classList.remove("active")
-                    );
-                    // Thêm active cho ô vừa click
-                    option.classList.add("active");
-                });
-            });
-            // Initialize animation styles
-            document
-                .querySelectorAll(
-                    ".product-details, .chart-section, .reviews-section"
-                )
-                .forEach((element) => {
-                    element.style.opacity = "0";
-                    element.style.transform = "translateY(20px)";
-                    element.style.transition = "all 0.6s ease";
-                });
-
-            // Show elements on load
-            window.addEventListener("load", function () {
-                setTimeout(() => {
-                    document
-                        .querySelectorAll(
-                            ".product-details, .chart-section, .reviews-section"
-                        )
-                        .forEach((element) => {
-                            element.style.opacity = "1";
-                            element.style.transform = "translateY(0)";
-                        });
-                }, 300);
-            });
-
-            /////////chart///////////
-            const ctx = document.getElementById("myChart").getContext("2d");
-
-            // Dữ liệu mẫu
-            const chartData = {
-                daily: {
-                    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-                    data: [300, 200, 1500, 70, 50, 220, 60],
-                },
-                weekly: {
-                    labels: ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4"],
-                    data: [1200, 1900, 800, 2200],
-                },
-                monthly: {
-                    labels: ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-                    data: [3500, 4200, 3900, 4500, 4800, 5000],
-                },
-            };
-
-            // lưu lại index đang hover
-            let activeIndex = -1;
-            let myChart = new Chart(ctx, {
-                type: "bar",
-                data: {
-                    labels: [],
-                    datasets: [
-                        {
-                            label: "Doanh số",
-                            data: [],
-                            backgroundColor: "rgba(183,28,28,0.6)",
-                            hoverBackgroundColor: "rgba(183,28,28,0.9)",
-                            borderRadius: 8,
-                            categoryPercentage: 0.5, // độ rộng nhóm bar (giảm xuống thì cách xa hơn)
-                            barPercentage: 0.7, // độ rộng mỗi bar (giảm thì bar hẹp lại, cách xa hơn)
-                        },
-                    ],
-                },
-                options: {
-                    scales: {
-                        x: {
-                            grid: {
-                                display: false, // ẩn lưới dọc
-                            },
-                            ticks: {
-                                color: "#999", // màu chữ trục X
-                                font: {
-                                    size: 16, // cỡ chữ trục X
-                                    weight: "100",
-                                },
-                            },
-                        },
-                        y: {
-                            ///ẩn đường trục y
-                            ticks: {
-                                font: {
-                                    size: 15, // cỡ chữ trục X
-                                    weight: "500",
-                                },
-                                callback: (val) => {
-                                    if (val >= 1000000)
-                                        return val / 1000000 + "M";
-                                    if (val >= 1000) return val / 1000 + "k";
-                                    return val;
-                                },
-                                maxTicksLimit: 8,
-                            },
-                            grid: {
-                                color: "rgba(0,0,0,0.1)", // màu lưới ngang rất nhạt
-                                // bỏ đường viền trục Y
-                                lineWidth: 1, // mỏng nhẹ
-                                ///ẩn đường trục y
-                                borderDash: [3, 3], // đường nét đứt
-                            },
-                            border: {
-                                display: false,
-                                width: 2,
-                                color: "red",
-                                dash: [5, 5],
-                                dashOffset: 2,
-                            },
-                            beginAtZero: true,
-                        },
-                    },
-                    plugins: {
-                        legend: {
-                            display: false, // ẩn chú thích
-                        },
-                    },
-                },
-            });
-
-            function updateChart(type) {
-                const { labels, data } = chartData[type];
-                myChart.data.labels = labels;
-                myChart.data.datasets[0].data = data;
-                myChart.update();
-
-                document
-                    .querySelectorAll(".tab")
-                    .forEach((tab) => tab.classList.remove("active"));
-                document
-                    .querySelector(`.tab[data-type="${type}"]`)
-                    .classList.add("active");
-            }
-
-            // Xác định tab mặc định theo tháng hiện tại
-            window.onload = () => {
-                updateChart("monthly");
-            };
-
-            // Gắn sự kiện click
-            document.querySelectorAll(".tab").forEach((tab) => {
-                tab.addEventListener("click", () => {
-                    const type = tab.getAttribute("data-type");
-                    updateChart(type);
-                });
-            });
-        </script>
-
-        <script src="/admin/js/products/product_create.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="/admin/js/products/product_update.js"></script>
+        <script src="/admin/js/products/product_detail.js"></script>
+        <script type="module"></script>
     </body>
 </html>

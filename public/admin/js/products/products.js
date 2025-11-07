@@ -2,6 +2,7 @@
 // /admin/js/products.js -- Replace entire file with this
 (() => {
     let currentCategoryId = null;
+    let currentKeyword = "";
     let currentPage = 1;
     let pageSize = 9;
     let tuiPager = null;
@@ -19,18 +20,32 @@
     $(document).ready(() => {
         setupEventListeners();
         initScrollNavigation();
-        fetchProducts(1, null);
+        fetchProducts(1);
     });
 
     // Unified fetch function
-    function fetchProducts(page = 1, categoryId = null) {
+    function fetchProducts(page = 1, categoryId = null, keyword = "") {
         currentPage = page;
+        currentKeyword = keyword;
         currentCategoryId = categoryId;
         $(".loading-wrapper").html(loadingHTML);
-
-        const url = categoryId
-            ? `/api/admin/categories/${categoryId}/products?page=${page}`
-            : `/api/admin/products?page=${page}`;
+        let url = "";
+        if (keyword && keyword.trim() !== "" && categoryId) {
+            url = `/api/admin/categories/${categoryId}/products/search?q=${encodeURIComponent(
+                keyword
+            )}&page=${page}`;
+        } else if (keyword && keyword.trim() !== "") {
+            // ✅ Chỉ tìm kiếm theo tên
+            url = `/api/admin/products/search?q=${encodeURIComponent(
+                keyword
+            )}&page=${page}`;
+        } else if (categoryId) {
+            // ✅ Chỉ lọc theo category
+            url = `/api/admin/categories/${categoryId}/products?page=${page}`;
+        } else {
+            // ✅ Mặc định: tất cả sản phẩm
+            url = `/api/admin/products?page=${page}`;
+        }
 
         $.ajax({
             url,
@@ -57,6 +72,19 @@
         });
     }
 
+    ////api xem chi tiết sản phẩm
+    $(document).on("click", ".menu-card", function (e) {
+        const productId = $(this).data("id");
+        if (!productId) {
+            return;
+        }
+        if ($(e.target).closest(".product__edit").length > 0) {
+            // mở popup chỉnh sửa
+            sessionStorage.setItem("openPopup", "true"); // hoặc tùy code popup của bạn
+        }
+        window.location.href = `products/${productId}`;
+    });
+
     // Render main area: categories (only when not in category view) + products
     function renderArea(data = {}) {
         $(".menu-grid").html(`
@@ -69,7 +97,7 @@
         if (!currentCategoryId && Array.isArray(data.categories)) {
             $(".explore__menu--list").empty();
             data.categories.forEach((c) => {
-                const id = c.id ?? c.category_id ?? c.categoryId ?? "";
+                const id = c.category_id ?? c.categoryId ?? "";
                 const item = document.createElement("div");
                 item.className = "category-item";
                 item.dataset.category = id;
@@ -109,14 +137,14 @@
                     sizeOptions += `
             <button class="size-btn" data-size="${pp.size}">
               <span class="product_size">${pp.size}</span>
-              <span class="product_price">${pp.price}</span>
+              <span class="product_price">${formatVND(pp.price)}</span>
             </button>
           `;
                 });
             }
             const imgName = product.images ?? product.image ?? "";
             const card = $(`
-        <div class="menu-card">
+        <div class="menu-card" data-id=${product.product_id}>
           <div class="menu-image"><img src="/images/products/${imgName}" alt="${product.name}" /></div>
           <div class="menu-info">
             <div class="menu__info-header">
@@ -131,7 +159,7 @@
       `);
             $(".menu-grid").append(card);
         });
-
+        initSizeOptionsForCards();
         // IntersectionObserver for reveal animation
         const observer = new IntersectionObserver(
             (entries, obs) => {
@@ -149,7 +177,23 @@
             .querySelectorAll(".menu-card")
             .forEach((el) => observer.observe(el));
     }
+    function initSizeOptionsForCards() {
+        const products = document.querySelectorAll(".menu-card");
 
+        products.forEach((product) => {
+            const sizeBtns = product.querySelectorAll(".size-btn");
+            const priceSize = product.querySelector(".product_size");
+
+            if (
+                sizeBtns.length === 1 &&
+                sizeBtns[0].dataset.size.toUpperCase() === "DEFAULT"
+            ) {
+                // Nếu chỉ có 1 size và là DEFAULT → ẩn price-size
+                sizeBtns[0].classList.add("default");
+                priceSize.style.display = "none";
+            }
+        });
+    }
     // tui-pagination init/update
     function initTuiPagination(totalItems, itemsPerPage, current) {
         const container = document.getElementById("pagination-container");
@@ -174,7 +218,7 @@
 
         tuiPager.on("afterMove", (evt) => {
             const page = evt.page;
-            fetchProducts(page, currentCategoryId);
+            fetchProducts(page, currentCategoryId, currentKeyword);
             window.scrollTo({ top: 0, behavior: "smooth" });
         });
     }
@@ -190,7 +234,7 @@
                 .closest(".category-item")
                 .data("category");
             $(".menu-title h2").text(`${categoryName}`);
-            fetchProducts(1, categoryId);
+            fetchProducts(1, categoryId, currentKeyword);
         });
 
         $(document).on("click", ".menu-card .size-btn", function (e) {
@@ -250,7 +294,40 @@
             $categoryNavContainer.removeClass("show-fade");
         }
     }
+    function formatVND(amount) {
+        return Number(amount).toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+        });
+    }
 
     // expose for debug/inline calls if needed
     window.fetchProducts = fetchProducts;
+    let typingTimer;
+    const typingDelay = 300;
+    /////tìm kiếm theo tên sản phẩm
+    $("#search").on("keyup", function () {
+        const keyword = $(this).val().trim();
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(() => {
+            // gọi fetchProducts, giữ page = 1 và currentCategoryId nếu có
+            fetchProducts(1, currentCategoryId, keyword);
+        }, typingDelay);
+    });
+
+    ///reset về ban đầu
+    // Reset filter về mặc định
+    $(document).on("click", ".reset-filter", function () {
+        currentCategoryId = null;
+        currentKeyword = "";
+        currentPage = 1;
+
+        // reset UI
+        $(".menu-title h2").text("Tất cả sản phẩm");
+        $(".category-image img").removeClass("active");
+        $("#search").val("");
+
+        // gọi lại fetchProducts về mặc định
+        fetchProducts(1);
+    });
 })();

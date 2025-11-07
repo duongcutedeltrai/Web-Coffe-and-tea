@@ -34,7 +34,10 @@ function openChartModal() {
     const staffId = document.body.getAttribute("data-staff-id");
 
     // ✅ Set tab mặc định là "month"
-    document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+
+    document
+        .querySelectorAll(".tab")
+        .forEach((tab) => tab.classList.remove("active"));
     const defaultTab = document.querySelector('.tab[data-period="month"]');
     defaultTab.classList.add("active");
 
@@ -46,7 +49,6 @@ function closeChartModal() {
     modal.classList.remove("show");
     document.body.style.overflow = "auto";
 }
-
 
 
 // Go back functionality
@@ -64,9 +66,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const tabs = document.querySelectorAll(".tab");
     const staffId = document.body.getAttribute("data-staff-id");
 
-    tabs.forEach(tab => {
+
+    tabs.forEach((tab) => {
         tab.addEventListener("click", () => {
-            tabs.forEach(t => t.classList.remove("active"));
+            tabs.forEach((t) => t.classList.remove("active"));
             tab.classList.add("active");
             const period = tab.getAttribute("data-period");
             renderStaffRevenueChart(staffId, period);
@@ -117,12 +120,14 @@ function previewAvatar(input) {
     }
 }
 
-
 // Chart
 // ===== Fetch API cho dữ liệu doanh thu =====
 async function fetchStaffRevenue(staffId, period = "month") {
     try {
-        const res = await fetch(`/admin/staff-revenue/api?staffId=${staffId}&period=${period}`);
+
+        const res = await fetch(
+            `/admin/staff-revenue/api?staffId=${staffId}&period=${period}`
+        );
         if (!res.ok) {
             throw new Error("Failed to fetch staff revenue");
         }
@@ -141,7 +146,10 @@ async function fetchStaffRevenue(staffId, period = "month") {
 async function renderStaffRevenueChart(staffId, period = "month") {
     try {
         const data = await fetchStaffRevenue(staffId, period);
-        const ctx = document.getElementById("staffRevenueChart").getContext("2d");
+
+        const ctx = document
+            .getElementById("staffRevenueChart")
+            .getContext("2d");
 
         if (window.staffChart) {
             window.staffChart.destroy();
@@ -186,7 +194,7 @@ async function renderStaffRevenueChart(staffId, period = "month") {
             },
         });
     } catch (error) {
-        console.error("❌ Error rendering chart:", error);
+        console.error(" Error rendering chart:", error);
     }
 }
 
