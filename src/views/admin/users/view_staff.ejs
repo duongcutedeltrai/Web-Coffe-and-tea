@@ -177,14 +177,12 @@
                                             </thead>
                                             <tbody>
                                                 <% staffCalender.forEach(function (staff) { %>
-                                                    <tr>
+                                                    <tr data-staff-id="<%= staff.user_id %>">
                                                         <td>
                                                             <div class="employee-info">
-                                                                <div>
-                                                                    <img class="avatar"
-                                                                        src="<%= staff.avatar ? '/images/users/' + staff.avatar : '/images/users/avatar-face.jpg' %>"
-                                                                        alt="Avatar" />
-                                                                </div>
+                                                                <img class="avatar"
+                                                                    src="<%= staff.avatar ? '/images/users/' + staff.avatar : '/images/users/avatar-face.jpg' %>"
+                                                                    alt="Avatar" />
                                                                 <div class="employee-details">
                                                                     <div class="employee-name">
                                                                         <%= staff.username %>
@@ -195,15 +193,14 @@
                                                                 </div>
                                                             </div>
                                                         </td>
+
                                                         <% staff.staff_detail?.staff_schedules.forEach(day=> { %>
                                                             <td>
                                                                 <div class="shift-cell <%= 
-                                                day.work_shifts.name === 'Sáng (07h-15h)' 
-                                                ? 'shift-morning' 
-                                                : day.work_shifts.name === 'Chiều (14h-22h)' 
-                                                ? 'shift-afternoon' 
-                                                : 'shift-off' 
-                                            %>">
+                day.work_shifts.name.includes('Sáng') ? 'shift-morning' :
+                day.work_shifts.name.includes('Chiều') ? 'shift-afternoon' :
+                day.work_shifts.name.includes('Tối') ? 'shift-night' : 'shift-off' 
+            %>" data-staff-id="<%= staff.user_id %>" data-day-of-week="<%= day.day_of_week %>">
                                                                     <%= day.work_shifts.name %>
                                                                 </div>
                                                             </td>

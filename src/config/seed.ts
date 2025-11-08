@@ -82,77 +82,6 @@ const initDatabase = async () => {
                         role_id: staffRole.role_id,
                         gender: "nam",
                     },
-                    {
-                        email: "staf2f@gmail.com",
-                        username: "duong",
-                        password: await hashPassword("123456"),
-                        phone: "111113",
-                        role_id: staffRole.role_id,
-                        gender: "nam",
-                    },
-
-                    {
-                        email: "staf24f@gmail.com",
-                        username: "duong",
-                        password: await hashPassword("123456"),
-                        phone: "111114",
-                        role_id: staffRole.role_id,
-                        gender: "nam",
-                    },
-
-                    {
-                        email: "staf32f@gmail.com",
-                        username: "duong",
-                        password: await hashPassword("123456"),
-                        phone: "111115",
-                        role_id: staffRole.role_id,
-                        gender: "nam",
-                    },
-
-                    {
-                        email: "staf2323f@gmail.com",
-                        username: "duong",
-                        password: await hashPassword("123456"),
-                        phone: "111116",
-                        role_id: staffRole.role_id,
-                        gender: "nam",
-                    },
-
-                    {
-                        email: "sta2323ff@gmail.com",
-                        username: "duong",
-                        password: await hashPassword("123456"),
-                        phone: "11117",
-                        role_id: staffRole.role_id,
-                        gender: "nam",
-                    },
-
-                    {
-                        email: "sta23232ff@gmail.com",
-                        username: "duong",
-                        password: await hashPassword("123456"),
-                        phone: "111118",
-                        role_id: staffRole.role_id,
-                        gender: "nam",
-                    },
-
-                    {
-                        email: "staf23232f@gmail.com",
-                        username: "duong",
-                        password: await hashPassword("123456"),
-                        phone: "111119",
-                        role_id: staffRole.role_id,
-                        gender: "nam",
-                    },
-
-                    {
-                        email: "staf32323232f@gmail.com",
-                        username: "duong",
-                        password: await hashPassword("123456"),
-                        phone: "111122",
-                        role_id: staffRole.role_id,
-                        gender: "nam",
-                    },
                 ],
             });
         }
@@ -264,6 +193,9 @@ const initDatabase = async () => {
                 },
                 {
                     name: "Tối (22h-06h)",
+                },
+                {
+                    name: "Nghỉ",
                 },
             ],
         });

@@ -11,7 +11,6 @@ class AdminUserController {
         let currentPageCustomer = pageCustomer ? +pageCustomer : 1;
         if (currentPageCustomer <= 0) {
             currentPageCustomer = 1;
-
         }
 
         const customers = await AdminUserService.getUserCustomer(
@@ -19,14 +18,12 @@ class AdminUserController {
             currentPageCustomer
         ); //customer pagination
 
-
         const totalPagesCustomer =
             await AdminUserService.countTotalUserPagesByRole("CUSTOMER");
 
         const roles = await AdminUserService.getAllRoles(); // lấy tất cả role
 
         const totalAmount = await orderService.getAllOrders();
-
 
         const genderOptions = [
             { name: "Nữ", value: "man" },
@@ -42,7 +39,6 @@ class AdminUserController {
         });
     };
 
-
     getViewDetailCustomerAdminPage = async (req: Request, res: Response) => {
         const { id } = req.params;
         const user = await AdminUserService.getDetailCustomerById(+id);
@@ -57,7 +53,6 @@ class AdminUserController {
         await AdminUserService.handleDeleteUser(+id);
         return res.redirect("/admin/customer");
     };
-
 
     postLockCustomer = async (req: Request, res: Response) => {
         try {
@@ -113,21 +108,21 @@ class AdminUserController {
         let currentPageStaffs = pageStaff ? +pageStaff : 1;
         if (currentPageStaffs <= 0) {
             currentPageStaffs = 1;
-
         }
 
         const staffs = await AdminUserService.getAdminandStaff(
             currentPageStaffs
         ); //customer pagination
 
-
         const totalPageStaffs =
             await AdminUserService.countTotalStaffAndAdminPages();
-
 
         const roles = await AdminUserService.getAllRoles(); // lấy tất cả role
         const workShifts = await AdminUserService.getAllShift();
         const staffCalender = await AdminUserService.getCalanderStaff();
+
+        const workShiftsStaff = await AdminUserService.getWorkShiftStaff();
+
 
 
         const genderOptions = [
@@ -142,9 +137,8 @@ class AdminUserController {
             pageStaff: currentPageStaffs,
             genderOptions: genderOptions,
             workShifts: workShifts,
-
             staffCalender: staffCalender,
-
+            workShiftsStaff: workShiftsStaff
         });
     };
 
@@ -159,7 +153,6 @@ class AdminUserController {
         ];
         return res.render("admin/users/detail_staff.ejs", {
             user: user,
-
             roleOptions: roleOptions,
         });
     };
@@ -175,12 +168,10 @@ class AdminUserController {
             password,
             position,
             salary,
-
             shiftId,
         } = req.body;
         const file = req.file;
         const avatar = file?.filename ?? null;
-
 
         await AdminUserService.handleCreateUser(
             username,
@@ -198,7 +189,6 @@ class AdminUserController {
         //success
         return res.redirect("/admin/staff");
     };
-
 
     postUpdateStaff = async (req: Request, res: Response) => {
         const { id, username, email, password, phone, address, oldAvatar } =
@@ -250,14 +240,12 @@ class AdminUserController {
 
     getSearchStaff = async (req: Request, res: Response) => {
         try {
-
             const username = req.query.username?.toString().trim() || "";
             const email = req.query.email?.toString().trim() || "";
 
             const { pageStaff } = req.query;
             let currentPageStaffs = +pageStaff ? +pageStaff : 1;
             if (currentPageStaffs <= 0) {
-
                 currentPageStaffs = 1;
             }
 
@@ -271,7 +259,6 @@ class AdminUserController {
             res.status(500).json({ error: "Có lỗi xảy ra" });
         }
     };
-
 
     getStaffRevenueAPI = async (req: Request, res: Response) => {
         try {
@@ -288,14 +275,12 @@ class AdminUserController {
             console.error("Error fetching staff revenue API:", err);
             return res.status(500).json({ error: "Internal Server Error" });
         }
-    }
-
+    };
 
     getStaffRevenue = async (req: Request, res: Response) => {
         try {
             const { staffId, period = "month" } = req.query;
             if (!staffId) return res.status(400).send("Missing staffId");
-
 
             const data = await AdminUserService.getStaffRevenue(
                 +staffId,
@@ -308,9 +293,27 @@ class AdminUserController {
             console.error("Error rendering staff revenue:", err);
             return res.status(500).send("Internal Server Error");
         }
-
     };
 
+    postUpdateStaffCalander = async (req: Request, res: Response) => {
+        const { id } = req.params;
+        const { shiftId, dayOfWeek } = req.body;
+
+        const result = await AdminUserService.handleUpdateStaffCalander(
+            +id,
+            +shiftId,
+            +dayOfWeek
+        );
+
+        return res.json({
+            success: true,
+            data: {
+                shiftName: result.work_shifts?.name,
+                dayOfWeek: result.day_of_week,
+                status: result.status
+            }
+        });
+    }
     // end user phan admin phan staff
 }
 

@@ -18,6 +18,7 @@ export function authMiddleware(
             return next();
         }
         (req as any).user = decoded;
+
         next();
     } catch (err) {
         (req as any).user = null;

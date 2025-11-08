@@ -23,6 +23,7 @@ class AuthController {
             +(req.user as any)?.id || 0
         );
 
+
         return res.render("client/home/home.ejs", { user });
     }
     async getForgotPasswordPage(req: Request, res: Response) {

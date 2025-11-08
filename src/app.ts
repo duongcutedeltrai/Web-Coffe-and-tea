@@ -1,11 +1,13 @@
 import express from "express";
 import webRouter from "./routers/web";
+const flash = require('express-flash')
 
 // import getConection from "./config/database";
 import { initDatabase } from "./config/seed";
 
 import { z } from "zod";
 import cookieParser from "cookie-parser";
+const session = require('express-session')
 import { Server } from "socket.io";
 import http from "http";
 import { setupSocket } from "./socket";
@@ -20,8 +22,16 @@ app.set("view engine", "ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+app.use(session({
+    secret: 'yourSecretKeyHere',       // 🔑 BẮT BUỘC
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 60000 }
+}));
 //static files
 app.use(express.static("public"));
+app.use(flash());
 
 //seeding data
 initDatabase()

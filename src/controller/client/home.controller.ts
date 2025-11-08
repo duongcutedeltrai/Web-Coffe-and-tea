@@ -10,6 +10,7 @@ class ClientHomeController {
         const user = await UserService.getDetailCustomerById(
             +(req.user as any)?.id || 0
         );
+        console.log("User in getHomeClientPage:", user);
 
         return res.render("client/home/home.ejs", {
             user: user,

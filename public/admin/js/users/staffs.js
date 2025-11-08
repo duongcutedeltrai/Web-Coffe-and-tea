@@ -1,27 +1,35 @@
 document.addEventListener("DOMContentLoaded", function () {
     initSearch();
     calenderStaff();
+    initCalendarStaff();
 });
 
 function initSearch() {
     const searchInput = document.getElementById("staffSearchInput");
     const staffTableBody = document.getElementById("staffTableBody");
 
-    if (!searchInput) return;
+    if (!searchInput) {
+        return;
+    }
 
     searchInput.addEventListener("input", async (e) => {
         const q = e.target.value.trim();
 
         try {
             const res = await fetch(
-                `/admin/staff/search?username=${encodeURIComponent(q)}&email=${encodeURIComponent(q)}`
+                `/admin/staff/search?username=${encodeURIComponent(
+                    q
+                )}&email=${encodeURIComponent(q)}`
             );
             const data = await res.json();
             staffTableBody.innerHTML = "";
 
             data.forEach((staff) => {
                 const tr = document.createElement("tr");
-                tr.setAttribute("onclick", `window.location='/admin/staff/detail_staff/${staff.user_id}'`);
+                tr.setAttribute(
+                    "onclick",
+                    `window.location='/admin/staff/detail_staff/${staff.user_id}'`
+                );
                 tr.style.cursor = "pointer";
 
                 tr.innerHTML = `
@@ -30,7 +38,8 @@ function initSearch() {
                     <td>
                         ${staff.roles.name === "ADMIN"
                         ? `<span class="role-badge admin">Admin</span>`
-                        : `<span class="role-badge staff">${staff.staff_detail?.position || ""}</span>`
+                        : `<span class="role-badge staff">${staff.staff_detail?.position || ""
+                        }</span>`
                     }
                     </td>
                     <td>${staff.gender || ""}</td>
@@ -48,7 +57,8 @@ function initSearch() {
                                         </form>
                                     `
                     }
-                            <form action="/admin/staff/delete-staff/${staff.user_id}" method="post">
+                            <form action="/admin/staff/delete-staff/${staff.user_id
+                    }" method="post">
                                 <button type="submit" class="btn btn-danger">Xóa</button>
                             </form>
                         </div>
@@ -59,7 +69,8 @@ function initSearch() {
             });
 
             if (data.length === 0) {
-                staffTableBody.innerHTML = "<tr><td colspan='5'>Không có nhân viên nào</td></tr>";
+                staffTableBody.innerHTML =
+                    "<tr><td colspan = '5'>Không có nhân viên nào </td></td>";
             }
         } catch (err) {
             console.error(err);
@@ -67,53 +78,107 @@ function initSearch() {
     });
 }
 
-function calenderStaff() {
-    const dataOptions = document.querySelector("[data-options]");
-    const dataSchedule = document.querySelector("[data-schedule]");
-    const modalCalender = document.getElementById("modalCalender");
-    const getAllCalender = dataOptions.querySelectorAll(".shift-card");
-    const saveBtn = modalCalender.querySelector("#saveBtn");
-    const cancelBtn = modalCalender.querySelector(".btn-cancel");
 
-    let selectedShift = null;
+document.addEventListener("DOMContentLoaded", () => {
+    const modal = document.getElementById("modalCalender");
+    const shiftCards = modal.querySelectorAll(".shift-card");
+    const saveBtn = document.getElementById("saveBtn");
+    const cancelBtn = modal.querySelector(".btn-cancel");
 
-    document.addEventListener("click", (e) => {
-        if (!modalCalender.contains(e.target) && !e.target.closest(".shift-cell")) {
-            modalCalender.setAttribute("hidden", true);
+    let selectedStaffId = null;
+    let selectedDayOfWeek = null;
+    let selectedShiftId = null;
+    let currentCell = null; // Lưu reference đến cell đang chỉnh sửa
+
+    // Mapping shift ID sang tên và class
+    const shiftMapping = {
+        1: { name: "Sáng (07h-15h)", class: "shift-morning" },
+        2: { name: "Chiều (14h-22h)", class: "shift-afternoon" },
+        3: { name: "Tối (22h-06h)", class: "shift-night" },
+        4: { name: "Nghỉ", class: "shift-off" }
+    };
+
+    // Click vào cell trong bảng lịch
+    document.querySelectorAll(".shift-cell").forEach(cell => {
+        cell.addEventListener("click", e => {
+            e.stopPropagation();
+
+            selectedStaffId = Number(cell.dataset.staffId);
+            selectedDayOfWeek = Number(cell.dataset.dayOfWeek);
+            currentCell = cell; // Lưu lại cell hiện tại
+
+            // Đặt vị trí modal gần cell
+            const rect = cell.getBoundingClientRect();
+            modal.style.left = `${rect.left + window.scrollX}px`;
+            modal.style.top = `${rect.bottom + window.scrollY + 5}px`;
+            modal.removeAttribute("hidden");
+
+            // Reset selection
+            shiftCards.forEach(c => c.classList.remove("selected"));
+            selectedShiftId = null;
+            saveBtn.disabled = true;
+        });
+    });
+
+    // Chọn ca
+    shiftCards.forEach(card => {
+        card.addEventListener("click", () => {
+            shiftCards.forEach(c => c.classList.remove("selected"));
+            card.classList.add("selected");
+            selectedShiftId = Number(card.dataset.shiftId);
+            saveBtn.disabled = false;
+        });
+    });
+
+    // Lưu thay đổi
+    saveBtn.addEventListener("click", async () => {
+        if (!selectedStaffId || !selectedDayOfWeek || !selectedShiftId) {
+            alert("Vui lòng chọn ca làm việc");
+            return;
+        }
+
+        const res = await fetch(`/admin/staff/update-calander/${selectedStaffId}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                shiftId: selectedShiftId,
+                dayOfWeek: selectedDayOfWeek
+            })
+        });
+
+        const result = await res.json();
+
+        if (result.success && currentCell) {
+
+            const shiftName = result.data.shiftName;
+
+            // Xác định class CSS dựa trên tên ca
+            let shiftClass = 'shift-off';
+            if (shiftName.includes('Sáng')) shiftClass = 'shift-morning';
+            else if (shiftName.includes('Chiều')) shiftClass = 'shift-afternoon';
+            else if (shiftName.includes('Tối')) shiftClass = 'shift-night';
+
+            // Update UI
+            currentCell.classList.remove('shift-morning', 'shift-afternoon', 'shift-night', 'shift-off');
+            currentCell.classList.add(shiftClass);
+            currentCell.textContent = shiftName;
+
+            modal.setAttribute("hidden", true);
+            showSuccessMessage("Cập nhật lịch làm việc thành công!");
+        } else {
+            alert("Cập nhật thất bại. Vui lòng thử lại.");
         }
     });
 
-    if (dataSchedule) {
-        const popupCalender = dataSchedule.querySelectorAll(".shift-cell");
-
-        popupCalender.forEach((calender) => {
-            calender.addEventListener("click", (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-
-                const rect = calender.getBoundingClientRect();
-                const scrollTop = window.scrollY || document.documentElement.scrollTop;
-                const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
-
-                modalCalender.style.left = `${rect.left + scrollLeft}px`;
-                modalCalender.style.top = `${rect.top + scrollTop - modalCalender.offsetHeight - 250}px`;
-
-                modalCalender.toggleAttribute("hidden");
-            });
-        });
-    }
-
-    getAllCalender.forEach((shift) => {
-        shift.addEventListener("click", () => {
-            getAllCalender.forEach((c) => c.classList.remove("selected"));
-            shift.classList.add("selected");
-
-            selectedShift = shift.querySelector(".shift-name").textContent.trim();
-            saveBtn.removeAttribute("disabled");
-        });
-    });
-
+    // Hủy
     cancelBtn.addEventListener("click", () => {
-        modalCalender.setAttribute("hidden", true);
+        modal.setAttribute("hidden", true);
     });
-}
+
+    // Click ngoài modal thì đóng
+    document.addEventListener("click", e => {
+        if (!modal.contains(e.target) && !e.target.classList.contains('shift-cell')) {
+            modal.setAttribute("hidden", true);
+        }
+    });
+});

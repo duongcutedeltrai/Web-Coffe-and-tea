@@ -1,41 +1,16 @@
-<div class="container-calander" id="modalCalender" data-options>
+<div class="container-calander" id="modalCalender" hidden>
     <h2>Thay đổi ca làm việc</h2>
     <p class="subtitle">Vui lòng chọn ca làm việc cho nhân viên</p>
 
     <div class="shift-options">
-        <div class="shift-card evening">
-            <div class="shift-icon">🌆</div>
-            <div class="shift-info">
-                <div class="shift-name">Ca Chiều</div>
-                <div class="shift-time">14h - 22h</div>
-            </div>
-            <div class="radio-indicator"></div>
-        </div>
-
-        <div class="shift-card morning">
-            <div class="shift-icon">☀️</div>
-            <div class="shift-info">
-                <div class="shift-name">Ca Sáng</div>
-                <div class="shift-time">07h - 15h</div>
-            </div>
-            <div class="radio-indicator"></div>
-        </div>
-
-        <div class="shift-card night">
-            <div class="shift-icon">🌙</div>
-            <div class="shift-info">
-                <div class="shift-name">Ca Tối</div>
-                <div class="shift-time">22h - 06h</div>
-            </div>
-            <div class="radio-indicator"></div>
-        </div>
+        <div class="shift-card morning" data-shift-id="1">☀️ Ca Sáng (07h-15h)</div>
+        <div class="shift-card evening" data-shift-id="2">🌆 Ca Chiều (14h-22h)</div>
+        <div class="shift-card night" data-shift-id="3">🌙 Ca Tối (22h-06h)</div>
+        <div class="shift-card off" data-shift-id="4">🚫 Nghỉ</div>
     </div>
 
     <div class="button-group">
-        <button class="btn btn-cancel">Hủy</button>
-
-        <button class="btn btn-save" id="saveBtn" disabled type="submit">
-            Thay đổi
-        </button>
+        <button type="button" class="btn btn-cancel">Hủy</button>
+        <button class="btn btn-save" id="saveBtn" disabled>Thay đổi</button>
     </div>
 </div>

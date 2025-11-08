@@ -113,6 +113,14 @@ class AdminUserService {
         });
     };
 
+    getWorkShiftStaff = async () => {
+        return await prisma.staff_schedules.findFirst({
+            include: {
+                work_shifts: true,
+            },
+        });
+    }
+
     // end user phan staff
 
     getAllRoles = async () => {
@@ -386,10 +394,8 @@ class AdminUserService {
                     0
                 );
                 labels.push(
-                    `${startOfWeekRange.getDate()}/${
-                        startOfWeekRange.getMonth() + 1
-                    } - ${endOfWeekRange.getDate()}/${
-                        endOfWeekRange.getMonth() + 1
+                    `${startOfWeekRange.getDate()}/${startOfWeekRange.getMonth() + 1
+                    } - ${endOfWeekRange.getDate()}/${endOfWeekRange.getMonth() + 1
                     }`
                 );
                 revenues.push(totalRevenue);
@@ -449,8 +455,7 @@ class AdminUserService {
                     0
                 );
                 labels.push(
-                    `${
-                        startOfMonthRange.getMonth() + 1
+                    `${startOfMonthRange.getMonth() + 1
                     }/${startOfMonthRange.getFullYear()}`
                 );
                 revenues.push(totalRevenue);
@@ -462,6 +467,63 @@ class AdminUserService {
             revenues,
         };
     };
+
+
+    handleUpdateStaffCalander = async (
+        userId: number,
+        shiftId: number,
+        dayOfWeek: number
+    ) => {
+        try {
+            // ✅ Bước 1: Lấy staff_id từ user_id
+            const staffDetail = await prisma.staff_detail.findUnique({
+                where: { user_id: userId },
+                select: { staff_id: true }
+            });
+
+            if (!staffDetail) {
+                throw new Error(`Không tìm thấy staff_detail cho user_id: ${userId}`);
+            }
+
+            // ✅ Bước 2: Upsert với staff_id đúng
+            const result = await prisma.staff_schedules.upsert({
+                where: {
+                    staff_id_day_of_week: {
+                        staff_id: staffDetail.staff_id, // ← Dùng staff_id, không phải user_id
+                        day_of_week: dayOfWeek
+                    }
+                },
+                update: {
+                    shift_id: shiftId,
+                    status: "WORK"
+                },
+                create: {
+                    staff_id: staffDetail.staff_id,
+                    day_of_week: dayOfWeek,
+                    shift_id: shiftId,
+                    status: "WORK"
+                },
+                include: {
+                    work_shifts: true // Trả về thông tin ca làm việc
+                }
+            });
+
+            return result;
+        } catch (error) {
+            console.error("Error in handleUpdateStaffCalander:", error);
+            throw error;
+        }
+    };
+
+    getStaffIdFromUserId = async (userId: number): Promise<number | null> => {
+        const staffDetail = await prisma.staff_detail.findUnique({
+            where: { user_id: userId },
+            select: { staff_id: true }
+        });
+        return staffDetail?.staff_id ?? null;
+    };
+
+
 }
 
 export default new AdminUserService();
