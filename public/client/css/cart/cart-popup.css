@@ -119,8 +119,9 @@
 
 .shopping-item-info {
     margin-top: 5px;
-    font-size: 0.875rem;
-    color: #6c757d;
+    font-weight: 500;
+    font-size: 1rem;
+    color: #92400e;
 }
 
 .cart-quantity-controls {

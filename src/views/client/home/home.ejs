@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Phê La | Home</title>
+        <title>Phê La - Home</title>
         <link
             href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
             rel="stylesheet"
@@ -161,9 +161,11 @@
             <!-- Products Section -->
             <section class="products-section">
                 <div class="container-fluid">
-                    <h2 class="section-title">SẢN PHẨM ĐANG SALE</h2>
+                    
+<div data-aos="fade-down">     <h2 class="section-title" >SẢN PHẨM ĐANG SALE</h2></div>
+               
 
-                    <div class="carousel-wrapper">
+                    <div class="carousel-wrapper"  data-aos="fade-up">
                         <button
                             class="carousel-nav-btn prev-btn"
                             id="productsPrev"
@@ -201,9 +203,9 @@
             <!-- Combos Section -->
             <section class="combos-section">
                 <div class="container-fluid">
-                    <h2 class="section-title">COMBO SIÊU HỜI</h2>
+                    <h2 class="section-title" data-aos="fade-down">COMBO SIÊU HỜI</h2>
 
-                    <div class="carousel-wrapper">
+                    <div class="carousel-wrapper" data-aos="fade-up">
                         <button
                             class="carousel-nav-btn prev-btn"
                             id="combosPrev"
@@ -268,7 +270,7 @@
                         <div class="col-12 col-lg-6 mb-4 mb-lg-0">
                             <div
                                 class="hero-image-container"
-                                data-aos="zoom-in-left"
+                             data-aos="fade-right"
                             >
                                 <img
                                     src="/images/home_client/story.png"
@@ -278,7 +280,7 @@
                             </div>
                         </div>
 
-                        <div class="col-12 col-lg-6">
+                        <div class="col-12 col-lg-6" data-aos="fade-left">
                             <div class="hero-content">
                                 <p class="hero-subtitle">
                                     CÂU CHUYỆN VỀ THỨC UỐNG ĐẶC
@@ -333,11 +335,11 @@
         </div>
         <div class="bg-productSection">
             <div class="container">
-                <h1 class="pd-page-title text-center mb-5">
+                <h1 class="pd-page-title text-center mb-5" data-aos="fade-down">
                     SẢN PHẨM BÁN CHẠY
                 </h1>
 
-                <div class="row g-4" id="pdProductGrid"></div>
+                <div class="row g-4" id="pdProductGrid" data-aos="fade-up"></div>
 
                 <div class="text-center mt-5">
                     <button class="pd-btn-view-all">View All</button>
@@ -370,8 +372,7 @@
                     <div class="col-lg-5">
                         <div
                             class="pd-why-image-wrapper"
-                            data-aos="fade-up"
-                            data-aos-anchor-placement="top-center"
+                            data-aos="fade-left"
                         >
                             <img
                                 src="/images/home_client/why.png"
@@ -383,7 +384,7 @@
                     <div class="col-lg-7">
                         <h2 class="pd-why-title">TẠI SAO BẠN LẠI CHỌN MIRA?</h2>
 
-                        <div class="pd-why-carousel-container">
+                        <div class="pd-why-carousel-container"  data-aos="fade-right">
                             <div
                                 class="pd-why-carousel"
                                 id="pdWhyCarousel"
@@ -413,7 +414,7 @@
             });
         </script>
         <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.39/bundled/lenis.min.js"></script>
-        <script>
+        <!-- <script>
             const lenis = new Lenis({
                 duration: 1.5, // tốc độ (càng lớn càng mượt, 1.2 là vừa)
                 easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // easing
@@ -425,7 +426,7 @@
             }
 
             requestAnimationFrame(raf);
-        </script>
+        </script> -->
 
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

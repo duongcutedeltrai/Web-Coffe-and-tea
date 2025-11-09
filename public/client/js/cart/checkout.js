@@ -15,49 +15,6 @@ document.getElementById("addressBtn").onclick = function () {
 // Fix lỗi map bị co hoặc không hiển thị đầy đủ
 
 let marker;
-// async function searchAddress() {
-//     const provinceSelect = document.getElementById("provinceSelect");
-//     const province =
-//         provinceSelect.options[provinceSelect.selectedIndex].text.trim();
-//     const districtSelect = document.getElementById("districtSelect");
-//     const district =
-//         districtSelect.options[districtSelect.selectedIndex].text.trim();
-//     const street = document.getElementById("specificAddress").value.trim();
-
-//     if (!province && !district && !street) {
-//         alert("Vui lòng nhập ít nhất một phần địa chỉ.");
-//         return;
-//     }
-
-//     const fullAddress = `${street}, ${district}, ${province}, Việt Nam`;
-//     console.log(fullAddress);
-//     const url = `https://us1.locationiq.com/v1/search?key=${API_KEY}&q=${encodeURIComponent(
-//         fullAddress
-//     )}&format=json`;
-
-//     try {
-//         const res = await fetch(url);
-//         const data = await res.json();
-
-//         if (data && data.length > 0) {
-//             const lat = parseFloat(data[0].lat);
-//             const lon = parseFloat(data[0].lon);
-
-//             // Hiển thị marker
-//             if (marker) marker.remove();
-//             marker = L.marker([lat, lon]).addTo(map);
-//             map.setView([lat, lon], 17);
-
-//             // Popup địa chỉ
-//             marker.bindPopup(`<b>${data[0].display_name}</b>`).openPopup();
-//         } else {
-//             alert("Không tìm thấy địa chỉ!");
-//         }
-//     } catch (err) {
-//         console.error(err);
-//         alert("Lỗi khi gọi API LocationIQ.");
-//     }
-// }
 
 // Sự kiện: click nút hoặc nhấn Enter
 document.addEventListener("keypress", (e) => {
@@ -166,31 +123,92 @@ getCurrentLocation();
 const bootstrap = window.bootstrap;
 
 // Initialize on page load
+let products = [];
+let promotionSelected;
+let subtotal;
+let discount;
 document.addEventListener("DOMContentLoaded", () => {
+    dataFlashsale = localStorage.getItem("flashsale-product");
+    products = dataFlashsale ? JSON.parse(dataFlashsale) : [];
+    dataPromotion = localStorage.getItem("selectedVoucher");
+    promotionSelected = dataPromotion ? JSON.parse(dataPromotion) : [];
+    document
+        .getElementById("checkoutForm")
+        .addEventListener("submit", handlePayment);
     getCartAPI();
     initializeEventListeners();
 });
+async function applyPromotion() {
+    try {
+        const promotionId = promotionSelected?.promotion_id;
+        const totalPrice = subtotal;
+        const response = await fetch("/admin/data/promotions/apply-promotion", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                promotion_id: promotionId,
+                totalPrice: totalPrice,
+            }),
+        });
 
+        const data = await response.json();
+
+        if (!data.success) {
+            alert(data.message || "Mã khuyến mãi không hợp lệ.");
+            return null;
+        }
+
+        // ✅ Gán discountPrice vào biến discount
+        discount = data.discountPrice || 0;
+        // console.log(discount);
+    } catch (err) {
+        console.error(err);
+        alert("Có lỗi xảy ra khi áp dụng khuyến mãi.");
+        return null;
+    }
+}
 // Initialize products display
 function initializeProducts(carts) {
     const productsList = document.getElementById("productsList");
     productsList.innerHTML = carts
-        .map(
-            (cart) => `
+        .map((cart) => {
+            const flashSaleItem = products.find(
+                (f) =>
+                    f.product_id === cart.product_id &&
+                    (f.size == cart.product_size || f.size === "all")
+            );
+            let displayPrice = cart.price;
+            let oldPrice = null;
+
+            if (flashSaleItem) {
+                const discountValue = flashSaleItem.discountValue ?? 0;
+                oldPrice = cart.price;
+                displayPrice = cart.price - discountValue;
+            }
+            return `
         <div class="product-item">
             <img src="/images/products/${cart.products.images}" alt="${
                 cart.products.name
             }" class="product-image">
             <div class="flex-grow-1">
                 <p class="product-name">${cart.products.name} </p>
-                <p style="color:#7b4423;">x${cart.quantity}</p>
+                <p style="color:#7b4423;">x${cart.quantity} : ${
+                cart.product_size
+            }</p>
             </div>
-            <p class="product-price">${formatVND(
-                cart.price * cart.quantity
-            )}</p>
+             
+           
+             <p class="pd-old-price">${
+                 displayPrice == cart.price
+                     ? ""
+                     : formatVND(oldPrice * cart.quantity)
+             }</p>
+              <p class="product-price">${formatVND(
+                  displayPrice * cart.quantity
+              )}</p>
         </div>
-    `
-        )
+    `;
+        })
         .join("");
     updateCartTotals(carts);
     // Initialize locations list
@@ -198,15 +216,28 @@ function initializeProducts(carts) {
     renderLocations(NEARBY_LOCATIONS);
 }
 
-function updateCartTotals(carts) {
-    const subtotal = carts.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0
-    );
-    const discount = 26400;
+async function updateCartTotals(carts) {
+    subtotal = carts.reduce((sum, item) => {
+        // Tìm sản phẩm flash sale tương ứng
+        const flashSaleItem = products.find(
+            (f) =>
+                f.product_id === item.product_id &&
+                (f.size == item.product_size || f.size === "all")
+        );
+
+        // Nếu có flash sale → giảm giá
+        let finalPrice = item.price;
+        if (flashSaleItem) {
+            const discountValue = flashSaleItem.discountValue ?? 0;
+            finalPrice = item.price - discountValue;
+        }
+
+        return sum + finalPrice * item.quantity;
+    }, 0);
+    await applyPromotion();
     const delivery = 0;
     const total = subtotal - discount + delivery;
-
+    // console.log(discount);
     $("#subtotal").text(`${formatVND(subtotal)}`);
     $("#discount").text(`-${formatVND(discount)}`);
     $("#total").text(`${formatVND(total)}`);
@@ -379,56 +410,137 @@ function formatVND(amount) {
 }
 
 /////////////Sự kiện thanh toán//////////
-async function checkout() {
-    try {
-        const orderData = {
-            receiver_name: document.getElementById("receiver_name").value,
-            receiver_phone: document.getElementById("receiver_phone").value,
-            address: document.getElementById("address").value,
-            payment_method: document.querySelector(
-                'input[name="payment_method"]:checked'
-            ).value, // "vnpay" hoặc "cod"
-            products: [
-                // 🧺 ví dụ từ giỏ hàng
-                { id: 1, quantity: 2 },
-                { id: 3, quantity: 1 },
-            ],
-        };
 
-        // 🧩 2️⃣ Gửi dữ liệu đơn hàng đến BE
+async function handlePayment(event) {
+    event.preventDefault(); // Chặn reload form
+    const promotionId = promotionSelected?.promotion_id;
+    const totalPrice = subtotal;
+    // --- Lấy từng value từ form ---
+    const fullName = document.getElementById("firstName").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const address = document.getElementById("specificAddress").value.trim();
+    const notes = document.getElementById("notes").value.trim();
+    const paymentMethod =
+        document.querySelector('input[name="paymentMethod"]:checked')?.value ||
+        "";
+
+    // --- Gắn từng field vào FormData ---
+    const formData = new FormData();
+    formData.append("name", fullName);
+    formData.append("phone", phone);
+    formData.append("email", email);
+    formData.append("address", address);
+    formData.append("totalPrice", totalPrice);
+    formData.append("promotion_id", promotionId);
+    formData.append("notes", notes);
+    formData.append("paymentMethod", paymentMethod);
+
+    // Nếu bạn muốn xem thử
+    for (const [key, val] of formData.entries()) {
+        console.log(key, ":", val);
+    }
+    if (paymentMethod === "cash") {
+        return;
+    }
+    // --- Chuyển sang object để gửi JSON ---
+    const data = Object.fromEntries(formData.entries());
+
+    try {
         const response = await fetch(
-            "http://localhost:5000/api/orders/create",
+            "http://localhost:3000/api/payment/vnpay/create_payment",
             {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(orderData),
+                body: JSON.stringify(data),
             }
         );
 
         const result = await response.json();
 
-        // 🧭 3️⃣ Kiểm tra kết quả từ BE
-        if (!result.success) {
-            alert(result.message || "Tạo đơn hàng thất bại");
+        // ⚠️ Nếu Zod validation lỗi
+        if (
+            response.status === 200 &&
+            result.success === false &&
+            result.errors
+        ) {
+            let errorMsg = "Vui lòng kiểm tra lại thông tin:\n\n";
+            result.errors.forEach((err) => {
+                errorMsg += `- ${err.field}: ${err.message}\n`;
+            });
+            alert(errorMsg);
             return;
         }
 
-        // 💳 4️⃣ Nếu chọn VNPAY → redirect sang trang thanh toán
-        if (orderData.payment_method === "vnpay") {
-            const paymentUrl = result.paymentUrl;
-            if (paymentUrl) {
-                window.location.href = paymentUrl;
-            } else {
-                alert("Không lấy được URL thanh toán VNPAY");
-            }
-        } else {
-            // 🏠 Nếu là COD → hiển thị thông báo thành công
-            alert("Đơn hàng đã được tạo. Vui lòng thanh toán khi nhận hàng!");
+        // ✅ Nếu thành công: chuyển sang VNPay
+        if (response.status === 201 && result.url) {
+            window.location.href = result.url;
+            return;
         }
+
+        // ❌ Lỗi khác
+        alert("Có lỗi xảy ra trong quá trình thanh toán. Vui lòng thử lại!");
+        console.error("Payment error:", result);
     } catch (error) {
-        console.error("Lỗi thanh toán:", error);
-        alert("Đã xảy ra lỗi khi xử lý thanh toán.");
+        console.error("Fetch error:", error);
+        alert("Không thể kết nối đến máy chủ thanh toán.");
     }
 }
+
+// Gắn sự kiện cho nút thanh toán
+// document.getElementById("checkoutBtn").addEventListener("click", handlePayment);
+// async function checkout() {
+//     try {
+//         const orderData = {
+//             receiver_name: document.getElementById("receiver_name").value,
+//             receiver_phone: document.getElementById("receiver_phone").value,
+//             address: document.getElementById("address").value,
+//             payment_method: document.querySelector(
+//                 'input[name="payment_method"]:checked'
+//             ).value, // "vnpay" hoặc "cod"
+//             products: [
+//                 // 🧺 ví dụ từ giỏ hàng
+//                 { id: 1, quantity: 2 },
+//                 { id: 3, quantity: 1 },
+//             ],
+//         };
+
+//         // 🧩 2️⃣ Gửi dữ liệu đơn hàng đến BE
+//         const response = await fetch(
+//             "http://localhost:5000/api/orders/create",
+//             {
+//                 method: "POST",
+//                 headers: {
+//                     "Content-Type": "application/json",
+//                 },
+//                 body: JSON.stringify(orderData),
+//             }
+//         );
+
+//         const result = await response.json();
+
+//         // 🧭 3️⃣ Kiểm tra kết quả từ BE
+//         if (!result.success) {
+//             alert(result.message || "Tạo đơn hàng thất bại");
+//             return;
+//         }
+
+//         // 💳 4️⃣ Nếu chọn VNPAY → redirect sang trang thanh toán
+//         if (orderData.payment_method === "vnpay") {
+//             const paymentUrl = result.paymentUrl;
+//             if (paymentUrl) {
+//                 window.location.href = paymentUrl;
+//             } else {
+//                 alert("Không lấy được URL thanh toán VNPAY");
+//             }
+//         } else {
+//             // 🏠 Nếu là COD → hiển thị thông báo thành công
+//             alert("Đơn hàng đã được tạo. Vui lòng thanh toán khi nhận hàng!");
+//         }
+//     } catch (error) {
+//         console.error("Lỗi thanh toán:", error);
+//         alert("Đã xảy ra lỗi khi xử lý thanh toán.");
+//     }
+// }

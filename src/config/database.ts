@@ -6,11 +6,11 @@ import mysql from "mysql2/promise";
 
 const getConection = async () => {
     const connection = await mysql.createConnection({
-        port: 37695, // default MySQL port
-        host: "shinkansen.proxy.rlwy.net",
+        port: 3306, // default MySQL port
+        host: "localhost",
         user: "root",
-        password: "cqAPIvdFQlxmqaqmVSvzHgZMXROCmKbH", // replace with youactual password
-        database: "railway",
+        password: "123456", // replace with youactual password
+        database: "coffee",
     });
     return connection;
 };

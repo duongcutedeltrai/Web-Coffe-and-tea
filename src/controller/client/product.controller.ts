@@ -26,15 +26,7 @@ class ProductClientController {
             res.status(500).json({ message: "Lỗi server" });
         }
     };
-    getProductsSellerAPI = async (req: Request, res: Response) => {
-        try {
-            res.json({
-                products: await ProductService.getListProductSellers(1),
-            });
-        } catch (error) {
-            console.error("Error in getProductsSellerAPI:", error);
-        }
-    };
+  
     getCategoriesAPI = async (req: Request, res: Response) => {
         try {
             res.json({

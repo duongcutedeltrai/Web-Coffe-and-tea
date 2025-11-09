@@ -156,6 +156,8 @@ submitButton.addEventListener("click", async () => {
         });
 
         resetReviewForm();
+        const data = await res.json();
+        appendFeedback(data.data);
         const modal = bootstrap.Modal.getInstance(
             document.getElementById("reviewModal")
         );
@@ -170,7 +172,61 @@ submitButton.addEventListener("click", async () => {
         });
     }
 });
+function appendFeedback(feedback) {
+    const reviewsList = document.querySelector(".reviews-list");
+    const avatar = feedback.users.avatar || "/images/users/avatar-face.jpg";
+    const html = `
+    <div class="review-item">
+      <div class="reviewer-avatar">
+        <img src="${avatar}" alt="avatar" class="reviewer-avatar">
+      </div>
 
+      <div class="review-content">
+        <div class="reviewer-info">
+          <span class="reviewer-name">${feedback.users.username}</span>
+          <span class="review-date">${formatDate(feedback.created_at)}</span>
+        </div>
+
+        <div class="review-rating">${renderStars(feedback.rating)}</div>
+        <div class="review-text">${feedback.comment}</div>
+        ${renderImages(feedback.images, feedback.id)}
+      </div>
+    </div>
+  `;
+
+    // Chèn lên đầu danh sách
+    reviewsList.insertAdjacentHTML("afterbegin", html);
+}
+function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+}
+
+// Hàm render sao
+function renderStars(rating) {
+    return "★".repeat(rating) + "☆".repeat(5 - rating);
+}
+
+function renderImages(images, id) {
+    if (!images || images.length === 0) return "";
+    const imagess = JSON.parse(images || "[]");
+    console.log(images);
+    return `
+    <div class="review-images">
+      ${imagess
+          .map(
+              (url) => `
+        <div class="review-image">
+          <a href="${url}" data-lightbox="feedback-${id}">
+            <img src="${url}" alt="feedback image">
+          </a>
+        </div>
+      `
+          )
+          .join("")}
+    </div>
+  `;
+}
 function resetReviewForm() {
     selectedRating = 0;
     uploadedImages = [];

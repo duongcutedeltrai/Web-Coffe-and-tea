@@ -24,9 +24,43 @@ class PromotionController {
         }
     }
 
-    async getAllPromotions(req: Request, res: Response) {
+    async getAllPromotionsVoucher(req: Request, res: Response) {
         try {
-            const promotions = await promotionService.getAllPromotions();
+            const promotions = await promotionService.getAllPromotionsVoucher();
+            return res.status(200).json({
+                success: true,
+                data: promotions,
+            });
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message,
+            });
+        }
+    }
+    async getValidVouchers(req: Request, res: Response) {
+        try {
+            const user_id = (req.user as any)?.id;
+            const totalPrice = req.params.total;
+            const data = await promotionService.getValidVouchers(
+                +user_id,
+                +totalPrice
+            );
+
+            res.json({
+                success: true,
+                count: data.length,
+                vouchers: data,
+            });
+        } catch (error: any) {
+            console.error(error);
+            res.status(500).json({ success: false, message: error.message });
+        }
+    }
+    async getAllPromotionsFlashsale(req: Request, res: Response) {
+        try {
+            const promotions =
+                await promotionService.getAllPromotionsFlashsale();
             return res.status(200).json({
                 success: true,
                 data: promotions,
@@ -83,6 +117,58 @@ class PromotionController {
             });
         }
     }
+
+    // async applyPromotionByCustomer(req: Request, res: Response) {
+    //     try {
+    //         const user_id = (req.user as any)?.id;
+    //         const { code, orderAmount, phone } = req.body;
+    //         if (!code || !orderAmount || !phone) {
+    //             return res.status(400).json({
+    //                 success: false,
+    //                 message:
+    //                     "Thiếu thông tin cần thiết để áp dụng mã khuyến mãi",
+    //             });
+    //         }
+    //         const result = await promotionService.applyPromotion(
+    //             code,
+    //             orderAmount,
+    //             user_id,
+    //             phone
+    //         );
+    //         return res.status(200).json({
+    //             success: true,
+    //             data: result,
+    //         });
+    //     } catch (error) {
+    //         return res.status(500).json({
+    //             success: false,
+    //             message: error.message,
+    //         });
+    //     }
+    // }
+    // controller/promotionController.ts
+    async applyPromotionByCustomer(req: Request, res: Response) {
+        try {
+            const user_id = (req.user as any)?.id;
+            const { totalPrice, promotion_id } = req.body;
+
+            const result = await promotionService.applyPromotionByClient(
+                +user_id,
+                +totalPrice,
+                promotion_id
+            );
+
+            if (!result.success) {
+                return res.status(400).json(result);
+            }
+
+            res.json(result);
+        } catch (error: any) {
+            console.error(error);
+            res.status(500).json({ success: false, message: error.message });
+        }
+    }
+
     async applyPromotion(req: Request, res: Response) {
         try {
             const { code, orderAmount, userId, phone } = req.body;

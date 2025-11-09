@@ -157,6 +157,7 @@ model products {
   categories         categories?          @relation(fields: [category_id], references: [category_id], onDelete: NoAction, onUpdate: NoAction, map: "products_ibfk_1")
   promotion_products promotion_products[]
   price_product      price_product[]
+  favorites   favorite[]
 
   @@index([category_id], map: "category_id")
 }
@@ -189,12 +190,13 @@ model promotion_products {
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model promotions {
   promotion_id       String                  @id 
-  code               String               @unique(map: "code") @db.VarChar(50)
+  code               String?               @unique(map: "code") @db.VarChar(50)
   description        String?              @db.VarChar(255)
-  discount_percent   Decimal              @db.Decimal(5, 2)
-  start_date         DateTime             @db.Date
-  end_date           DateTime             @db.Date
-
+  discount_percent   Decimal?              @db.Decimal(5, 2)
+  discount_price     Int?               @default(0)
+  start_date         DateTime             @db.DateTime(0)
+  end_date           DateTime             @db.DateTime(0)
+  type                  PromotionType              @default(voucher)
   //Điều kiện áp dụng
   min_order_amount   Decimal?             @db.Decimal(10, 2)  // Đơn tối thiểu
   max_usage_count    Int?                 // Số lần dùng giới hạn (null = không giới hạn)
@@ -261,7 +263,7 @@ model users {
   messages  Message[] @relation("UserMessages")
   userRooms UserRoom[]
   roles         roles                @relation(fields: [role_id], references: [role_id], onDelete: NoAction, onUpdate: NoAction, map: "users_ibfk_1")
-
+  favorites   favorite[]
   @@index([role_id], map: "role_id")
   @@fulltext([username, email])
 }
@@ -305,7 +307,16 @@ model point_history {
 
   @@index([user_id])
 }
+model favorite {
+  favorite_id         Int      @id @default(autoincrement())
+  user       users     @relation(fields: [userId], references: [user_id])
+  userId     Int
+  product    products  @relation(fields: [productId], references: [product_id])
+  productId  Int
+  createdAt  DateTime @default(now())
 
+  @@unique([userId, productId]) // tránh trùng
+}
 model staff_detail {
   staff_id  Int      @id @default(autoincrement())
   user_id   Int      @unique
@@ -420,4 +431,8 @@ enum ProductStatus {
 enum schedule_status {
   WORK
   OFF
+}
+enum PromotionType {
+  voucher
+  flashsale
 }

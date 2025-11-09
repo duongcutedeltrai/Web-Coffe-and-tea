@@ -19,6 +19,7 @@ import { authMiddleware, roleMiddleware } from "../middleware/auth.middleware";
 import feedbackRoute from "./client/feedback.route";
 import statisticsRouter from "./admin/statistics.route";
 import { paymentAPI } from "./client/payment.route";
+import favoriteRouteAPI from "./client/favorite.route";
 
 const router = express.Router();
 const webRouter = (app: Express) => {
@@ -39,6 +40,7 @@ const webRouter = (app: Express) => {
     app.use("/", ClientHomeRouter);
     app.use("/api", productAPI);
     app.use("/api", cartRouteAPI);
+    app.use("/api", favoriteRouteAPI);
     app.use("/api/payment", paymentAPI);
     app.use("/api/chat", chatRouteAPI);
     app.use("/products", categoryRoute);

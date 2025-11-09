@@ -7,38 +7,6 @@ import { Request, Response } from "express";
 import { number } from "zod";
 
 class ProductService {
-    getListProductSellers = async (page: number) => {
-        const pageSize = TOTAL_ITEMS_PER_PAGE_CLIENT;
-        const soldStats = await prisma.order_details.groupBy({
-            by: ["product_id"],
-            _sum: { quantity: true },
-        });
-
-        // Map product_id -> totalSold
-        const soldMap = soldStats.reduce((acc, item) => {
-            acc[item.product_id] = item._sum.quantity || 0;
-            return acc;
-        }, {} as Record<number, number>);
-
-        // 2. Lấy tất cả sản phẩm
-        const products = await prisma.products.findMany({
-            include: { price_product: true, categories: true },
-        });
-
-        // 3. Ghép số lượng bán vào sản phẩm
-        const productsWithSold = products.map((p) => ({
-            ...p,
-            totalSold: soldMap[p.product_id] ?? 0,
-        }));
-
-        // 4. Sắp xếp theo totalSold DESC
-        productsWithSold.sort((a, b) => b.totalSold - a.totalSold);
-
-        // 5. Phân trang
-        const start = (page - 1) * pageSize;
-        const end = start + pageSize;
-        return productsWithSold.slice(start, end);
-    };
     getProducts = async (page: number) => {
         try {
             const pageSize = TOTAL_ITEMS_PER_PAGE;
@@ -376,7 +344,7 @@ class ProductService {
             const orderedIds = grouped.map((g: any) => g.product_id);
 
             //  Lấy products theo orderedIds, include các relation cần
-            let products = await prisma.products.findMany({
+            let productsFilter = await prisma.products.findMany({
                 where: { product_id: { in: orderedIds } },
                 include: {
                     price_product: {
@@ -388,14 +356,14 @@ class ProductService {
             });
 
             // Sắp theo thứ tự orderedIds
-            products.sort(
+            productsFilter.sort(
                 (a: any, b: any) =>
                     orderedIds.indexOf(a.product_id) -
                     orderedIds.indexOf(b.product_id)
             );
 
             return {
-                products,
+                productsFilter,
                 totalPages,
                 currentPage: pageNum,
                 totalProducts,
@@ -410,7 +378,7 @@ class ProductService {
         };
         const orderBy = sortOptions[sort] || { createdAt: "desc" };
 
-        const products = await prisma.products.findMany({
+        const productsFilter = await prisma.products.findMany({
             where: filters,
             orderBy,
             skip,
@@ -424,7 +392,12 @@ class ProductService {
             },
         });
 
-        return { products, totalPages, currentPage: pageNum, totalProducts };
+        return {
+            productsFilter,
+            totalPages,
+            currentPage: pageNum,
+            totalProducts,
+        };
     };
     async getAllDataProducts() {
         try {

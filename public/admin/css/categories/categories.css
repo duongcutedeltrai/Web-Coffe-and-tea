@@ -28,7 +28,7 @@
 }
 
 .btn-primary {
-    background-color: #b22830;
+    background-color: #714024;
     color: white;
     border: none;
     padding: 12px 20px;
@@ -43,7 +43,7 @@
 }
 
 .btn-primary:hover {
-    background-color: #9a1f26;
+    background-color: #714024;
 }
 
 .btn-secondary {
@@ -202,14 +202,14 @@
 
 .btn-icon.delete:hover {
     background-color: #fef2f2;
-    color: #dc2626;
+    color: #64381e;
     border-color: #fecaca;
 }
 
 /* Table Styles */
 .table-container {
     background: white;
-    border-radius: 12px;
+    border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     border: 1px solid #e5e7eb;
     overflow: hidden;
@@ -235,7 +235,7 @@
 
 .table-wrapper {
     overflow-x: auto;
-    max-height: 350px;
+    max-height: 500px;
     overflow-y: auto;
     overflow-x: auto;
 }
@@ -246,12 +246,12 @@
 }
 
 .groups-table th {
-    background-color: #f9fafb;
-    padding: 12px 24px;
+    background-color: #714024;
+    padding: 20px 24px;
     text-align: left;
     font-weight: 500;
-    color: #374151;
-    font-size: 14px;
+    color: #ffffff;
+    font-size: 16px;
     border-bottom: 1px solid #e5e7eb;
     position: sticky;
     top: 0;
@@ -262,6 +262,11 @@
     padding: 16px 24px;
     border-bottom: 1px solid #f3f4f6;
     font-size: 14px;
+}
+.groups-table th:nth-child(4),
+.groups-table td:nth-child(4) {
+    width: 160px; /* Trạng thái */
+    text-align: center;
 }
 
 .groups-table tr:hover {
@@ -372,7 +377,7 @@
 .form-group input:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #b22830;
+    border-color: #714024;
     box-shadow: 0 0 0 3px rgba(178, 40, 48, 0.1);
 }
 
@@ -404,7 +409,7 @@
 }
 
 .image-preview:hover {
-    border-color: #b22830;
+    border-color: #714024;
     background-color: #fef2f2;
 }
 
@@ -474,7 +479,7 @@
 
 .warning-icon i {
     font-size: 48px;
-    color: #dc2626;
+    color: #714024;
 }
 
 .delete-confirmation h2 {
@@ -526,7 +531,7 @@
 }
 
 .warning-text {
-    color: #dc2626;
+    color: #714024;
     font-size: 14px;
     margin: 20px 0;
     padding: 16px;
@@ -537,7 +542,7 @@
 
 /* Danger Button Styles */
 .btn-danger {
-    background-color: #dc2626;
+    background-color: #714024;
     color: white;
     border: none;
     padding: 12px 20px;
@@ -549,7 +554,7 @@
 }
 
 .btn-danger:hover {
-    background-color: #b91c1c;
+    background-color: #532e18;
 }
 
 /* Comparison Layout Styles for Edit Page */
@@ -571,12 +576,12 @@
 
 .current-info-section h3,
 .edit-form-section h3 {
-    background-color: #f9fafb;
+    background-color: #714024;
     padding: 20px 24px;
     margin: 0;
     font-size: 18px;
     font-weight: 600;
-    color: #1a1a1a;
+    color: #ffffff;
     border-bottom: 1px solid #e5e7eb;
 }
 
@@ -701,7 +706,7 @@
 
 .delete-popup .warning-icon i {
     font-size: 48px;
-    color: #dc2626;
+    color: #714024;
 }
 
 .delete-popup .delete-confirmation h2 {
@@ -753,7 +758,7 @@
 }
 
 .delete-popup .warning-text {
-    color: #dc2626;
+    color: #714024;
     font-size: 14px;
     margin: 20px 0;
     padding: 16px;

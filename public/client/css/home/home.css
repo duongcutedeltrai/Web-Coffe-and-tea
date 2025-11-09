@@ -189,7 +189,7 @@
 
 .products-carousel-container,
 .combos-carousel-container {
-    overflow: visible;
+    overflow: hidden;
 }
 
 .products-carousel,
@@ -1027,7 +1027,7 @@
 
 /* Product Card */
 .pd-product-card {
-    background: #e3dfd2;
+    background: #fcfaf6;
     border-radius: var(--border-radius);
     overflow: hidden;
     box-shadow: 0px 2.55px 2.55px 0px rgba(0, 0, 0, 0.2);

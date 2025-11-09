@@ -38,7 +38,7 @@ class FeedbackService {
                 folder: "feedbacks",
             });
             urls.push(result.secure_url);
-            fs.unlinkSync(file.path); 
+            fs.unlinkSync(file.path);
         }
         const feedback = await prisma.feedback.create({
             data: {
@@ -47,6 +47,9 @@ class FeedbackService {
                 rating,
                 comment,
                 images: JSON.stringify(urls),
+            },
+            include: {
+                users: true, // Lấy dữ liệu user liên kết
             },
         });
         const avg = await prisma.feedback.aggregate({

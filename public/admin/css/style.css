@@ -19,33 +19,12 @@ a {
 /* Sidebar */
 .sidebar {
     width: 260px;
-    background: #b22830;
+    background: #714024;
     color: white;
     padding: 20px 0;
     position: fixed;
     height: 100vh;
     overflow-y: auto;
-}
-
-.logo {
-    text-align: center;
-    padding: 20px;
-    font-size: 24px;
-    font-weight: bold;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.search-box {
-    padding: 20px;
-}
-
-.search-box input {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 25px;
-    outline: none;
-    font-size: 14px;
 }
 
 .menu {
@@ -54,20 +33,31 @@ a {
 
 .menu-item {
     display: flex;
-    align-items: center;
-    padding: 15px 25px;
+    justify-content: flex-start;
+    /* align-items: center; */
+    padding: 20px 25px;
+    padding-left: 50px;
     color: white;
     text-decoration: none;
     transition: all 0.3s ease;
     border-left: 4px solid transparent;
+    transition: all 0.3s ease;
 }
 
-.menu-item:hover,
+
 .menu-item.active {
     background-color: rgba(255, 255, 255, 0.1);
     border-left-color: white;
+   
 }
-
+.menu-item.active *{
+ transform: translateX(5px);
+ font-weight: 600;
+ font-size: 16px;
+}
+.menu-item:hover{
+      background-color: rgba(255, 255, 255, 0.1);
+}
 .menu-item span {
     margin-left: 15px;
     font-size: 14px;

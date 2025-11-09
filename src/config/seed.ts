@@ -299,63 +299,76 @@ const initDatabase = async () => {
                 name: "Cà Phê",
                 description:
                     "Gồm cà phê đen, nâu, bạc xỉu, espresso, cappuccino, latte và các món pha máy phổ biến.",
+                images: "Cà phê.jpg",
             },
             {
                 name: "Syphon",
                 description:
                     "Cà phê pha thủ công bằng dụng cụ Syphon — hương vị trong trẻo, phù hợp người thích trải nghiệm pha tay.",
+                images: "Syphon.jpg",
             },
             {
                 name: "French Press",
                 description:
                     "Cà phê pha bằng bình ép kiểu Pháp — đậm đà, giữ trọn hương vị nguyên chất.",
+                images: "French Press.jpg",
             },
             {
                 name: "Moka Pot",
                 description:
                     "Cà phê pha bằng bình Moka Pot phong cách Ý — vị mạnh, đầy đặn.",
+                images: "Moka Pot.jpg",
             },
             {
                 name: "Cold Brew",
                 description:
                     "Cà phê ủ lạnh nhiều giờ — vị dịu nhẹ, ít đắng, tươi mát, phù hợp đồ uống mùa hè.",
+                images: "Cold Brew.jpg",
             },
             {
                 name: "Ô Long & Matcha",
                 description:
                     "Các loại trà ô long, trà nhài, matcha latte và biến tấu trà sữa thanh mát.",
+                images: "Ô Long & Matcha.jpg",
             },
             {
                 name: "Topping",
                 description:
                     "Lựa chọn thêm: trân châu, thạch, kem tươi, whipping cream, hạt trang trí.",
+                images: "Topping.jpg",
             },
             {
                 name: "Plus - Lon/Chai tiện lợi",
                 description:
                     "Đồ uống đóng sẵn trong lon/chai: cold brew, trà trái cây, nước giải khát tiện mang theo.",
+                images: "Plus - Lon Chai tiện lợi.jpg",
             },
             {
                 name: "Cà phê hạt rang xay (Gói mang về)",
                 description:
                     "Các loại cà phê hạt rang từ Ethiopia, Kenya, Colombia… đóng gói 150g–250g, phù hợp pha phin, máy hoặc pha tay tại nhà.",
+                images: "Cà phê hạt rang xay (Gói mang về).jpg",
             },
             {
                 name: "Combo",
                 description:
                     "Set combo nhiều ly cà phê/trà, phù hợp cho nhóm, họp mặt hoặc gia đình với giá ưu đãi hơn.",
+                images: "Combo.jpg",
             },
             {
                 name: "Bánh ngọt",
                 description:
                     "Bánh tươi phục vụ tại quán: cheesecake, tiramisu, cookie, brownie và các loại pastry.",
+                images: "Bánh ngọt.jpg",
             },
             {
                 name: "Phụ kiện",
                 description:
                     "Các sản phẩm mang thương hiệu, tiện dụng và thời trang: túi tote, ly giữ nhiệt, bình nước… giúp khách hàng đồng hành cùng thương hiệu mọi lúc",
+                images: "Phụ kiện.jpg",
             },
         ];
+
         await prisma.categories.createMany({
             data: categories,
         });

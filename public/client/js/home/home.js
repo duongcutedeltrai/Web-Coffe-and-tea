@@ -1,5 +1,6 @@
-/* eslint-disable no-undef */
 /* global $, jQuery */
+let favoriteIds = JSON.parse(localStorage.getItem("favoriteList")) || [];
+
 async function loadCartFromDB() {
     try {
         const res = await fetch("/api/cart");
@@ -32,11 +33,18 @@ async function loadCartFromDB() {
         } else {
             console.error("Không thể tải giỏ hàng:", data.message);
         }
+        const total = await fetch("/api/favorite");
+        const totalFavorite = await total.json();
+        if (totalFavorite.total) {
+            $("#favoriteBadge").text(totalFavorite.total);
+            favoriteIds = totalFavorite.favorites.map((f) => f.product_id);
+            localStorage.setItem("favoriteCount", totalFavorite.total);
+            localStorage.setItem("favoriteList", JSON.stringify(favoriteIds));
+        }
     } catch (err) {
         console.error("Lỗi khi tải giỏ hàng:", err);
     }
 }
-
 // jQuery is loaded via CDN in index.html
 function formatVND(amount) {
     return Number(amount).toLocaleString("vi-VN", {
@@ -50,86 +58,6 @@ function parseVND(vndString) {
     const num = vndString.replace(/[^\d]/g, "");
     return parseInt(num, 10) || 0;
 }
-
-// Products Data
-const products = [
-    {
-        id: 1,
-        name: "Phê Nấu",
-        image: "/images/products/GẤM.jpg",
-        currentPrice: 11.0,
-        originalPrice: 12.5,
-        discount: 12,
-        rating: 0,
-        endTime:
-            new Date().getTime() +
-            177 * 24 * 60 * 60 * 1000 +
-            5 * 60 * 60 * 1000 +
-            2 * 60 * 1000 +
-            8 * 1000,
-    },
-    {
-        id: 2,
-        name: "Phê Nấu",
-        image: "/images/products/GẤM.jpg",
-        currentPrice: 11.0,
-        originalPrice: 12.5,
-        discount: 12,
-        rating: 0,
-        endTime:
-            new Date().getTime() +
-            177 * 24 * 60 * 60 * 1000 +
-            5 * 60 * 60 * 1000 +
-            2 * 60 * 1000 +
-            8 * 1000,
-    },
-    {
-        id: 3,
-        name: "Phê Nấu",
-        image: "/images/products/GẤM.jpg",
-        currentPrice: 11.0,
-        originalPrice: 12.5,
-        discount: 12,
-        rating: 0,
-        endTime:
-            new Date().getTime() +
-            177 * 24 * 60 * 60 * 1000 +
-            5 * 60 * 60 * 1000 +
-            2 * 60 * 1000 +
-            8 * 1000,
-    },
-    {
-        id: 4,
-        name: "Phê Nấu",
-        image: "/images/products/GẤM.jpg",
-        currentPrice: 11.0,
-        originalPrice: 12.5,
-        discount: 12,
-        rating: 0,
-        endTime:
-            new Date().getTime() +
-            177 * 24 * 60 * 60 * 1000 +
-            5 * 60 * 60 * 1000 +
-            2 * 60 * 1000 +
-            8 * 1000,
-    },
-    {
-        id: 5,
-        name: "Phê Nấu",
-        image: "/images/products/GẤM.jpg",
-        currentPrice: 11.0,
-        originalPrice: 12.5,
-        discount: 12,
-        rating: 0,
-        endTime:
-            new Date().getTime() +
-            177 * 24 * 60 * 60 * 1000 +
-            5 * 60 * 60 * 1000 +
-            2 * 60 * 1000 +
-            8 * 1000,
-    },
-];
-
 // Combos Data
 const combos = [
     {
@@ -163,14 +91,12 @@ function updateCountdown(endTime, $element) {
         );
         return;
     }
-
     const days = Math.floor(distance / (1000 * 60 * 60 * 24));
     const hours = Math.floor(
         (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
     );
     const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
     $element.html(`
     <div class="countdown-item">
       <span class="countdown-value">${days}</span>
@@ -193,16 +119,35 @@ function updateCountdown(endTime, $element) {
 
 // Create Product Card
 function createProductCard(product) {
+    products.push(product);
     const stars = "★★★★★";
+    const favoriteList = JSON.parse(
+        localStorage.getItem("favoriteList") || "[]"
+    );
+    const isFavorite = favoriteList.some((fav) => fav === product.product_id);
+    const discount = product.discountValue || 0;
+    const matchedSize = product.price_product.find(
+        (pp) => pp.size === product.size
+    );
+
+    const basePrice = matchedSize?.price || 0;
+    const currentPrice = basePrice - discount;
+    const originalPrice = basePrice;
 
     return $(`
-    <div class="product-card" data-aos="flip-right">
+    <div class="product-card pd-product-card" data-id="${product.product_id}">
       <div class="product-image-container">
-        <img src="${product.image}" alt="${product.name}" class="product-image">
-        <div class="sale-badge"><i class="fa-solid fa-bolt" style="color: #e3b81c;"></i> -${
-            product.discount
-        }%</div>
-        <button class="favorite-btn"><i class="fa-solid fa-heart" style="color: #be1313; font-size:15px;"></i></button>
+        <img src="/images/products/${product.images}" alt="${
+        product.name
+    }" class="product-image">
+        <div class="sale-badge"><i class="fa-solid fa-bolt" style="color: #e3b81c;"></i> -${formatVND(
+            discount
+        )}</div>
+         <button class="pd-favorite-btn ${
+             isFavorite ? "active" : ""
+         }" onclick="pdToggleFavorite(this)">
+                        <i class="far fa-heart"></i>
+                    </button>
         <div class="countdown-timer" data-endtime="${product.endTime}"></div>
       </div>
       <div class="product-info">
@@ -210,19 +155,30 @@ function createProductCard(product) {
           <span class="stars">${stars}</span>
           <span class="rating-count">(${product.rating})</span>
         </div>
+      
         <h3 class="product-name">${product.name}</h3>
+          <div class="product-size">
+          <button 
+                class="pd-size-btn active" 
+                data-price="${currentPrice}" 
+                data-original="${originalPrice}" 
+                data-size="${product.size}"
+                onclick="pdSelectSize(this)"
+                style="width: 40px; margin-right: 4px;">
+                ${product.size}
+            </button>
+               </b></span>
+            </div>
         <div class="product-footer">
           <div class="product-price">
-            <span class="current-price">$${product.currentPrice.toFixed(
-                2
-            )}</span>
-            <span class="original-price">$${product.originalPrice.toFixed(
-                2
-            )}</span>
+            <span class="current-price">${formatVND(currentPrice)}</span>
+            <span class="original-price">${formatVND(originalPrice)}</span>
           </div>
           <button class="add-to-cart-btn" data-product-id="${
-              product.id
-          }"><i class="fa-solid fa-plus" style="color: #ffffff;  font-size:15px;"></i></button>
+              product.product_id
+          }">
+            <i class="fa-solid fa-plus" style="color: #ffffff; font-size:15px;"></i>
+          </button>
         </div>
       </div>
     </div>
@@ -232,7 +188,7 @@ function createProductCard(product) {
 // Create Combo Card
 function createComboCard(combo) {
     return $(`
-    <div class="combo-card" data-aos="zoom-in-up">
+    <div class="combo-card" >
       <div class="combo-image-container">
         <img src="${combo.image}" alt="${combo.title}" class="combo-image">
         <div class="overlay"></div>
@@ -252,37 +208,84 @@ function createComboCard(combo) {
 // Products Carousel
 let productsCurrentIndex = 0;
 const productsPerView = 5;
+let products = [];
+async function renderProducts() {
+    try {
+        const res = await fetch("/admin/data/promotions/flashsale");
+        const data = await res.json();
 
-function renderProducts() {
-    const $carousel = $("#productsCarousel");
-    $carousel.empty();
+        if (!data.success) throw new Error("Không thể tải flash sale");
 
-    $.each(products, (index, product) => {
-        const $card = createProductCard(product);
-        $carousel.append($card);
-    });
+        const flashSales = data.data;
+        const $carousel = $("#productsCarousel");
+        $carousel.empty();
+        products = [];
+        const now = new Date();
 
-    // Initialize countdown timers
-    $(".countdown-timer").each(function () {
-        const $element = $(this);
-        const endTime = Number.parseInt($element.attr("data-endtime"));
-        updateCountdown(endTime, $element);
-        setInterval(() => updateCountdown(endTime, $element), 1000);
-    });
+        flashSales.forEach((promotion) => {
+            const startDate = new Date(promotion.start_date);
+            const endDate = new Date(promotion.end_date);
 
-    updateProductsCarousel();
-    renderProductsDots();
+            // 🕒 Chỉ hiển thị khi đang trong khoảng thời gian
+            if (now < startDate || now > endDate) return;
+
+            promotion.promotion_products.forEach((promoProd) => {
+                const product = promoProd.products;
+                // const basePrice = product.price_product[0]?.price || 0;
+                const discountValue = promotion.discount_price || 0;
+
+                if (promoProd.size === "all") {
+                    product.price_product.forEach((pp) => {
+                        const $card = createProductCard({
+                            ...product,
+                            size: pp.size,
+                            discountValue: discountValue,
+                            endTime: promotion.end_date,
+                        });
+                        $carousel.append($card);
+                    });
+                }
+                // ⚙️ Nếu size cụ thể → chỉ render 1 card
+                else {
+                    const $card = createProductCard({
+                        ...product,
+                        size: promoProd.size,
+                        discountValue: discountValue,
+                        endTime: promotion.end_date,
+                    });
+                    $carousel.append($card);
+                }
+
+                // $carousel.append($card);
+            });
+        });
+        localStorage.setItem("flashsale-product", JSON.stringify(products));
+        if ($carousel.children().length === 0) {
+            $carousel.append(
+                `<p class="text-center text-gray-500 mt-4">Hiện chưa có Flash Sale nào đang diễn ra.</p>`
+            );
+            return;
+        }
+
+        // 🧭 Countdown
+        $(".countdown-timer").each(function () {
+            const $element = $(this);
+            const endTime = new Date($element.attr("data-endtime"));
+            updateCountdown(endTime, $element);
+            setInterval(() => updateCountdown(endTime, $element), 1000);
+        });
+        console.log(products);
+        updateProductsCarousel();
+        renderProductsDots();
+    } catch (err) {
+        console.error("Lỗi khi tải flash sale:", err);
+    }
 }
-
 function updateProductsCarousel() {
     const $carousel = $("#productsCarousel");
-    const cardWidth = $carousel.find(".product-card").first().outerWidth();
+    const cardWidth = $carousel.find(".product-card").first().outerWidth(true);
     const gap = 24;
-    const offset = -(
-        productsCurrentIndex *
-        (cardWidth + gap) *
-        productsPerView
-    );
+    const offset = -(productsCurrentIndex * (cardWidth + gap));
     $carousel.css("transform", `translateX(${offset}px)`);
 }
 
@@ -305,13 +308,25 @@ function renderProductsDots() {
     }
 }
 
-function goToProductsPage(index) {
-    const totalPages = Math.ceil(products.length / productsPerView);
-    productsCurrentIndex = Math.max(0, Math.min(index, totalPages - 1));
+function goToNextProduct() {
+    const maxIndex = products.length - productsPerView; // 8 - 5 = 3
+    if (productsCurrentIndex < maxIndex) {
+        productsCurrentIndex++;
+    } else {
+        productsCurrentIndex = 0; // quay lại đầu
+    }
     updateProductsCarousel();
-    renderProductsDots();
 }
 
+function goToPrevProduct() {
+    const maxIndex = products.length - productsPerView; // 8 - 5 = 3
+    if (productsCurrentIndex > 0) {
+        productsCurrentIndex--;
+    } else {
+        productsCurrentIndex = maxIndex;
+    }
+    updateProductsCarousel();
+}
 // Combos Carousel
 let combosCurrentIndex = 0;
 const combosPerView = 3;
@@ -379,7 +394,7 @@ $(document).ready(() => {
                 : '<i class="fa-regular fa-heart" style="color: #808080; font-size:15px;"></i>'
         );
     });
-
+    setInterval(goToNextProduct, 4000);
     $(document).on("click", ".add-to-cart-btn", function () {
         const productId = $(this).data("product-id");
         alert("Đã thêm vào giỏ hàng!");
@@ -391,18 +406,8 @@ $(document).ready(() => {
     });
 
     // Products carousel navigation
-    $("#productsPrev").on("click", () => {
-        if (productsCurrentIndex > 0) {
-            goToProductsPage(productsCurrentIndex - 1);
-        }
-    });
-
-    $("#productsNext").on("click", () => {
-        const totalPages = Math.ceil(products.length / productsPerView);
-        if (productsCurrentIndex < totalPages - 1) {
-            goToProductsPage(productsCurrentIndex + 1);
-        }
-    });
+    $("#productsNext").on("click", goToNextProduct);
+    $("#productsPrev").on("click", goToPrevProduct);
 
     // Combos carousel navigation
     $("#combosPrev").on("click", () => {
@@ -419,14 +424,14 @@ $(document).ready(() => {
     });
 
     // Auto-play products carousel
-    setInterval(() => {
-        const totalPages = Math.ceil(products.length / productsPerView);
-        if (productsCurrentIndex < totalPages - 1) {
-            goToProductsPage(productsCurrentIndex + 1);
-        } else {
-            goToProductsPage(0);
-        }
-    }, 5000);
+    // setInterval(() => {
+    //     const totalPages = Math.ceil(products.length / productsPerView);
+    //     if (productsCurrentIndex < totalPages - 1) {
+    //         goToProductsPage(productsCurrentIndex + 1);
+    //     } else {
+    //         goToProductsPage(0);
+    //     }
+    // }, 5000);
 
     // Auto-play combos carousel
     setInterval(() => {
@@ -688,10 +693,10 @@ let pdProducts = [];
 
 function initProductSeller() {
     $.ajax({
-        url: "/api/product/sellers",
+        url: "http://localhost:3000/api/products?sort=bestseller",
         method: "GET",
         success: function (res) {
-            pdProducts = res.products; // gán vào biến
+            pdProducts = res.productsFilter; // gán vào biến
             console.log("Products:", pdProducts);
             pdInitializeProductGrid();
         },
@@ -712,29 +717,54 @@ function pdGenerateStars(rating) {
 
 // Create product card HTML
 function pdCreateProductCard(product) {
+    const favoriteList = JSON.parse(
+        localStorage.getItem("favoriteList") || "[]"
+    );
+
+    const isFavorite = favoriteList.some((fav) => fav === product.product_id);
     const sizeButtonsHTML = product.price_product
-        .map(
-            (pp, idx) => `
-            <button class="pd-size-btn ${idx === 0 ? "active" : ""}" 
-                data-price="${pp.price}" 
+        .map((pp, idx) => {
+            const flashSaleItem = products.find(
+                (f) =>
+                    f.product_id === product.product_id &&
+                    (f.size == pp.size || f.size === "all")
+            );
+
+            let displayPrice = pp.price;
+            let oldPrice = null;
+
+            if (flashSaleItem) {
+                const discountValue = flashSaleItem.discountValue ?? 0;
+                oldPrice = pp.price;
+                displayPrice = pp.price - discountValue;
+            }
+
+            return `
+            <button 
+                class="pd-size-btn ${idx === 0 ? "active" : ""}" 
+                data-price="${displayPrice}" 
+                data-oldprice="${oldPrice || ""}"
                 onclick="pdSelectSize(this)">
                 ${pp.size}
             </button>
-        `
-        )
+        `;
+        })
         .join("");
     return `
         <div class="col-12 col-sm-6 col-md-4 col-lg-3 ">
-            <div class="pd-product-card pd-product-card-compact" data-aos="zoom-out-up" data-id="${
-                product.id
+            <div class="pd-product-card pd-product-card-compact"  data-id="${
+                product.product_id
             }">
                 <div class="pd-product-image-wrapper">
                     <img src="/images/products/${product.images}" alt="${
         product.name
     }" class="pd-product-image">
-                    <button class="pd-favorite-btn" onclick="pdToggleFavorite(this)">
+                    <button class="pd-favorite-btn ${
+                        isFavorite ? "active" : ""
+                    }" onclick="pdToggleFavorite(this)">
                         <i class="far fa-heart"></i>
                     </button>
+                   
                 </div>
                 
                 <div  class="pd-product-content" >
@@ -775,9 +805,7 @@ function pdCreateProductCard(product) {
                             </div>
                         </div>
                         
-                        <div class="pd-product-price">${formatVND(
-                            product.price_product[0].price
-                        )}</div>
+                        <div class="pd-product-price"></div>
                     </div>
                     
                     <button class="pd-btn-add-to-cart" data-productId=${
@@ -790,6 +818,32 @@ function pdCreateProductCard(product) {
         </div>
     `;
 }
+function pdInitPriceDisplay(card) {
+    const activeBtn = card.querySelector(".pd-size-btn.active");
+    const priceDiv = card.querySelector(".pd-product-price");
+    if (!activeBtn || !priceDiv) return;
+    const price = Number(activeBtn.dataset.price);
+    const oldPrice = activeBtn.dataset.oldprice
+        ? Number(activeBtn.dataset.oldprice)
+        : null;
+
+    priceDiv.innerHTML = oldPrice
+        ? `<span class="pd-old-price" id="price-old">${formatVND(
+              oldPrice
+          )}</span>
+           <span class="pd-sale-price text-danger ms-2">${formatVND(
+               price
+           )}</span>`
+        : `<span id="price-old">${formatVND(price)}</span>`;
+    if (oldPrice) {
+        card.querySelector(".pd-product-image-wrapper").insertAdjacentHTML(
+            "beforeend",
+            `<div class="flashsale-badge"><span>Flash<br/> Sale</span></div>`
+        );
+    }
+}
+
+// Gọi hàm này sau khi render tất cả card
 
 // Initialize product grid
 function pdInitializeProductGrid() {
@@ -799,11 +853,61 @@ function pdInitializeProductGrid() {
             .map((product) => pdCreateProductCard(product))
             .join("");
     }
+    requestAnimationFrame(() => {
+        document
+            .querySelectorAll(".pd-product-card")
+            .forEach(pdInitPriceDisplay);
+    });
 }
-
 // Toggle favorite
-function pdToggleFavorite(button) {
+async function pdToggleFavorite(button) {
     button.classList.toggle("active");
+    const productId = parseInt(
+        button.closest(".pd-product-card").getAttribute("data-id")
+    );
+    const isActive = button.classList.contains("active");
+    try {
+        if (isActive) {
+            // Gọi API thêm
+            const res = await fetch("/api/favorite", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    productId: productId,
+                }),
+            });
+            if (!res.ok) throw new Error("Thêm yêu thích thất bại");
+            const data = await res.json();
+            if (!favoriteIds.includes(productId)) {
+                favoriteIds.push(productId);
+                localStorage.setItem(
+                    "favoriteList",
+                    JSON.stringify(favoriteIds)
+                );
+                $("#favoriteBadge").text(favoriteIds.length);
+            }
+        } else {
+            const res = await fetch(`/api/favorite`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    productId: productId,
+                }),
+            });
+            if (!res.ok) throw new Error("Xóa yêu thích thất bại");
+            favoriteIds = favoriteIds.filter((id) => id !== productId);
+            console.log("Updated favoriteIds:", favoriteIds);
+            localStorage.setItem("favoriteList", JSON.stringify(favoriteIds));
+            $("#favoriteBadge").text(favoriteIds.length);
+        }
+    } catch (err) {
+        console.error("Lỗi khi cập nhật yêu thích:", err);
+        button.classList.toggle("active");
+    }
 
     // Add animation
     button.style.transform = "scale(1.2)";
@@ -817,11 +921,8 @@ function pdSelectSize(button) {
     const sizeButtons = button.parentElement.querySelectorAll(".pd-size-btn");
     sizeButtons.forEach((btn) => btn.classList.remove("active"));
     button.classList.add("active");
-
-    const card = button.closest(".pd-product-card");
-    const priceEl = card.querySelector(".pd-product-price");
-    const newPrice = button.getAttribute("data-price");
-    priceEl.textContent = formatVND(Number(newPrice));
+    const parent = button.closest(".pd-product-card");
+    pdInitPriceDisplay(parent);
 }
 
 // Change quantity (for grid cards)
@@ -845,7 +946,7 @@ $(document).ready(function () {
                 .find(".pd-product-image")
                 .attr("src")
                 .replace(/^\/images\/products\//, ""),
-            price: parseVND(productDiv.find(".pd-product-price").text()),
+            price: parseVND(productDiv.find("#price-old").text()),
             product_size: productDiv
                 .find(".pd-size-options .active")
                 .text()
@@ -1119,15 +1220,15 @@ function pdHandleNewsletterSubmit(event) {
 }
 
 // Toggle favorite
-function pdToggleFavorite(button) {
-    button.classList.toggle("active");
+// function pdToggleFavorite(button) {
+//     button.classList.toggle("active");
 
-    // Add animation
-    button.style.transform = "scale(1.2)";
-    setTimeout(() => {
-        button.style.transform = "";
-    }, 200);
-}
+//     // Add animation
+//     button.style.transform = "scale(1.2)";
+//     setTimeout(() => {
+//         button.style.transform = "";
+//     }, 200);
+// }
 // Initialize on page load
 document.addEventListener("DOMContentLoaded", async () => {
     // Initialize product grid if on index page

@@ -3,16 +3,11 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>MIRA - Whiskas Dry Adult Dewasa 7+</title>
+        <title>Phê La - Quản lý Khách hàng</title>
         <link rel="stylesheet" href="/admin/css/style.css" />
         <link rel="stylesheet" href="/admin/css/users/user.css" />
         <link rel="stylesheet" href="/admin/css/users/addUser.css" />
-        <link
-            rel="icon"
-            type="image/png"
-            sizes="32x32"
-            href="/images/favicon/favicon-32x32.png"
-        />
+     
 
         <link
             rel="stylesheet"
@@ -20,6 +15,17 @@
             integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
             crossorigin="anonymous"
             referrerpolicy="no-referrer"
+        />
+         <!--Favicon-->
+        <link
+            rel="shortcut icon"
+            href="/images/favicon/favicon.ico"
+            type="image/x-icon"
+        />
+        <link
+            rel="icon"
+            href="/images/favicon/favicon.ico"
+            type="image/x-icon"
         />
     </head>
 
@@ -99,7 +105,7 @@
                 </section>
 
                 <!-- Filters Section -->
-                <section class="filters-section">
+                <!-- <section class="filters-section">
                     <div class="filters-section_header">
                         <div class="filters-header">
                             <h3>Bộ lọc và tìm kiếm</h3>
@@ -107,10 +113,18 @@
                         </div>
                     </div>
 
-                    <div class="filters-row">
+                   
+                </section> -->
+
+                <!-- Customer Table -->
+                <section class="table-section">
+                    <div class="table-header">
+                        <h3 class="table-title">Danh sách khách hàng</h3>
+                        <div style="display: flex; gap: 10px">
+                             <div class="filters-row">
                         <div class="filter-group">
-                            <label>Tìm kiếm</label>
-                            <div class="search-wrapper">
+                            
+                            <div class="search-wrapper" style="margin-right: 20px;">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                                 <input
                                     type="text"
@@ -121,13 +135,6 @@
                             </div>
                         </div>
                     </div>
-                </section>
-
-                <!-- Customer Table -->
-                <section class="table-section">
-                    <div class="table-header">
-                        <h3 class="table-title">Danh sách khách hàng</h3>
-                        <div style="display: flex; gap: 10px">
                             <button class="btn btn-secondary">
                                 <i class="fas fa-download"></i>
                                 Xuất Excel

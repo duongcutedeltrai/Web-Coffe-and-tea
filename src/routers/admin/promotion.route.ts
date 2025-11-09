@@ -1,5 +1,6 @@
 import express from "express";
 import promotionController from "../../controller/admin/promotion.controller";
+import { authMiddleware } from "../../middleware/auth.middleware";
 const promotionRoute = express.Router();
 const promotionDataRoute = express.Router();
 
@@ -7,6 +8,11 @@ promotionRoute.get("/promotions", promotionController.getCreatePromotionPage);
 promotionRoute.get(
     "/promotions/:id",
     promotionController.getCreatePromotionPage
+);
+promotionRoute.get(
+    "/valid-vouchers/:total",
+    authMiddleware,
+    promotionController.getValidVouchers
 );
 promotionRoute.get(
     "/promotions/update/:id",
@@ -22,13 +28,22 @@ promotionDataRoute.post(
     promotionController.applyPromotion
 );
 promotionDataRoute.post(
+    "/data/promotions/apply-promotion",
+    authMiddleware,
+    promotionController.applyPromotionByCustomer
+);
+promotionDataRoute.post(
     "/data/promotions/create",
     promotionController.createPromotion
 );
 
 promotionDataRoute.get(
-    "/data/promotions",
-    promotionController.getAllPromotions
+    "/data/promotions/voucher",
+    promotionController.getAllPromotionsVoucher
+);
+promotionDataRoute.get(
+    "/data/promotions/flashsale",
+    promotionController.getAllPromotionsFlashsale
 );
 promotionDataRoute.get(
     "/data/promotions/:id",

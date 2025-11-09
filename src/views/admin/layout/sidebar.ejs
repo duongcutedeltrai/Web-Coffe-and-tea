@@ -1,56 +1,73 @@
 <!-- Sidebar -->
 <nav class="sidebar">
-    <div class="logo">MIRA</div>
-    <div class="search-box">
-        <input type="text" placeholder="Tìm kiếm..." />
-    </div>
-    <div class="menu">
+    <a
+        class="navbar-brand d-flex align-items-center"
+        onclick="location.href='/admin/home'"
+        style="margin: auto; padding-bottom: 20px"
+    >
+        <img
+            class="logo_nav"
+            src="/images/logo1.png"
+            alt=""
+            style="width: 110px; height: auto; object-fit: cover"
+        />
+    </a>
+    <hr style=" border: none;
+    border-top: 1px solid rgba(0,0,0,0.2);
+    height: 0;" />
+    <div class="menu" style="padding-top: 20px">
         <a href="/admin" class="menu-item active">
-            <span>🏠</span>
+            <i class="fa-solid fa-house" style="color: #ffffff"></i>
             <span>Trang Chủ</span>
         </a>
         <a href="/admin/products" class="menu-item">
-            <span>📦</span>
+            <i class="fa-solid fa-mug-hot" style="color: #ffffff"></i>
             <span>Sản Phẩm</span>
         </a>
         <a href="/admin/categories" class="menu-item">
-            <span>🏪</span>
+            <i class="fa-solid fa-list" style="color: #ffffff"></i>
             <span>Danh mục</span>
         </a>
         <a href="/admin/customer" class="menu-item">
-            <span>👥</span>
+            <i class="fa-solid fa-user" style="color: #ffffff"></i>
             <span>Khách hàng</span>
         </a>
         <a href="/admin/staff" class="menu-item">
-            <span>🧑‍💼</span>
+            <i class="fa-solid fa-user-tie" style="color: #ffffff"></i>
             <span>Nhân viên</span>
         </a>
         <a href="/admin/orders" class="menu-item">
-            <span>🛒</span>
+            <i class="fa-solid fa-newspaper" style="color: #ffffff"></i>
             <span>Đơn hàng</span>
         </a>
+          <a href="/admin/promotions" class="menu-item">
+            <i class="fa-regular fa-percent" style="color: #ffffff;"></i>
+            <span>Khuyến mãi</span>
+        </a>
         <a href="/admin/statistics" class="menu-item">
-            <span>📊</span>
+            <i class="fa-solid fa-chart-line" style="color: #ffffff"></i>
             <span>Thống kê</span>
         </a>
         <a href="#" class="menu-item">
-            <span>⚙️</span>
+            <i class="fa-solid fa-gear" style="color: #ffffff"></i>
             <span>Cài đặt</span>
         </a>
     </div>
 </nav>
 
 <script>
-    // lấy tất cả menu-item
-    const menuItems = document.querySelectorAll(".menu-item");
+   document.addEventListener("DOMContentLoaded", () => {
+    const currentPath = window.location.pathname; // Ví dụ: /admin/categories/update/1
+    const menuLinks = document.querySelectorAll(".menu-item");
 
-    menuItems.forEach((item) => {
-        item.addEventListener("click", function () {
-            // bỏ active của tất cả item
-            menuItems.forEach((el) => el.classList.remove("active"));
+    menuLinks.forEach(link => {
+        const linkPath = link.getAttribute("href"); // Ví dụ: /admin/categories
 
-            // thêm active cho item đang click
-            this.classList.add("active");
-        });
+        // Nếu URL hiện tại bắt đầu bằng linkPath (dù có /update/... phía sau)
+        if (currentPath.startsWith(linkPath)) {
+            menuLinks.forEach(l => l.classList.remove("active")); // Xóa active cũ
+            link.classList.add("active"); // Thêm active vào link đúng
+        }
     });
+});
 </script>

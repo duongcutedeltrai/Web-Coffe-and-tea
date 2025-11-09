@@ -106,7 +106,7 @@ $(document).on("click", ".delete--btn", function (e) {
         text: "You won't be able to revert this!",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: "#d33",
+        confirmButtonColor: "#714024",
         cancelButtonColor: "#d33",
         confirmButtonText: "Yes, delete it!",
         backdrop: `
@@ -181,8 +181,8 @@ let myChart = new Chart(ctx, {
             {
                 label: "Doanh số",
                 data: [],
-                backgroundColor: "rgba(183,28,28,0.6)",
-                hoverBackgroundColor: "rgba(183,28,28,0.9)",
+                backgroundColor: "#714024c0",
+                hoverBackgroundColor: "#714024",
                 borderRadius: 8,
                 categoryPercentage: 0.5, // độ rộng nhóm bar (giảm xuống thì cách xa hơn)
                 barPercentage: 0.7, // độ rộng mỗi bar (giảm thì bar hẹp lại, cách xa hơn)
