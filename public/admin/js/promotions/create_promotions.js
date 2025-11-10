@@ -446,9 +446,9 @@ async function renderPromotions() {
           : "";
 
       return `
-            <div class="promotion-card" onclick="viewPromotionDetails(${
-              promotion.id
-            })">
+            <div class="promotion-card" onclick="viewPromotionDetails('${
+              promotion.promotion_id
+            }')">
                 <div class="promotion-header">
                     <div class="promotion-code">${promotion.code}</div>
                     <span class="promotion-status status-${status}">${getStatusText(
@@ -496,12 +496,12 @@ async function renderPromotions() {
                 </div>
                 ${applicableProductsHtml}
                 <div class="promotion-actions" onclick="event.stopPropagation()">
-                    <button class="btn-edit" onclick="editPromotion(${
-                      promotion.id
-                    })">✏️ Sửa</button>
-                    <button class="btn-delete" onclick="deletePromotion(${
-                      promotion.id
-                    })">🗑️ Xóa</button>
+                    <button class="btn-edit" onclick="editPromotion('${
+                      promotion.promotion_id
+                    }')">Sửa</button>
+                    <button class="btn-delete" onclick="deletePromotion('${
+                      promotion.promotion_id
+                    }')"> Xóa</button>
                 </div>
             </div>
         `;
@@ -548,7 +548,7 @@ function editPromotion(id) {
   const promotion = promotions.find(
     (p) => p.id === id || p.promotion_id === id
   );
-  console.log("promotion:", promotion);
+  console.log("promotion in edit:", promotion);
   if (!promotion) return;
   window.history.pushState(
     { promotionId: id },
@@ -612,11 +612,13 @@ function deletePromotion(id) {
 
 // View promotion details
 async function viewPromotionDetails(id) {
+  console.log("Viewing promotion details for ID:", id);
   let promotion = promotions.find((p) => p.id === id || p.promotion_id === id);
-  console.log("Viewing promotion:", promotion);
+
   if (!promotion) {
     const res = await fetch(`/admin/data/promotions/${id}`);
     const data = await res.json();
+
     if (data.success) {
       promotion = data.data;
     } else {
@@ -624,6 +626,8 @@ async function viewPromotionDetails(id) {
       return;
     }
   }
+  console.log("Loaded promotion for details:", promotion);
+
   const newUrl = `/admin/promotions/${promotion.promotion_id}`;
   window.history.pushState({ promotionId: id }, "", newUrl);
 
@@ -715,7 +719,7 @@ async function viewPromotionDetails(id) {
             </div>
             <div class="detail-row" style="margin-top: 12px;">
                 <label>Sản phẩm áp dụng</label>
-                <span>${getProductNames(promotion.applicable_products)}</span>
+                <span>${getProductNames(promotion.promotion_products)}</span>
             </div>
         </div>
     `;

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý Blog</title>
+    <link rel="stylesheet" href="/admin/css/blogs/blogs-management.css" />
+    <link rel="stylesheet" href="/admin/css/style.css" />
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <%- include('../layout/sidebar.ejs'); -%>
+      <!-- <Header -->
+      <div class="header1">
+        <div class="breadcrumb1">
+          Quản lý Blog<br />
+          <small style="color: black; font-size: 14px"
+            >Tạo, chỉnh sửa và quản lý các bài viết blog</small
+          >
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="container-wrapper">
+        <main class="main-content">
+          <!-- Updated filters section to match schema -->
+          <div class="filters-section">
+            <div class="filters-left">
+              <div class="search-wrapper">
+                <svg
+                  class="search-icon"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input
+                  type="text"
+                  id="searchInput"
+                  class="search-input"
+                  placeholder="Tìm kiếm blog..."
+                />
+              </div>
+
+              <div class="filter-group">
+                <select id="typeFilter" class="filter-select">
+                  <option value="">Tất cả loại</option>
+                  <option value="NEWS">Tin tức</option>
+                  <option value="PROMOTION">Khuyến mãi</option>
+                  <option value="PRODUCT">Sản phẩm</option>
+                  <option value="EVENT">Sự kiện</option>
+                  <option value="GUIDE">Hướng dẫn</option>
+                </select>
+
+                <select id="statusFilter" class="filter-select">
+                  <option value="">Tất cả trạng thái</option>
+                  <option value="DRAFT">Bản nháp</option>
+                  <option value="PUBLISHED">Đã xuất bản</option>
+                  <option value="ARCHIVED">Đã lưu trữ</option>
+                </select>
+              </div>
+            </div>
+
+            <button
+              class="btn-advanced-filter"
+              onclick="openCreateBlogDrawer()"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Tạo blog mới
+            </button>
+          </div>
+
+          <!-- Blogs Grid -->
+          <div class="blogs-grid" id="blogsGrid">
+            <!-- Blog cards will be rendered here -->
+          </div>
+
+          <!-- Empty State -->
+          <div class="empty-state" id="emptyState" style="display: none">
+            <div class="empty-icon">📝</div>
+            <h3>Không có blog nào</h3>
+            <p>Bắt đầu bằng cách tạo bài viết blog đầu tiên của bạn</p>
+          </div>
+        </main>
+      </div>
+
+      <!-- Create/Edit Blog Drawer - now integrated with form -->
+      <div class="drawer-overlay" id="blogDrawerOverlay"></div>
+      <div class="blog-drawer hidden" id="blogDrawer">
+        <div class="drawer-header">
+          <h2 id="drawerTitle">Tạo blog mới</h2>
+          <button class="close-btn" id="closeDrawerBtn">&times;</button>
+        </div>
+        <div class="drawer-content">
+          <form id="blogForm" class="blog-form">
+            <div class="form-section">
+              <h3 class="form-section-title">Thông tin cơ bản</h3>
+              <div class="form-group">
+                <label for="title">Tiêu đề *</label>
+                <input
+                  type="text"
+                  id="title"
+                  name="title"
+                  required
+                  placeholder="Nhập tiêu đề blog"
+                />
+              </div>
+              <div class="form-group">
+                <label for="slug">Slug *</label>
+                <input
+                  type="text"
+                  id="slug"
+                  name="slug"
+                  required
+                  placeholder="url-friendly-slug"
+                />
+              </div>
+              <div class="form-group">
+                <label for="description">Mô tả ngắn *</label>
+                <textarea
+                  id="description"
+                  name="description"
+                  required
+                  rows="2"
+                  placeholder="Mô tả ngắn gọn về bài viết (tối đa 500 ký tự)"
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3 class="form-section-title">Phân loại</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="type">Loại bài viết *</label>
+                  <select id="type" name="type" required>
+                    <option value="">Chọn loại</option>
+                    <option value="NEWS">Tin tức</option>
+                    <option value="PROMOTION">Khuyến mãi</option>
+                    <option value="PRODUCT">Sản phẩm</option>
+                    <option value="EVENT">Sự kiện</option>
+                    <option value="GUIDE">Hướng dẫn</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="status">Trạng thái *</label>
+                  <select id="status" name="status" required>
+                    <option value="DRAFT">Bản nháp</option>
+                    <option value="PUBLISHED">Đã xuất bản</option>
+                    <option value="ARCHIVED">Đã lưu trữ</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3 class="form-section-title">Nội dung</h3>
+              <div class="form-group">
+                <label for="thumbnail">Ảnh đại diện</label>
+                <div class="image-upload">
+                  <input
+                    type="file"
+                    id="thumbnail"
+                    name="thumbnail"
+                    accept="image/*"
+                  />
+                  <div class="upload-preview" id="thumbnailPreview"></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="content">Nội dung *</label>
+                <textarea id="content" name="content" required></textarea>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3 class="form-section-title">SEO</h3>
+              <div class="form-group">
+                <label for="metaTitle">Meta Title</label>
+                <input
+                  type="text"
+                  id="metaTitle"
+                  name="metaTitle"
+                  placeholder="Tiêu đề SEO"
+                />
+              </div>
+              <div class="form-group">
+                <label for="metaDescription">Meta Description</label>
+                <textarea
+                  id="metaDescription"
+                  name="metaDescription"
+                  placeholder="Mô tả SEO"
+                  rows="2"
+                ></textarea>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="drawer-footer">
+          <button
+            type="button"
+            class="btn btn-outline"
+            onclick="closeBlogDrawer()"
+          >
+            Hủy
+          </button>
+          <button type="button" class="btn btn-primary" onclick="submitBlog()">
+            Lưu blog
+          </button>
+        </div>
+      </div>
+
+      <!-- Blog Detail Modal -->
+      <div class="modal-overlay" id="blogModalOverlay">
+        <div class="blog-modal" id="blogModal">
+          <div class="modal-header">
+            <h2 id="modalTitle">Chi tiết blog</h2>
+            <button class="close-btn" id="closeModalBtn">&times;</button>
+          </div>
+          <div class="modal-content" id="modalContent">
+            <!-- Content will be rendered here -->
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeBlogModal()">
+              Đóng
+            </button>
+            <button class="btn btn-primary" onclick="editBlog()">
+              Chỉnh sửa
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="/admin/js/blogs/blogs-management.js"></script>
+  </body>
+</html>

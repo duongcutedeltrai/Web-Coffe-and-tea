@@ -10,6 +10,7 @@ import userRoute from "./admin/user.route";
 import homeRoute from "./admin/home.route";
 import { orderRoute, orderDataRoute } from "./admin/order.route";
 import { promotionDataRoute, promotionRoute } from "./admin/promotion.route";
+import { blogRoute, blogDataRoute } from "./admin/blog.route";
 
 const webRouter = (app: Express) => {
   app.use("/admin", productRoute);
@@ -23,6 +24,8 @@ const webRouter = (app: Express) => {
   app.use("/auth", authRoute);
   app.use("/admin", promotionDataRoute);
   app.use("/admin", promotionRoute);
+  app.use("/admin", blogRoute);
+  app.use("/admin", blogDataRoute);
 };
 
 export default webRouter;

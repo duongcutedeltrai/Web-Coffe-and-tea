@@ -1,52 +1,56 @@
 <!-- Sidebar -->
 <nav class="sidebar">
-    <div class="logo">MIRA</div>
-    <div class="search-box">
-        <input type="text" placeholder="Tìm kiếm..." />
-    </div>
-    <div class="menu">
-        <a href="/" class="menu-item active">
-            <span>🏠</span>
-            <span>Trang Chủ</span>
-        </a>
-        <a href="/admin/products" class="menu-item">
-            <span>📦</span>
-            <span>Sản Phẩm</span>
-        </a>
-        <a href="/admin/categories" class="menu-item">
-            <span>🏪</span>
-            <span>Danh mục</span>
-        </a>
-        <a href="/admin/user" class="menu-item">
-            <span>👥</span>
-            <span>Tài khoản</span>
-        </a>
-        <a href="/admin/orders" class="menu-item">
-            <span>🛒</span>
-            <span>Đơn hàng</span>
-        </a>
-        <a href="#" class="menu-item">
-            <span>📊</span>
-            <span>Thống kê</span>
-        </a>
-        <a href="#" class="menu-item">
-            <span>⚙️</span>
-            <span>Cài đặt</span>
-        </a>
-    </div>
+  <div class="logo"></div>
+  <div class="search-box">
+    <input type="text" placeholder="Tìm kiếm..." />
+  </div>
+  <div class="menu">
+    <a href="/" class="menu-item active">
+      <span>🏠</span>
+      <span>Trang Chủ</span>
+    </a>
+    <a href="/admin/products" class="menu-item">
+      <span>📦</span>
+      <span>Sản Phẩm</span>
+    </a>
+    <a href="/admin/categories" class="menu-item">
+      <span>🏪</span>
+      <span>Danh mục</span>
+    </a>
+    <a href="/admin/user" class="menu-item">
+      <span>👥</span>
+      <span>Tài khoản</span>
+    </a>
+    <a href="/admin/orders" class="menu-item">
+      <span>🛒</span>
+      <span>Đơn hàng</span>
+    </a>
+    <a href="/admin/blogs" class="menu-item">
+      <span>📝</span>
+      <span>Blog</span>
+    </a>
+    <a href="#" class="menu-item">
+      <span>📊</span>
+      <span>Thống kê</span>
+    </a>
+    <a href="#" class="menu-item">
+      <span>⚙️</span>
+      <span>Cài đặt</span>
+    </a>
+  </div>
 </nav>
 
 <script>
-    // lấy tất cả menu-item
-    const menuItems = document.querySelectorAll(".menu-item");
+  // lấy tất cả menu-item
+  const menuItems = document.querySelectorAll(".menu-item");
 
-    menuItems.forEach((item) => {
-        item.addEventListener("click", function () {
-            // bỏ active của tất cả item
-            menuItems.forEach((el) => el.classList.remove("active"));
+  menuItems.forEach((item) => {
+    item.addEventListener("click", function () {
+      // bỏ active của tất cả item
+      menuItems.forEach((el) => el.classList.remove("active"));
 
-            // thêm active cho item đang click
-            this.classList.add("active");
-        });
+      // thêm active cho item đang click
+      this.classList.add("active");
     });
+  });
 </script>
