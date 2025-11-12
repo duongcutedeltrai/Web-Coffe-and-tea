@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let selectedStaffId = null;
     let selectedDayOfWeek = null;
     let selectedShiftId = null;
-    let currentCell = null; // Lưu reference đến cell đang chỉnh sửa
+    let currentCell = null;
 
     // Mapping shift ID sang tên và class
     const shiftMapping = {
@@ -152,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const shiftName = result.data.shiftName;
 
-            // Xác định class CSS dựa trên tên ca
+
             let shiftClass = 'shift-off';
             if (shiftName.includes('Sáng')) shiftClass = 'shift-morning';
             else if (shiftName.includes('Chiều')) shiftClass = 'shift-afternoon';

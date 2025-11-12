@@ -300,6 +300,8 @@ class AdminStatisticService {
 
         const totalOrders = await prisma.orders.count();
 
+        const productDetail = await prisma.products.findMany()
+
         // Return payload
         return {
             labels,
@@ -310,6 +312,7 @@ class AdminStatisticService {
             favoriteProducts,
 
             totalOrders,
+            productDetail
         };
     };
 }

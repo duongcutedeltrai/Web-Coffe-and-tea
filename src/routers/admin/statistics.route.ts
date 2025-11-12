@@ -12,4 +12,10 @@ statisticsRouter.get(
     AdminStatisticsController.getStatistics
 );
 
+statisticsRouter.get(
+    "/statistics/products/:id",
+    AdminStatisticsController.getStatisticsDetailProduct
+);
+
+
 export default statisticsRouter;
