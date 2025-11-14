@@ -25,64 +25,66 @@
 </head>
 
 <body>
-  <div class="container">
-    <%- include('../layout/sidebar.ejs'); -%> <%- include('./create_product.ejs'); -%>
-        <div class="content">
-          <div class="top">
-            <div class="top-content">
-              <h1>Menu</h1>
-            </div>
-          </div>
-
-          <!-- Category Navigation -->
-          <div class="category-nav-container">
-            <nav class="explore__menu--list"></nav>
-
-            <button class="scroll-arrow left" id="scrollLeft">
-              <i class="fas fa-chevron-left"></i>
-            </button>
-            <button class="scroll-arrow right" id="scrollRight">
-              <i class="fas fa-chevron-right"></i>
-            </button>
-          </div>
-
-          <!-- Main Content -->
-          <main class="main-content">
-            <div class="menu-header">
-              <div class="menu-title">
-                <h2>All products</h2>
-                <p class="date">Thursday, 2 Feb 2021</p>
+  <% if (isAdmin) { %>
+    <div class="container">
+      <%- include('../layout/sidebar.ejs'); -%> <%- include('./create_product.ejs'); -%>
+          <div class="content">
+            <div class="top">
+              <div class="top-content">
+                <h1>Menu</h1>
               </div>
-              <div class="menu-controls">
-                <div class="search-container">
-                  <i class="fas fa-search search-icon"></i>
-                  <input type="text" placeholder="Search for food, coffee, etc..." class="search-input" id="search" />
+            </div>
+
+            <!-- Category Navigation -->
+            <div class="category-nav-container">
+              <nav class="explore__menu--list"></nav>
+
+              <button class="scroll-arrow left" id="scrollLeft">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              <button class="scroll-arrow right" id="scrollRight">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+
+            <!-- Main Content -->
+            <main class="main-content">
+              <div class="menu-header">
+                <div class="menu-title">
+                  <h2>All products</h2>
+                  <p class="date">Thursday, 2 Feb 2021</p>
                 </div>
-                <button class="reset-filter">
-                  <i class="fas fa-redo"></i>
-                  Reset Filter
-                </button>
+                <div class="menu-controls">
+                  <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" placeholder="Search for food, coffee, etc..." class="search-input" id="search" />
+                  </div>
+                  <button class="reset-filter">
+                    <i class="fas fa-redo"></i>
+                    Reset Filter
+                  </button>
+                </div>
               </div>
-            </div>
-            <!-- Add New Dish Card -->
-            <div class="loading-wrapper"></div>
-            <!-- Menu Grid -->
-            <div class="menu-grid"></div>
-            <div id="pagination-container" class="pagination"></div>
-            <!-- Pagination -->
-            <div class="pagination">
-              <span class="page-info"></span>
-              <div class="page-numbers"></div>
-            </div>
-          </main>
-        </div>
-        <!-- Header -->
-  </div>
+              <!-- Add New Dish Card -->
+              <div class="loading-wrapper"></div>
+              <!-- Menu Grid -->
+              <div class="menu-grid"></div>
+              <div id="pagination-container" class="pagination"></div>
+              <!-- Pagination -->
+              <div class="pagination">
+                <span class="page-info"></span>
+                <div class="page-numbers"></div>
+              </div>
+            </main>
+          </div>
+          <!-- Header -->
+    </div>
+    <% } %>
 
-  <!-- Embedded JavaScript to avoid 404 errors -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="/admin/js/products/products.js"></script>
-  <script src="/admin/js/products/product_create.js"></script>
+      <!-- Embedded JavaScript to avoid 404 errors -->
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <script src="/admin/js/products/products.js"></script>
+      <script src="/admin/js/products/product_create.js"></script>
 </body>
 
 </html>

@@ -1,21 +1,23 @@
 <!DOCTYPE html>
-
-<html lang="en">
+<html lang="vi">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <!--Favicon-->
-    <link rel="shortcut icon" href="/images/favicon/favicon.ico" type="image/x-icon" />
-    <link rel="icon" href="/images/favicon/favicon.ico" type="image/x-icon" />
 
-    <link rel="stylesheet" href="/admin/css/style.css" />
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
-        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Phê La - Bảng điều khiển</title>
+        <link rel="stylesheet" href="/admin/css/style.css" />
+        <link rel="stylesheet" href="/admin/css/dashboard/dashboard.css" />
+        <!--Favicon-->
+        <link rel="shortcut icon" href="/images/favicon/favicon.ico" type="image/x-icon" />
+        <link rel="icon" href="/images/favicon/favicon.ico" type="image/x-icon" />
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+            integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+            crossorigin="anonymous" referrerpolicy="no-referrer" />
+    </head>
 
 <body>
     <div class="container">
@@ -23,10 +25,220 @@
 
             <!-- Main Content -->
             <main class="main-content">
+                <div class="page-header">
+                    <h1>Bảng điều khiển</h1>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Tổng Doanh Thu</h3>
+
+                        <% const total=totalAmount.reduce((sum, order)=> sum
+                            + Number(order.final_amount), 0); %>
+                            <div class="stat-value">
+                                <span class="value">
+
+                                    <%= new Intl.NumberFormat('vi-VN', { style: 'currency' , currency: 'VND'
+                                        }).format(total) %>
+                                </span>
+                                <span class="stat-change positive">↑ 12,5%</span>
+                            </div>
+                            <p class="stat-footer">+1.248.900 ₫ so với tuần trước</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <h3>Đơn Hàng Hôm Nay</h3>
+                        <div class="stat-value">
+                            <span class="value">
+                                <%= todayOrders %>
+                            </span>
+                            <span class="stat-change positive">↑ 8%</span>
+                        </div>
+                        <p class="stat-footer">+2 so với hôm qua</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <h3>Tổng khác hàng</h3>
+                        <div class="stat-value">
+                            <span class="value">
+                                <%= customers %>
+                            </span>
+
+                        </div>
+                        <p class="stat-footer">+2 so với hôm qua</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <h3>Nhân Viên Làm Việc</h3>
+                        <div class="stat-value">
+                            <span class="value">
+                                <%= staffs.length + 1%>
+                            </span>
+                            <span class="stat-change positive">✓ Đầy đủ</span>
+                        </div>
+                        <% const positionCount={}; staffDetails.forEach(staff=> {
+                            if(positionCount[staff.position]) {
+                            positionCount[staff.position]++;
+                            } else {
+                            positionCount[staff.position] = 1;
+                            }
+                            });
+                            %>
+
+                            <p class="stat-footer">
+                                <% Object.keys(positionCount).forEach((pos, idx, arr)=> { %>
+                                    <%= positionCount[pos] %>
+                                        <%= pos %>
+                                            <%= idx < arr.length - 1 ? ', ' : '' %>
+                                                <% }) %>,
+                                                    1 Quản Lý
+                            </p>
+                    </div>
+                </div>
+
+                <div class="content-grid">
+                    <div class="left-column">
+                        <div class="card">
+                            <div class="card-header">
+                                <div>
+                                    <h3>Biểu đồ đặt hàng</h3>
+                                </div>
+
+                            </div>
+
+                            <canvas id="orderChart" class="chart-canvas"></canvas>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Đơn hàng gần đây</h3>
+                                <a href="#" class="view-all">Xem tất cả →</a>
+                            </div>
+                            <div class="orders-list">
+                                <% products.forEach((p)=> { %>
+                                    <div class="order-item">
+                                        <div class="order-info">
+                                            <h4>
+                                                <%= p.order_id %> - <%= p.receiver_name %>
+                                            </h4>
+
+                                            <% if (Array.isArray(p.order_details) && p.order_details.length> 0) {
+                                                const nameProduct = {};
+                                                p.order_details.forEach(detail => {
+                                                const productName = detail.products?.name || "Không xác định";
+                                                if (nameProduct[productName]) {
+                                                nameProduct[productName] += detail.quantity;
+                                                } else {
+                                                nameProduct[productName] = detail.quantity;
+                                                }
+                                                });
+                                                %>
+                                                <p class="stat-footer">
+                                                    <% Object.keys(nameProduct).forEach((productName, idx, arr)=> { %>
+                                                        <%= nameProduct[productName] %>
+                                                            <%= productName %>
+                                                                <%= idx < arr.length - 1 ? ', ' : '' %>
+                                                                    <% }) %>
+                                                </p>
+                                                <% } %>
+                                        </div>
+
+                                        <div>
+                                            <% if (p.status==="ready" ) { %>
+                                                <span class="order-status status-ready"
+                                                    style="padding: 12px; background-color: #D6A700">
+                                                    Sẵn sàng
+                                                </span>
+                                                <% } else if (p.status==="pending" ) { %>
+                                                    <span class="order-status status-preparing"
+                                                        style="padding: 12px; background-color: #CFE8F3">
+                                                        Đang chuẩn bị
+                                                    </span>
+                                                    <% } else { %>
+                                                        <span class="order-status status-unknown"
+                                                            style="padding: 12px; background-color: #4CAF50">
+                                                            Hoàn thành
+                                                        </span>
+                                                        <% } %>
+
+                                                            <p
+                                                                style="text-align: right; margin-top: 20px; color: #667eea; font-weight: 600;">
+                                                                <%= new Intl.NumberFormat('vi-VN', { style: 'currency' ,
+                                                                    currency: 'VND' }).format(p.final_amount) %>
+                                                            </p>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <div>
+                                    <h3>Mặt hàng bán chạy</h3>
+                                </div>
+                                <!-- <div class="time-toggles">
+                                        <button class="toggle-btn" data-period="week">Tuần</button>
+                                        <button class="toggle-btn active" data-period="month">Tháng</button>
+                                        <button class="toggle-btn" data-period="year">Năm</button>
+                                    </div> -->
+                            </div>
+                            <div class="best-sellers-list">
+                                <% trending.topProducts.forEach((p, index)=> { %>
+                                    <div class="seller-item">
+                                        <div class="item-rank">
+                                            #<%= index + 1 %>
+                                        </div>
+                                        <img src="/images/products/<%= p.image %>" alt="<%= p.name %>"
+                                            class="seller-image" />
+
+                                        <div class="seller-info">
+                                            <div class="seller-name">
+                                                <%= p.name %>
+                                            </div>
+                                        </div>
+                                        <div class="seller-price">
+                                            <%= p.sold %> SP
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                            </div>
+                        </div>
+                    </div>
 
 
+                    <div class="right-column">
+
+                        <div class="card">
+                            <div class="card-header">
+                                <div>
+                                    <h3>Blogs</h3>
+                                </div>
+
+                            </div>
+                            <div class="best-sellers-list">
+                                <p>Blogs</p>
+
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <div>
+                                    <h3>Thống kê doanh thu</h3>
+                                </div>
+                                <div class="time-toggles">
+
+                                </div>
+                            </div>
+                            <canvas id="revenueChart" class="chart-canvas"></canvas>
+                        </div>
+                    </div>
+                </div>
             </main>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/admin/js/dashboard/dashboard.js"></script>
 </body>
 
 </html>

@@ -21,6 +21,8 @@ app.use(cookieParser());
 //static files
 app.use(express.static("public"));
 
+
+
 //config routers
 webRouter(app);
 // getConection();

@@ -1,58 +1,49 @@
 <!-- Sidebar -->
+<!-- Sidebar -->
 <nav class="sidebar">
   <a class="navbar-brand d-flex align-items-center" onclick="location.href='/admin/home'"
     style="margin: auto; padding-bottom: 20px">
     <img class="logo_nav" src="/images/logo1.png" alt="" style="width: 110px; height: auto; object-fit: cover" />
   </a>
-  <hr style=" border: none;
-    border-top: 1px solid rgba(0,0,0,0.2);
-    height: 0;" />
+  <hr style=" border: none; border-top: 1px solid rgba(0,0,0,0.2); height: 0;" />
   <div class="menu" style="padding-top: 20px">
-    <a href="/admin" class="menu-item active">
-      <i class="fa-solid fa-house" style="color: #ffffff"></i>
-      <span>Trang Chủ</span>
-    </a>
-    <a href="/admin/products" class="menu-item">
-      <i class="fa-solid fa-mug-hot" style="color: #ffffff"></i>
-      <span>Sản Phẩm</span>
-    </a>
-    <a href="/admin/categories" class="menu-item">
-      <i class="fa-solid fa-list" style="color: #ffffff"></i>
-      <span>Danh mục</span>
-    </a>
-    <a href="/admin/customer" class="menu-item">
-      <i class="fa-solid fa-user" style="color: #ffffff"></i>
-      <span>Khách hàng</span>
-    </a>
-    <a href="/admin/staff" class="menu-item">
-      <i class="fa-solid fa-user-tie" style="color: #ffffff"></i>
-      <span>Nhân viên</span>
-    </a>
-    <a href="/admin/orders" class="menu-item">
-      <i class="fa-solid fa-newspaper" style="color: #ffffff"></i>
-      <span>Đơn hàng</span>
-    </a>
-    <a href="/admin/promotions" class="menu-item">
-      <i class="fa-regular fa-percent" style="color: #ffffff;"></i>
-      <span>Khuyến mãi</span>
-    </a>
 
-    <a href="/admin/blogs" class="menu-item">
-      <span>📝</span>
-      <span>Blog</span>
-    </a>
+    <% if (isAdmin || isStaff) { %>
+      <!-- Menu chung admin + staff -->
+      <a href="/admin" class="menu-item">
+        <i class="fa-solid fa-house" style="color: #ffffff"></i>
+        <span>Trang Chủ</span>
+      </a>
+      <a href="/admin/orders" class="menu-item">
+        <i class="fa-solid fa-newspaper" style="color: #ffffff"></i>
+        <span>Đơn hàng</span>
+      </a>
+      <a href="/admin/promotions" class="menu-item">
+        <i class="fa-regular fa-percent" style="color: #ffffff;"></i>
+        <span>Khuyến mãi</span>
+      </a>
+
+      <a href="/admin/categories" class="menu-item"><i class="fa-solid fa-list"></i> <span>Danh mục</span></a>
+      <a href="/admin/blogs" class="menu-item"><span>📝</span> <span>Blog</span></a>
 
 
-    <a href="/admin/statistics" class="menu-item">
-      <i class="fa-solid fa-chart-line" style="color: #ffffff"></i>
-      <span>Thống kê</span>
-    </a>
-    <a href="#" class="menu-item">
-      <i class="fa-solid fa-gear" style="color: #ffffff"></i>
-      <span>Cài đặt</span>
-    </a>
+      <% if (isAdmin) { %>
+        <!-- Menu chỉ admin -->
+        <a href="/admin/products" class="menu-item"><i class="fa-solid fa-mug-hot"></i> <span>Sản Phẩm</span></a>
+        <a href="/admin/customer" class="menu-item"><i class="fa-solid fa-user"></i> <span>Khách hàng</span></a>
+        <a href="/admin/staff" class="menu-item"><i class="fa-solid fa-user-tie"></i> <span>Nhân viên</span></a>
+        <a href="/admin/statistics" class="menu-item"><i class="fa-solid fa-chart-line"></i> <span>Thống kê</span></a>
+        <a href="#" class="menu-item"><i class="fa-solid fa-gear"></i> <span>Cài đặt</span></a>
+        <% } %>
+
+          <% } else { %>
+            <script>
+              window.location.href = "/auth/login";
+            </script>
+            <% } %>
   </div>
 </nav>
+
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
