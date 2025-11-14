@@ -1,0 +1,136 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  /* Updated background to match project's teal color scheme */
+  background: rgb(64, 34, 4);
+  /* Updated font to match project's Inter font family */
+  font-family: "Inter", sans-serif;
+}
+
+.text_404 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.text_404 h1 {
+  font-size: 15vw;
+  color: white;
+  /* Updated stroke color to complement teal background */
+  -webkit-text-stroke: 3px rgba(255, 255, 255, 0.3);
+}
+
+.eye {
+  position: relative;
+  width: 14vw;
+  height: 14vw;
+  display: block;
+  /* Updated eye background to semi-transparent white for better integration */
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  margin: 0 15px;
+  /* Added subtle shadow to match project's glass morphism style */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.eyeball {
+  position: absolute;
+  top: 50%;
+  left: 36%;
+  transform: translate(-50%, -50%);
+  width: 10vw;
+  height: 10vw;
+  border-radius: 50%;
+  /* Updated eyeball color to match project's teal theme */
+  background: rgb(2, 2, 2);
+}
+
+.description {
+  font-size: 4vw;
+  color: white;
+  /* Added text styling to match project's typography */
+  font-weight: 500;
+  margin-top: 2rem;
+  opacity: 0.9;
+}
+
+/* Added back button styling matching login page design */
+.back-btn {
+  margin-top: 3rem;
+  padding: 16px 32px;
+  /* Same gradient background as login page buttons */
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    rgba(255, 255, 255, 0.9) 100%
+  );
+  color: rgb(12, 90, 100);
+  border: none;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 300ms ease;
+  font-family: "Inter", sans-serif;
+  min-width: 140px;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: slideUpButton 600ms ease-out 1000ms forwards;
+}
+
+.back-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.3);
+}
+
+/* Added animation for button entrance */
+@keyframes slideUpButton {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .text_404 h1 {
+    font-size: 90px;
+  }
+
+  .eye {
+    width: 90px;
+    height: 90px;
+  }
+
+  .eyeball {
+    width: 60px;
+    height: 60px;
+  }
+
+  .description {
+    font-size: 23px;
+  }
+
+  /* Added responsive styling for button */
+  .back-btn {
+    font-size: 14px;
+    padding: 14px 28px;
+    margin-top: 2rem;
+  }
+}

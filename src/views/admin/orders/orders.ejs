@@ -2,338 +2,332 @@
 <html lang="vi">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Phê la - Quản lý đơn hàng</title>
-    <link rel="stylesheet" href="/admin/css/orders/orders.css" />
-    <link rel="stylesheet" href="/admin/css/style.css" />
-    <link rel="shortcut icon" href="/images/favicon/favicon.ico" type="image/x-icon" />
-    <link rel="icon" href="/images/favicon/favicon.ico" type="image/x-icon" />
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
-        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phê la - Quản lý đơn hàng</title>
+  <link rel="stylesheet" href="/admin/css/orders/orders.css" />
+  <link rel="stylesheet" href="/admin/css/style.css" />
+  <link rel="shortcut icon" href="/images/favicon/favicon.ico" type="image/x-icon" />
+  <link rel="icon" href="/images/favicon/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body>
-    <div class="container">
-        <%- include('../layout/sidebar.ejs'); -%>
-            <div class="content">
-                <div class="main-wrapper">
-                    <main class="main-content">
-                        <div class="filters-section">
-                            <div class="filters-left">
-                                <div class="search-wrapper">
-                                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="2">
-                                        <circle cx="11" cy="11" r="8"></circle>
-                                        <path d="m21 21-4.35-4.35"></path>
-                                    </svg>
-                                    <input type="text" id="searchInput" class="search-input"
-                                        placeholder="Tìm kiếm đơn hàng..." />
-                                </div>
-
-                                <div class="filter-group">
-                                    <select id="typeFilter" class="filter-select">
-                                        <option value="all">Tất cả loại</option>
-                                        <option value="DINE_IN">
-                                            Tại quán
-                                        </option>
-                                        <option value="TAKE_AWAY">
-                                            Mang đi
-                                        </option>
-                                        <option value="DELIVERY">
-                                            Giao hàng
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <button class="btn-advanced-filter" onclick="openCreateOrderDrawer()">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                </svg>
-                                Tạo đơn hàng mới
-                            </button>
-                        </div>
-
-                        <div class="tabs-container">
-                            <div class="tabs-list">
-                                <button class="tab-trigger active" data-tab="all">
-                                    Tất cả đơn hàng
-                                </button>
-                                <button class="tab-trigger" data-tab="pending">
-                                    Đơn hàng đang xử lý
-                                </button>
-                                <button class="tab-trigger" data-tab="ready">
-                                    Đơn hàng sẵn sàng
-                                </button>
-                                <button class="tab-trigger" data-tab="completed">
-                                    Đã hoàn thành
-                                </button>
-                                <button class="tab-trigger" data-tab="canceled">
-                                    Đã hủy
-                                </button>
-                            </div>
-
-                            <div class="tab-content active" id="tab-all">
-                                <div class="orders-grid" id="ordersGridAll"></div>
-                            </div>
-
-                            <div class="tab-content" id="tab-pending">
-                                <div class="orders-grid" id="ordersGridPending"></div>
-                            </div>
-
-                            <div class="tab-content" id="tab-ready">
-                                <div class="orders-grid" id="ordersGridReady"></div>
-                            </div>
-
-                            <div class="tab-content" id="tab-completed">
-                                <div class="orders-grid" id="ordersGridCompleted"></div>
-                            </div>
-
-                            <div class="tab-content" id="tab-canceled">
-                                <div class="orders-grid" id="ordersGridCanceled"></div>
-                            </div>
-                        </div>
-                    </main>
+  <div class="container">
+    <%- include('../layout/sidebar.ejs'); -%>
+      <div class="content">
+        <div class="main-wrapper">
+          <main class="main-content">
+            <div class="filters-section">
+              <div class="filters-left">
+                <div class="search-wrapper">
+                  <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                  </svg>
+                  <input type="text" id="searchInput" class="search-input" placeholder="Tìm kiếm đơn hàng..." />
                 </div>
 
-                <!-- Create Order Drawer -->
-                <div id="createOrderDrawer" class="drawer-overlay hidden">
-                    <div class="drawer-container">
-                        <div class="product-selector-panel">
-                            <div class="product-selector-header">
-                                <h3 class="product-selector-title">
-                                    Chọn sản phẩm
-                                </h3>
-                            </div>
-
-                            <div class="product-selector-search">
-                                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2">
-                                    <circle cx="11" cy="11" r="8"></circle>
-                                    <path d="m21 21-4.35-4.35"></path>
-                                </svg>
-                                <input type="text" id="productSearchInput" class="search-input"
-                                    placeholder="Tìm kiếm sản phẩm..." oninput="filterProducts()" />
-                            </div>
-
-                            <div class="product-selector-body">
-                                <div class="product-categories"></div>
-
-                                <div id="productsGrid" class="products-grid">
-                                    <!-- Products will be rendered here -->
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="drawer-content">
-                            <div class="drawer-header">
-                                <h2 class="drawer-title">Tạo đơn hàng mới</h2>
-                                <button class="drawer-close" onclick="closeCreateOrderDrawer()">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2">
-                                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                                    </svg>
-                                </button>
-                            </div>
-
-                            <div class="drawer-body">
-                                <form id="createOrderForm" method="post" action="/admin/orders/create">
-                                    <!-- Customer Information -->
-                                    <div class="form-section">
-                                        <h3 class="form-section-title">
-                                            Thông tin khách hàng
-                                        </h3>
-                                        <div class="form-group">
-                                            <label class="form-label">Tên khách hàng
-                                                <span class="required">*</span></label>
-                                            <input type="text" id="customerName" class="form-input"
-                                                placeholder="Nhập tên khách hàng" required />
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">Số điện thoại
-                                                <span class="required">*</span></label>
-                                            <input type="tel" id="customerPhone" class="form-input"
-                                                placeholder="Nhập số điện thoại" required />
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">Địa chỉ giao hàng</label>
-                                            <textarea id="deliveryAddress" class="form-textarea"
-                                                placeholder="Nhập địa chỉ giao hàng" rows="2"></textarea>
-                                        </div>
-                                    </div>
-
-                                    <!-- Order Type -->
-                                    <div class="form-section">
-                                        <h3 class="form-section-title">
-                                            Loại đơn hàng
-                                        </h3>
-                                        <div class="form-radio-group">
-                                            <label class="form-radio">
-                                                <input type="radio" name="orderType" value="DINE_IN" checked />
-                                                <span>Tại quán</span>
-                                            </label>
-                                            <label class="form-radio">
-                                                <input type="radio" name="orderType" value="TAKE_AWAY" />
-                                                <span>Mang đi</span>
-                                            </label>
-                                            <label class="form-radio">
-                                                <input type="radio" name="orderType" value="DELIVERY" />
-                                                <span>Giao hàng</span>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <!-- Products -->
-                                    <div class="form-section">
-                                        <h3 class="form-section-title">
-                                            Sản phẩm
-                                        </h3>
-                                        <div id="selectedProductsList">
-                                            <!-- Selected products will appear here -->
-                                        </div>
-                                        <!-- Changed button to open product selector instead of adding empty rows -->
-                                        <button type="button" class="btn-add-product"
-                                            onclick="scrollToProductSelector()">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                                stroke="currentColor" stroke-width="2">
-                                                <line x1="12" y1="5" x2="12" y2="19"></line>
-                                                <line x1="5" y1="12" x2="19" y2="12"></line>
-                                            </svg>
-                                            Chọn từ danh sách bên trái
-                                        </button>
-                                    </div>
-
-                                    <!-- Payment -->
-                                    <div class="form-section">
-                                        <h3 class="form-section-title">
-                                            Thanh toán
-                                        </h3>
-                                        <div class="form-group">
-                                            <label class="form-label">Phương thức thanh toán</label>
-                                            <select id="paymentMethod" class="form-select">
-                                                <option value="Tiền mặt">
-                                                    Tiền mặt
-                                                </option>
-                                                <option value="Thẻ tín dụng">
-                                                    Thẻ tín dụng
-                                                </option>
-                                                <option value="Ví điện tử">
-                                                    Ví điện tử
-                                                </option>
-                                                <option value="Chuyển khoản">
-                                                    Chuyển khoản
-                                                </option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">Trạng thái thanh toán</label>
-                                            <select id="paymentStatus" class="form-select">
-                                                <option value="Đang chờ">
-                                                    Đang chờ
-                                                </option>
-                                                <option value="Đã thanh toán">
-                                                    Đã thanh toán
-                                                </option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <!-- Notes -->
-                                    <div class="form-section">
-                                        <h3 class="form-section-title">
-                                            Ghi chú
-                                        </h3>
-                                        <div class="form-group">
-                                            <textarea id="orderNotes" class="form-textarea"
-                                                placeholder="Nhập ghi chú cho đơn hàng..." rows="3"></textarea>
-                                        </div>
-                                    </div>
-
-                                    <!-- Voucher code -->
-                                    <div class="form-section">
-                                        <h3 class="form-section-title">
-                                            Mã giảm giá
-                                        </h3>
-                                        <div class="form-group">
-                                            <input type="text" id="voucherCode" class="form-input"
-                                                placeholder="Nhập mã giảm giá (nếu có)" />
-                                            <button type="button" class="btn-apply-voucher" onclick="applyVoucher()">
-                                                Áp dụng
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <!-- Total -->
-                                    <div class="form-total">
-                                        <span>Tổng cộng:</span>
-                                        <span id="orderTotal" class="form-total-amount">0₫</span>
-                                    </div>
-                                </form>
-                            </div>
-
-                            <div class="drawer-footer">
-                                <button type="button" class="btn btn-outline" onclick="closeCreateOrderDrawer()">
-                                    Hủy
-                                </button>
-                                <button type="button" class="btn btn-primary" onclick="submitCreateOrder()">
-                                    Tạo đơn hàng
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                <div class="filter-group">
+                  <select id="typeFilter" class="filter-select">
+                    <option value="all">Tất cả loại</option>
+                    <option value="DINE_IN">
+                      Tại quán
+                    </option>
+                    <option value="TAKE_AWAY">
+                      Mang đi
+                    </option>
+                    <option value="DELIVERY">
+                      Giao hàng
+                    </option>
+                  </select>
                 </div>
-            </div>
-    </div>
+              </div>
 
-    <div id="statusDropdown" class="dropdown-menu hidden">
-        <div class="dropdown-label">Thay đổi trạng thái</div>
-        <div class="dropdown-separator"></div>
-        <button class="dropdown-item" data-status="Đang xử lý">
-            Đang xử lý
-        </button>
-        <button class="dropdown-item" data-status="Sẵn sàng">
-            Sẵn sàng
-        </button>
-        <button class="dropdown-item" data-status="Hoàn thành">
-            Hoàn thành
-        </button>
-        <button class="dropdown-item" data-status="Đã hủy">Đã hủy</button>
-    </div>
-
-    <!-- Order Details Modal -->
-    <div id="orderModal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title" id="modalTitle">
-                    Chi tiết đơn hàng
-                </h2>
-                <button class="modal-close" onclick="closeOrderModal()">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
+              <button class="btn-advanced-filter" onclick="openCreateOrderDrawer()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Tạo đơn hàng mới
+              </button>
             </div>
 
-            <div class="modal-body"></div>
-            <div class="modal-footer">
-                <button class="btn btn-outline" onclick="closeOrderModal()">
-                    Đóng
+            <div class="tabs-container">
+              <div class="tabs-list">
+                <button class="tab-trigger active" data-tab="all">
+                  Tất cả đơn hàng
                 </button>
-                <button class="btn btn-primary" onclick="printOrder()">
-                    In đơn hàng
+                <button class="tab-trigger" data-tab="pending">
+                  Đơn hàng đang xử lý
                 </button>
+                <button class="tab-trigger" data-tab="ready">
+                  Đơn hàng sẵn sàng
+                </button>
+                <button class="tab-trigger" data-tab="completed">
+                  Đã hoàn thành
+                </button>
+                <button class="tab-trigger" data-tab="canceled">
+                  Đã hủy
+                </button>
+              </div>
+
+              <div class="tab-content active" id="tab-all">
+                <div class="orders-grid" id="ordersGridAll"></div>
+              </div>
+
+              <div class="tab-content" id="tab-pending">
+                <div class="orders-grid" id="ordersGridPending"></div>
+              </div>
+
+              <div class="tab-content" id="tab-ready">
+                <div class="orders-grid" id="ordersGridReady"></div>
+              </div>
+
+              <div class="tab-content" id="tab-completed">
+                <div class="orders-grid" id="ordersGridCompleted"></div>
+              </div>
+
+              <div class="tab-content" id="tab-canceled">
+                <div class="orders-grid" id="ordersGridCanceled"></div>
+              </div>
             </div>
+          </main>
         </div>
-    </div>
 
-    <script src="/admin/js/orders/orders.js"></script>
+        <!-- Create Order Drawer -->
+        <div id="createOrderDrawer" class="drawer-overlay hidden">
+          <div class="drawer-container">
+            <div class="product-selector-panel">
+              <div class="product-selector-header">
+                <h3 class="product-selector-title">
+                  Chọn sản phẩm
+                </h3>
+              </div>
+
+              <div class="product-selector-search">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input type="text" id="productSearchInput" class="search-input" placeholder="Tìm kiếm sản phẩm..."
+                  oninput="filterProducts()" />
+              </div>
+
+              <div class="product-selector-body">
+                <div class="product-categories"></div>
+
+                <div id="productsGrid" class="products-grid">
+                  <!-- Products will be rendered here -->
+                </div>
+              </div>
+            </div>
+
+            <div class="drawer-content">
+              <div class="drawer-header">
+                <h2 class="drawer-title">Tạo đơn hàng mới</h2>
+                <button class="drawer-close" onclick="closeCreateOrderDrawer()">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+
+              <div class="drawer-body">
+                <form id="createOrderForm" method="post" action="/admin/orders/create">
+                  <!-- Customer Information -->
+                  <div class="form-section">
+                    <h3 class="form-section-title">
+                      Thông tin khách hàng
+                    </h3>
+                    <div class="form-group">
+                      <label class="form-label">Tên khách hàng
+                        <span class="required">*</span></label>
+                      <input type="text" id="customerName" class="form-input" placeholder="Nhập tên khách hàng"
+                        required />
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Số điện thoại
+                        <span class="required">*</span></label>
+                      <input type="tel" id="customerPhone" class="form-input" placeholder="Nhập số điện thoại"
+                        required />
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Địa chỉ giao hàng</label>
+                      <textarea id="deliveryAddress" class="form-textarea" placeholder="Nhập địa chỉ giao hàng"
+                        rows="2"></textarea>
+                    </div>
+                  </div>
+
+                  <!-- Order Type -->
+                  <div class="form-section">
+                    <h3 class="form-section-title">
+                      Loại đơn hàng
+                    </h3>
+                    <div class="form-radio-group">
+                      <label class="form-radio">
+                        <input type="radio" name="orderType" value="DINE_IN" checked />
+                        <span>Tại quán</span>
+                      </label>
+                      <label class="form-radio">
+                        <input type="radio" name="orderType" value="TAKE_AWAY" />
+                        <span>Mang đi</span>
+                      </label>
+                      <label class="form-radio">
+                        <input type="radio" name="orderType" value="DELIVERY" />
+                        <span>Giao hàng</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <!-- Products -->
+                  <div class="form-section">
+                    <h3 class="form-section-title">
+                      Sản phẩm
+                    </h3>
+                    <div id="selectedProductsList">
+                      <!-- Selected products will appear here -->
+                    </div>
+                    <!-- Changed button to open product selector instead of adding empty rows -->
+                    <button type="button" class="btn-add-product" onclick="scrollToProductSelector()">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                      </svg>
+                      Chọn từ danh sách bên trái
+                    </button>
+                  </div>
+
+                  <!-- Payment -->
+                  <div class="form-section">
+                    <h3 class="form-section-title">
+                      Thanh toán
+                    </h3>
+                    <div class="form-group">
+                      <label class="form-label">Phương thức thanh toán</label>
+                      <select id="paymentMethod" class="form-select">
+                        <option value="Tiền mặt">
+                          Tiền mặt
+                        </option>
+                        <option value="Thẻ tín dụng">
+                          Thẻ tín dụng
+                        </option>
+                        <option value="Ví điện tử">
+                          Ví điện tử
+                        </option>
+                        <option value="Chuyển khoản">
+                          Chuyển khoản
+                        </option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Trạng thái thanh toán</label>
+                      <select id="paymentStatus" class="form-select">
+                        <option value="Đang chờ">
+                          Đang chờ
+                        </option>
+                        <option value="Đã thanh toán">
+                          Đã thanh toán
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Notes -->
+                  <div class="form-section">
+                    <h3 class="form-section-title">
+                      Ghi chú
+                    </h3>
+                    <div class="form-group">
+                      <textarea id="orderNotes" class="form-textarea" placeholder="Nhập ghi chú cho đơn hàng..."
+                        rows="3"></textarea>
+                    </div>
+                  </div>
+
+                  <!-- Voucher code -->
+                  <div class="form-section">
+                    <h3 class="form-section-title">
+                      Mã giảm giá
+                    </h3>
+                    <div class="form-group">
+                      <input type="text" id="voucherCode" class="form-input" placeholder="Nhập mã giảm giá (nếu có)" />
+                      <button type="button" class="btn-apply-voucher" onclick="applyVoucher()">
+                        Áp dụng
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Total -->
+                  <div class="form-total">
+                    <span>Tổng cộng:</span>
+                    <span id="orderTotal" class="form-total-amount">0₫</span>
+                  </div>
+                </form>
+              </div>
+
+              <div class="drawer-footer">
+                <button type="button" class="btn btn-outline" onclick="closeCreateOrderDrawer()">
+                  Hủy
+                </button>
+                <button type="button" class="btn btn-primary" onclick="submitCreateOrder()">
+                  Tạo đơn hàng
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+
+  <div id="statusDropdown" class="dropdown-menu hidden">
+    <div class="dropdown-label">Thay đổi trạng thái</div>
+    <div class="dropdown-separator"></div>
+    <button class="dropdown-item" data-status="Đang xử lý">
+      Đang xử lý
+    </button>
+    <button class="dropdown-item" data-status="Sẵn sàng">
+      Sẵn sàng
+    </button>
+    <button class="dropdown-item" data-status="Hoàn thành">
+      Hoàn thành
+    </button>
+    <button class="dropdown-item" data-status="Đã hủy">Đã hủy</button>
+  </div>
+
+  <!-- Order Details Modal -->
+  <div id="orderModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">
+          Chi tiết đơn hàng
+        </h2>
+        <button class="modal-close" onclick="closeOrderModal()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeOrderModal()">
+          Đóng
+        </button>
+        <button class="btn btn-primary" onclick="printOrder()">
+          In đơn hàng
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/admin/js/orders/orders.js"></script>
 </body>
 
 </html>

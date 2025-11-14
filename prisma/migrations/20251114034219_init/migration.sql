@@ -165,11 +165,13 @@ CREATE TABLE `promotion_products` (
 -- CreateTable
 CREATE TABLE `promotions` (
     `promotion_id` VARCHAR(191) NOT NULL,
-    `code` VARCHAR(50) NOT NULL,
+    `code` VARCHAR(50) NULL,
     `description` VARCHAR(255) NULL,
-    `discount_percent` DECIMAL(5, 2) NOT NULL,
-    `start_date` DATE NOT NULL,
-    `end_date` DATE NOT NULL,
+    `discount_percent` DECIMAL(5, 2) NULL,
+    `discount_price` INTEGER NULL DEFAULT 0,
+    `start_date` DATETIME(0) NOT NULL,
+    `end_date` DATETIME(0) NOT NULL,
+    `type` ENUM('voucher', 'flashsale') NOT NULL DEFAULT 'voucher',
     `min_order_amount` DECIMAL(10, 2) NULL,
     `max_usage_count` INTEGER NULL,
     `current_usage` INTEGER NOT NULL DEFAULT 0,
@@ -280,6 +282,17 @@ CREATE TABLE `point_history` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `favorite` (
+    `favorite_id` INTEGER NOT NULL AUTO_INCREMENT,
+    `userId` INTEGER NOT NULL,
+    `productId` INTEGER NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    UNIQUE INDEX `favorite_userId_productId_key`(`userId`, `productId`),
+    PRIMARY KEY (`favorite_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `staff_detail` (
     `staff_id` INTEGER NOT NULL AUTO_INCREMENT,
     `user_id` INTEGER NOT NULL,
@@ -315,8 +328,34 @@ CREATE TABLE `staff_schedules` (
     PRIMARY KEY (`staff_schedule_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- CreateTable
+CREATE TABLE `blogs` (
+    `blog_id` VARCHAR(191) NOT NULL,
+    `title` VARCHAR(255) NOT NULL,
+    `slug` VARCHAR(255) NOT NULL,
+    `description` VARCHAR(500) NULL,
+    `content` TEXT NOT NULL,
+    `thumbnail` VARCHAR(255) NULL,
+    `type` ENUM('NEWS', 'PROMOTION', 'PRODUCT', 'EVENT', 'GUIDE') NOT NULL DEFAULT 'NEWS',
+    `status` ENUM('DRAFT', 'PUBLISHED', 'ARCHIVED') NOT NULL DEFAULT 'DRAFT',
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NOT NULL,
+    `published_at` DATETIME(3) NULL,
+    `author_id` INTEGER NOT NULL,
+    `meta_title` VARCHAR(255) NULL,
+    `meta_description` VARCHAR(500) NULL,
+    `view_count` INTEGER NOT NULL DEFAULT 0,
+
+    UNIQUE INDEX `blogs_slug_key`(`slug`),
+    INDEX `blogs_author_id_idx`(`author_id`),
+    INDEX `blogs_type_idx`(`type`),
+    INDEX `blogs_status_idx`(`status`),
+    INDEX `blogs_slug_idx`(`slug`),
+    PRIMARY KEY (`blog_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- AddForeignKey
-ALTER TABLE `cart` ADD CONSTRAINT `cart_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE `cart` ADD CONSTRAINT `cart_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE `cart_details` ADD CONSTRAINT `cart_details_ibfk_1` FOREIGN KEY (`cart_id`) REFERENCES `cart`(`cart_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -388,6 +427,12 @@ ALTER TABLE `Message` ADD CONSTRAINT `Message_senderId_fkey` FOREIGN KEY (`sende
 ALTER TABLE `point_history` ADD CONSTRAINT `point_history_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `favorite` ADD CONSTRAINT `favorite_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`user_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `favorite` ADD CONSTRAINT `favorite_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `products`(`product_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `staff_detail` ADD CONSTRAINT `staff_detail_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -395,3 +440,6 @@ ALTER TABLE `staff_schedules` ADD CONSTRAINT `staff_schedules_staff_id_fkey` FOR
 
 -- AddForeignKey
 ALTER TABLE `staff_schedules` ADD CONSTRAINT `staff_schedules_shift_id_fkey` FOREIGN KEY (`shift_id`) REFERENCES `work_shifts`(`shift_id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `blogs` ADD CONSTRAINT `blogs_author_id_fkey` FOREIGN KEY (`author_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;

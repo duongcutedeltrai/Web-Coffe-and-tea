@@ -2,234 +2,228 @@
 <html lang="vi">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quản lý khuyến mãi</title>
-    <link rel="stylesheet" href="/admin/css/promotions/create_promotions.css" />
-    <link rel="stylesheet" href="/admin/css/style.css" />
-    <!--Favicon-->
-    <link rel="shortcut icon" href="/images/favicon/favicon.ico" type="image/x-icon" />
-    <link rel="icon" href="/images/favicon/favicon.ico" type="image/x-icon" />
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
-        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quản lý khuyến mãi</title>
+  <link rel="stylesheet" href="/admin/css/promotions/create_promotions.css" />
+  <link rel="stylesheet" href="/admin/css/style.css" />
+  <!--Favicon-->
+  <link rel="shortcut icon" href="/images/favicon/favicon.ico" type="image/x-icon" />
+  <link rel="icon" href="/images/favicon/favicon.ico" type="image/x-icon" />
 </head>
 
 <body>
-    <div class="container">
-        <%- include('../layout/sidebar.ejs'); -%> ; -%>
-            <div class="main-content">
-                <div class="content">
-                    <div class="page-header">
-                        <h1>Khuyến mãi</h1>
-                        <button class="btn-primary" onclick="openCreatePromotionDrawer()">
-                            <span>+</span> Tạo khuyến mãi mới
-                        </button>
-                    </div>
-
-                    <div class="filters">
-                        <div class="search">
-                            <input type="text" id="searchInput" placeholder="Tìm kiếm theo mã hoặc mô tả..." />
-                        </div>
-                        <select id="statusFilter" class="filter-select">
-                            <option value="all">Tất cả trạng thái</option>
-                            <option value="active">Đang hoạt động</option>
-                            <option value="upcoming">Sắp diễn ra</option>
-                            <option value="expired">Đã hết hạn</option>
-                        </select>
-                        <select id="membershipFilter" class="filter-select">
-                            <option value="all">Tất cả hạng thành viên</option>
-                            <option value="bronze">Đồng</option>
-                            <option value="silver">Bạc</option>
-                            <option value="gold">Vàng</option>
-                            <option value="platinum">Bạch kim</option>
-                        </select>
-                    </div>
-                    <div class="tabs-list">
-                        <button class="tab-trigger active" data-tab="Voucher">
-                            Voucher
-                        </button>
-                        <button class="tab-trigger" data-tab="FlashSale">
-                            FlashSale
-                        </button>
-                    </div>
-                    <div class="promotions-container" id="promotionsContainer">
-                        Promotions will be rendered here by JavaScript
-                    </div>
-                </div>
-            </div>
-    </div>
-    <div class="drawer-overlay" id="promotionDrawerOverlay" onclick="closePromotionDrawer()"></div>
-    <div class="promotion-drawer" id="promotionDrawer">
-        <div class="drawer-header">
-            <h2 id="drawerTitle">Tạo khuyến mãi mới</h2>
-            <button class="close-btn" onclick="closePromotionDrawer()">
-                ×
+  <div class="container">
+    <%- include('../layout/sidebar.ejs'); -%> ; -%>
+      <div class="main-content">
+        <div class="content">
+          <div class="page-header">
+            <h1>Khuyến mãi</h1>
+            <button class="btn-primary" onclick="openCreatePromotionDrawer()">
+              <span>+</span> Tạo khuyến mãi mới
             </button>
-        </div>
-        <div class="drawer-content">
-            <form id="promotionForm">
-                <input type="hidden" id="promotionId" />
+          </div>
 
-                <div class="form-section">
-                    <h3>Thông tin cơ bản</h3>
-                    <div class="form-group">
-                        <label for="promotionType">Chọn loại khuyến mãi</label>
-                        <select id="promotionType" onchange="togglePromotionType()">
-                            <option value="voucher" selected>Voucher (nhập mã giảm giá)</option>
-                            <option value="flashsale">Flash Sale (giảm giá chớp nhoáng)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="promotionCode">Mã khuyến mãi
-                            <span class="required">*</span></label>
-                        <input type="text" id="promotionCode" placeholder="VD: SUMMER2024" required />
-                    </div>
-
-                    <div class="form-group">
-                        <label for="promotionDescription">Mô tả <span class="required">*</span></label>
-                        <textarea id="promotionDescription" rows="3"
-                            placeholder="Mô tả chi tiết về chương trình khuyến mãi" required></textarea>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h3>Thời gian áp dụng</h3>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="startDate">Ngày bắt đầu
-                                <span class="required">*</span></label>
-                            <input type="datetime-local" id="startDate" required />
-                        </div>
-                        <div class="form-group">
-                            <label for="endDate">Ngày kết thúc
-                                <span class="required">*</span></label>
-                            <input type="datetime-local" id="endDate" required />
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h3>Điều kiện áp dụng</h3>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="discountPercent">Phần trăm giảm giá (%)
-                                <span class="required">*</span></label>
-                            <input type="number" id="discountPercent" min="0" max="100" placeholder="VD: 20" required />
-                        </div>
-                        <div class="form-group">
-                            <label for="discountPrice">Giá khuyến mãi (VNĐ)
-                                <span class="required">*</span></label>
-                            <input type="number" id="discountPrice" min="0" placeholder="VD: 20.000đ" required />
-                        </div>
-                        <div class="form-group">
-                            <label for="maxUsageCount">Số lần sử dụng tối đa</label>
-                            <input type="number" id="maxUsageCount" min="1" placeholder="VD: 100" />
-                        </div>
-
-                    </div>
-
-                    <div class="form-row">
-
-                        <div class="form-group">
-                            <label for="currentUsage">Số lần đã sử dụng</label>
-                            <input type="number" id="currentUsage" min="0" value="0" readonly />
-                        </div>
-                        <div class="form-group">
-                            <label for="minOrderAmount">Giá trị đơn hàng tối thiểu (₫)</label>
-                            <input type="number" id="minOrderAmount" min="0" placeholder="VD: 100000" />
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-section" id="membership">
-                    <h3>Đối tượng áp dụng</h3>
-
-                    <div class="form-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="isForNewUser" />
-                            <span>Chỉ dành cho khách hàng mới</span>
-                        </label>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="applicableMembership">Hạng thành viên áp dụng</label>
-                        <select id="applicableMembership" multiple size="4">
-                            <option value="bronze">Đồng</option>
-                            <option value="silver">Bạc</option>
-                            <option value="gold">Vàng</option>
-                            <option value="platinum">Bạch kim</option>
-                        </select>
-                        <small class="form-hint">Giữ Ctrl (hoặc Cmd) để chọn nhiều hạng</small>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h3>Sản phẩm áp dụng</h3>
-
-                    <div class="form-group">
-                        <label>
-                            <input type="radio" name="productScope" value="all" checked
-                                onchange="toggleProductSelection()" />
-                            Áp dụng cho tất cả sản phẩm
-                        </label>
-                    </div>
-
-                    <div class="form-group">
-                        <label>
-                            <input type="radio" name="productScope" value="specific"
-                                onchange="toggleProductSelection()" />
-                            Chọn sản phẩm cụ thể
-                        </label>
-                    </div>
-
-                    <div id="productSelectionContainer" style="display: none">
-                        <div class="product-search-box">
-                            <input type="text" id="productSearchInput" placeholder="Tìm kiếm sản phẩm..." />
-                        </div>
-
-                        <div class="product-categories"></div>
-
-                        <div class="selected-products-summary" id="selectedProductsSummary">
-                            <span>Đã chọn: <strong>0</strong> sản phẩm</span>
-                        </div>
-
-                        <div class="product-selection-grid" id="productSelectionGrid">
-                            Products will be rendered here
-                        </div>
-                    </div>
-                </div>
-
-                <div class="drawer-footer">
-                    <button type="button" class="btn-secondary" onclick="closePromotionDrawer()">
-                        Hủy
-                    </button>
-                    <button type="button" class="btn-primary" onclick="submitPromotions()">
-                        Lưu khuyến mãi
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="promotionDetailsOverlay" onclick="closePromotionDetails()">
-        <div class="modal" id="promotionDetailsModal" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <h2>Chi tiết khuyến mãi</h2>
-                <button class="close-btn" onclick="closePromotionDetails()">
-                    ×
-                </button>
+          <div class="filters">
+            <div class="search">
+              <input type="text" id="searchInput" placeholder="Tìm kiếm theo mã hoặc mô tả..." />
             </div>
-            <div class="modal-content" id="promotionDetailsContent">
-                Content will be populated by JavaScript
-            </div>
+            <select id="statusFilter" class="filter-select">
+              <option value="all">Tất cả trạng thái</option>
+              <option value="active">Đang hoạt động</option>
+              <option value="upcoming">Sắp diễn ra</option>
+              <option value="expired">Đã hết hạn</option>
+            </select>
+            <select id="membershipFilter" class="filter-select">
+              <option value="all">Tất cả hạng thành viên</option>
+              <option value="bronze">Đồng</option>
+              <option value="silver">Bạc</option>
+              <option value="gold">Vàng</option>
+              <option value="platinum">Bạch kim</option>
+            </select>
+          </div>
+          <div class="tabs-list">
+            <button class="tab-trigger active" data-tab="Voucher">
+              Voucher
+            </button>
+            <button class="tab-trigger" data-tab="FlashSale">
+              FlashSale
+            </button>
+          </div>
+          <div class="promotions-container" id="promotionsContainer">
+            Promotions will be rendered here by JavaScript
+          </div>
         </div>
+      </div>
+  </div>
+  <div class="drawer-overlay" id="promotionDrawerOverlay" onclick="closePromotionDrawer()"></div>
+  <div class="promotion-drawer" id="promotionDrawer">
+    <div class="drawer-header">
+      <h2 id="drawerTitle">Tạo khuyến mãi mới</h2>
+      <button class="close-btn" onclick="closePromotionDrawer()">
+        ×
+      </button>
     </div>
+    <div class="drawer-content">
+      <form id="promotionForm">
+        <input type="hidden" id="promotionId" />
 
-    <script src="/admin/js/promotions/create_promotions.js"></script>
+        <div class="form-section">
+          <h3>Thông tin cơ bản</h3>
+          <div class="form-group">
+            <label for="promotionType">Chọn loại khuyến mãi</label>
+            <select id="promotionType" onchange="togglePromotionType()">
+              <option value="voucher" selected>Voucher (nhập mã giảm giá)</option>
+              <option value="flashsale">Flash Sale (giảm giá chớp nhoáng)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="promotionCode">Mã khuyến mãi
+              <span class="required">*</span></label>
+            <input type="text" id="promotionCode" placeholder="VD: SUMMER2024" required />
+          </div>
+
+          <div class="form-group">
+            <label for="promotionDescription">Mô tả <span class="required">*</span></label>
+            <textarea id="promotionDescription" rows="3" placeholder="Mô tả chi tiết về chương trình khuyến mãi"
+              required></textarea>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Thời gian áp dụng</h3>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="startDate">Ngày bắt đầu
+                <span class="required">*</span></label>
+              <input type="datetime-local" id="startDate" required />
+            </div>
+            <div class="form-group">
+              <label for="endDate">Ngày kết thúc
+                <span class="required">*</span></label>
+              <input type="datetime-local" id="endDate" required />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Điều kiện áp dụng</h3>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="discountPercent">Phần trăm giảm giá (%)
+                <span class="required">*</span></label>
+              <input type="number" id="discountPercent" min="0" max="100" placeholder="VD: 20" required />
+            </div>
+            <div class="form-group">
+              <label for="discountPrice">Giá khuyến mãi (VNĐ)
+                <span class="required">*</span></label>
+              <input type="number" id="discountPrice" min="0" placeholder="VD: 20.000đ" required />
+            </div>
+            <div class="form-group">
+              <label for="maxUsageCount">Số lần sử dụng tối đa</label>
+              <input type="number" id="maxUsageCount" min="1" placeholder="VD: 100" />
+            </div>
+
+          </div>
+
+          <div class="form-row">
+
+            <div class="form-group">
+              <label for="currentUsage">Số lần đã sử dụng</label>
+              <input type="number" id="currentUsage" min="0" value="0" readonly />
+            </div>
+            <div class="form-group">
+              <label for="minOrderAmount">Giá trị đơn hàng tối thiểu (₫)</label>
+              <input type="number" id="minOrderAmount" min="0" placeholder="VD: 100000" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section" id="membership">
+          <h3>Đối tượng áp dụng</h3>
+
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="isForNewUser" />
+              <span>Chỉ dành cho khách hàng mới</span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label for="applicableMembership">Hạng thành viên áp dụng</label>
+            <select id="applicableMembership" multiple size="4">
+              <option value="bronze">Đồng</option>
+              <option value="silver">Bạc</option>
+              <option value="gold">Vàng</option>
+              <option value="platinum">Bạch kim</option>
+            </select>
+            <small class="form-hint">Giữ Ctrl (hoặc Cmd) để chọn nhiều hạng</small>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Sản phẩm áp dụng</h3>
+
+          <div class="form-group">
+            <label>
+              <input type="radio" name="productScope" value="all" checked onchange="toggleProductSelection()" />
+              Áp dụng cho tất cả sản phẩm
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label>
+              <input type="radio" name="productScope" value="specific" onchange="toggleProductSelection()" />
+              Chọn sản phẩm cụ thể
+            </label>
+          </div>
+
+          <div id="productSelectionContainer" style="display: none">
+            <div class="product-search-box">
+              <input type="text" id="productSearchInput" placeholder="Tìm kiếm sản phẩm..." />
+            </div>
+
+            <div class="product-categories"></div>
+
+            <div class="selected-products-summary" id="selectedProductsSummary">
+              <span>Đã chọn: <strong>0</strong> sản phẩm</span>
+            </div>
+
+            <div class="product-selection-grid" id="productSelectionGrid">
+              Products will be rendered here
+            </div>
+          </div>
+        </div>
+
+        <div class="drawer-footer">
+          <button type="button" class="btn-secondary" onclick="closePromotionDrawer()">
+            Hủy
+          </button>
+          <button type="button" class="btn-primary" onclick="submitPromotions()">
+            Lưu khuyến mãi
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="promotionDetailsOverlay" onclick="closePromotionDetails()">
+    <div class="modal" id="promotionDetailsModal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Chi tiết khuyến mãi</h2>
+        <button class="close-btn" onclick="closePromotionDetails()">
+          ×
+        </button>
+      </div>
+      <div class="modal-content" id="promotionDetailsContent">
+        Content will be populated by JavaScript
+      </div>
+    </div>
+  </div>
+
+  <script src="/admin/js/promotions/create_promotions.js"></script>
 </body>
 
 </html>

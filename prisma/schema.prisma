@@ -261,11 +261,11 @@ model users {
   feedback        feedback[]
   orders          orders[]
   promotion_usage promotion_usage[] @relation("UserPromotionUsage")
-
-  messages  Message[]  @relation("UserMessages")
-  userRooms UserRoom[]
-  roles     roles      @relation(fields: [role_id], references: [role_id], onDelete: NoAction, onUpdate: NoAction, map: "users_ibfk_1")
-  favorites favorite[]
+  messages        Message[]         @relation("UserMessages")
+  userRooms       UserRoom[]
+  roles           roles             @relation(fields: [role_id], references: [role_id], onDelete: NoAction, onUpdate: NoAction, map: "users_ibfk_1")
+  favorites       favorite[]
+  blogs           blogs[]
 
   @@index([role_id], map: "role_id")
   @@fulltext([username, email])
@@ -359,6 +359,53 @@ model staff_schedules {
   @@unique([staff_id, day_of_week])
   @@index([staff_id])
   @@index([shift_id])
+}
+
+model blogs {
+  blog_id     String  @id @default(uuid())
+  title       String  @db.VarChar(255)
+  slug        String  @unique @db.VarChar(255)
+  description String? @db.VarChar(500)
+  content     String  @db.Text
+  thumbnail   String? @db.VarChar(255)
+
+  // Loại và trạng thái bài viết
+  type   BlogType   @default(NEWS)
+  status BlogStatus @default(DRAFT)
+
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+  published_at DateTime?
+
+  // Người viết
+  author_id Int
+  author    users @relation(fields: [author_id], references: [user_id], onDelete: Cascade)
+
+  // SEO cơ bản
+  meta_title       String? @db.VarChar(255)
+  meta_description String? @db.VarChar(500)
+
+  // Thống kê
+  view_count Int @default(0)
+
+  @@index([author_id])
+  @@index([type])
+  @@index([status])
+  @@index([slug])
+}
+
+enum BlogType {
+  NEWS
+  PROMOTION
+  PRODUCT
+  EVENT
+  GUIDE
+}
+
+enum BlogStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
 }
 
 enum membership_level {

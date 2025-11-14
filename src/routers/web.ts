@@ -6,6 +6,7 @@ import { Request, Response } from "express";
 import { productRoute, productRouteAPI } from "./admin/product.route";
 import categoryRoute from "./admin/category.route";
 import userRoute from "./admin/user.route";
+import { blogRoute, blogDataRoute } from "./admin/blog.route";
 
 import homeRoute from "./admin/home.route";
 import authRoute from "./auth/auth.route";
@@ -48,6 +49,8 @@ const webRouter = (app: Express) => {
     app.use("/api/payment", paymentAPI);
     app.use("/api/chat", chatRouteAPI);
     app.use("/products", categoryRoute);
+    app.use("/admin", blogRoute);
+    app.use("/admin", blogDataRoute);
 
     app.use("/auth", authRoute);
 
@@ -63,6 +66,7 @@ const webRouter = (app: Express) => {
             .status(404)
             .render("auth/404_page.ejs", { url: req.originalUrl });
     });
+
 };
 
 export default webRouter;

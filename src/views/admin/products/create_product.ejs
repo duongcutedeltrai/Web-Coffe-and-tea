@@ -1,176 +1,85 @@
 <div class="overlay" id="overlay">
-    <div class="popup">
-        <div class="form-header">
-            <button class="back-btn">
-                <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                >
-                    <path d="m15 18-6-6 6-6" />
-                </svg>
-            </button>
-            <h1 class="form-title">Add Food</h1>
-        </div>
-
-        <form method="post" class="product-form" enctype="multipart/form-data">
-            <div class="form__content">
-                <div class="form_left">
-                    <label>Name <span class="bb">*</span></label>
-                    <input
-                        type="text"
-                        placeholder="Enter food name"
-                        name="name"
-                    />
-
-                    <label>Description</label>
-                    <textarea
-                        placeholder="Enter description"
-                        name="desc"
-                    ></textarea>
-
-                    <label class="price_label">
-                        Price
-                        <span class="bb">*</span>
-                        <button
-                            type="button"
-                            id="togglePricing"
-                            class="toggle-btn"
-                        >
-                            Giá cố định
-                        </button>
-                    </label>
-                    <div class="price-group">
-                        <div class="sizes__form">
-                            <input
-                                type="button"
-                                class="size active"
-                                id="sizeM"
-                                data-size="M"
-                                value="M"
-                            />
-                            <input
-                                type="hidden"
-                                id="sizeM_hidden"
-                                name="sizeM"
-                                value=""
-                            />
-                            <input
-                                type="button"
-                                class="size"
-                                id="sizeL"
-                                data-size="L"
-                                value="L"
-                            />
-                            <input
-                                type="hidden"
-                                id="sizeL_hidden"
-                                name="sizeL"
-                                value=""
-                            />
-                            <input
-                                type="button"
-                                class="size"
-                                id="sizeXL"
-                                data-size="XL"
-                                value="XL"
-                            />
-                            <input
-                                type="hidden"
-                                id="sizeXL_hidden"
-                                name="sizeXL"
-                                value=""
-                            />
-                        </div>
-                        <input
-                            type="text"
-                            id="priceInput"
-                            class="price-input"
-                            placeholder="Nhập giá"
-                        />
-                        <input
-                            type="hidden"
-                            id="Default_hidden"
-                            name="defaultPrice"
-                            value=""
-                        />
-                    </div>
-                    <label>Cập nhật tình trạng <span class="bb">*</span></label>
-                    <input
-                        type="text"
-                        style="display: none"
-                        name="status"
-                        class="input__status"
-                    />
-                    <div class="status-group">
-                        <div class="status-btn active" data-status="DANG_BAN">
-                            Đang bán
-                        </div>
-                        <div class="status-btn" data-status="HET">Hết hàng</div>
-                        <div class="status-btn" data-status="TAM_AN">
-                            Tạm ẩn
-                        </div>
-                    </div>
-                    <label>Category <span class="bb">*</span></label>
-                    <select
-                        id="category"
-                        name="category"
-                        class="form-select"
-                        required
-                    ></select>
-                </div>
-                <div class="form_right">
-                    <label>Preview images</label>
-                    <!-- Input file -->
-                    <!-- Khung upload -->
-                    <label class="upload-box" id="dropArea">
-                        <span class="plus">+</span>
-                        Drop your images here, or
-                        <span style="color: #d64a4a; text-decoration: underline"
-                            >click to browse</span
-                        >
-                        <small
-                            >1600 × 1200 (4:3) recommended, up to 5MB
-                            each.</small
-                        >
-                        <input
-                            type="file"
-                            id="fileInput"
-                            multiple
-                            accept=".png,.jpg,.jpeg"
-                            name="image"
-                        />
-                    </label>
-                    <div
-                        class="preview"
-                        id="preview"
-                        style="display: none"
-                    ></div>
-                    <label class="label">Số lượng ly tối đa:</label>
-                    <div class="not_limit">
-                        <p>Cho phép không giới hạn số lượng</p>
-                        <label class="switch">
-                            <input type="checkbox" id="toggle" />
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-                    <div id="inputBox" class="input-wrapper">
-                        <input
-                            type="number"
-                            id="cupInput"
-                            placeholder="Nhập số lượng"
-                            name="quantity"
-                            min="-1"
-                        />
-                        <span>Ly</span>
-                    </div>
-                </div>
-            </div>
-            <button type="submit" class="submit-btn">Thêm sản phẩm mới</button>
-        </form>
+  <div class="popup">
+    <div class="form-header">
+      <button class="back-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m15 18-6-6 6-6" />
+        </svg>
+      </button>
+      <h1 class="form-title">Add Food</h1>
     </div>
+
+    <form method="post" class="product-form" enctype="multipart/form-data">
+      <div class="form__content">
+        <div class="form_left">
+          <label>Name <span class="bb">*</span></label>
+          <input type="text" placeholder="Enter food name" name="name" />
+
+          <label>Description</label>
+          <textarea placeholder="Enter description" name="desc"></textarea>
+
+          <label class="price_label">
+            Price
+            <span class="bb">*</span>
+            <button type="button" id="togglePricing" class="toggle-btn">
+              Giá cố định
+            </button>
+          </label>
+          <div class="price-group">
+            <div class="sizes__form">
+              <input type="button" class="size active" id="sizeM" data-size="M" value="M" />
+              <input type="hidden" id="sizeM_hidden" name="sizeM" value="" />
+              <input type="button" class="size" id="sizeL" data-size="L" value="L" />
+              <input type="hidden" id="sizeL_hidden" name="sizeL" value="" />
+              <input type="button" class="size" id="sizeXL" data-size="XL" value="XL" />
+              <input type="hidden" id="sizeXL_hidden" name="sizeXL" value="" />
+            </div>
+            <input type="text" id="priceInput" class="price-input" placeholder="Nhập giá" />
+            <input type="hidden" id="Default_hidden" name="defaultPrice" value="" />
+          </div>
+          <label>Cập nhật tình trạng <span class="bb">*</span></label>
+          <input type="text" style="display: none" name="status" class="input__status" />
+          <div class="status-group">
+            <div class="status-btn active" data-status="DANG_BAN">
+              Đang bán
+            </div>
+            <div class="status-btn" data-status="HET">Hết hàng</div>
+            <div class="status-btn" data-status="TAM_AN">
+              Tạm ẩn
+            </div>
+          </div>
+          <label>Category <span class="bb">*</span></label>
+          <select id="category" name="category" class="form-select" required></select>
+        </div>
+        <div class="form_right">
+          <label>Preview images</label>
+          <!-- Input file -->
+          <!-- Khung upload -->
+          <label class="upload-box" id="dropArea">
+            <span class="plus">+</span>
+            Drop your images here, or
+            <span style="color: #d64a4a; text-decoration: underline">click to browse</span>
+            <small>1600 × 1200 (4:3) recommended, up to 5MB
+              each.</small>
+            <input type="file" id="fileInput" multiple accept=".png,.jpg,.jpeg" name="image" />
+          </label>
+          <div class="preview" id="preview" style="display: none"></div>
+          <label class="label">Số lượng ly tối đa:</label>
+          <div class="not_limit">
+            <p>Cho phép không giới hạn số lượng</p>
+            <label class="switch">
+              <input type="checkbox" id="toggle" />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div id="inputBox" class="input-wrapper">
+            <input type="number" id="cupInput" placeholder="Nhập số lượng" name="quantity" min="-1" />
+            <span>Ly</span>
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="submit-btn">Thêm sản phẩm mới</button>
+    </form>
+  </div>
 </div>

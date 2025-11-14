@@ -1,21 +1,21 @@
 {
-    "version": "1.0.0",
-    "configurations": [
-        {
-            "name": "Debug PBL Coffee",
-            "type": "node",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "runtimeExecutable": "npm",
-            "runtimeArgs": [
-                "run",
-                "start:debug"
-            ],
-            "console": "integratedTerminal",
-            "skipFiles": [
-                "<node_internals>/**",
-                "node_modules/**"
-            ]
-        }
-    ]
+  "version": "1.0.0",
+  "configurations": [
+    {
+      "name": "Debug PBL Coffee",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "start:debug"
+      ],
+      "console": "integratedTerminal",
+      "skipFiles": [
+        "<node_internals>/**",
+        "node_modules/**"
+      ]
+    }
+  ]
 }
