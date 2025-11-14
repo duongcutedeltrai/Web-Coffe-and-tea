@@ -4,49 +4,63 @@ function formatVND(amount) {
         currency: "VND",
     });
 }
+function parseVND(vndString) {
+    if (!vndString) return 0;
+    // Xóa tất cả ký tự không phải số (kể cả dấu chấm, đ, khoảng trắng)
+    const num = vndString.replace(/[^\d]/g, "");
+    return parseInt(num, 10) || 0;
+}
+let discount = 0;
+async function getVouchers() {
+    selectedVoucherId = null;
+    // const voucherList = document.getElementById("voucherList");
+    const totalCart = parseVND($("#totalAmount").text());
+    try {
+        const response = await fetch(`/admin/valid-vouchers/${totalCart}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
 
-// Dữ liệu voucher
-const availableVouchers = [
-    {
-        id: "1",
-        code: "WELCOME10",
-        description: "Giảm 10% cho khách hàng mới",
-        discount: 10,
-        minOrder: 50,
-        expiryDate: "31/12/2025",
-    },
-    {
-        id: "2",
-        code: "SAVE20",
-        description: "Giảm 20% cho đơn hàng trên $100",
-        discount: 20,
-        minOrder: 100,
-        expiryDate: "31/12/2025",
-    },
-    {
-        id: "3",
-        code: "FREESHIP",
-        description: "Miễn phí vận chuyển cho tất cả đơn hàng",
-        discount: 5,
-        minOrder: 30,
-        expiryDate: "31/12/2025",
-    },
-    {
-        id: "4",
-        code: "COFFEE15",
-        description: "Giảm 15% cho các món cà phê",
-        discount: 15,
-        minOrder: 40,
-        expiryDate: "31/12/2025",
-    },
-];
+        if (!response.ok) {
+            // Nếu HTTP status không 200–299
+            throw new Error(`Lỗi server (${response.status})`);
+        }
+
+        const result = await response.json();
+
+        // Kiểm tra cấu trúc JSON
+        if (!result.success) {
+            throw new Error(
+                result.message || "Không thể lấy danh sách voucher"
+            );
+        }
+        const vouchers = result.vouchers || [];
+
+        if (vouchers.length === 0) {
+            voucherList.innerHTML =
+                '<p class="text-muted text-center mt-3">Chưa có voucher nào.</p>';
+            return;
+        }
+        voucherscart = vouchers;
+        renderVouchers(vouchers);
+    } catch (error) {
+        console.error("Không thể tải voucher:", error);
+        voucherList.innerHTML =
+            '<p class="text-danger text-center mt-3">Không thể tải voucher! Vui lòng thử lại.</p>';
+    }
+}
 
 let selectedVoucherId = null;
 const $ = window.jQuery; // Declare the $ variable
-
+let product = [];
+let voucherscart;
 $(document).ready(async () => {
+    dataFlashsale = localStorage.getItem("flashsale-product");
+    products = dataFlashsale ? JSON.parse(dataFlashsale) : [];
     await getCartAPI();
-    renderVouchers();
+    await getVouchers();
     updateCartTotals();
 });
 function renderCartItems() {
@@ -64,8 +78,21 @@ function renderCartItems() {
     }
 
     const itemsHtml = cart.cart_details
-        .map(
-            (item) => `
+        .map((item) => {
+            const flashSaleItem = products.find(
+                (f) =>
+                    f.product_id === item.product_id &&
+                    (f.size == item.product_size || f.size === "all")
+            );
+            let displayPrice = item.price;
+            let oldPrice = null;
+
+            if (flashSaleItem) {
+                const discountValue = flashSaleItem.discountValue ?? 0;
+                oldPrice = item.price;
+                displayPrice = item.price - discountValue;
+            }
+            return `
         <div class="cart-item" data-cartDetailId="${item.cart_detail_id}">
             <div class="row g-3 align-items-center">
 
@@ -80,7 +107,11 @@ function renderCartItems() {
                         <img src="/images/products/${item.product_image}" 
                              alt="${item.product_name}" 
                              class="product-image" style="margin-left:4px;">
-                        <span class="fw-medium">${item.product_name}</span>
+                        <span class="fw-medium">${
+                            flashSaleItem
+                                ? `<div class="fw-semibold text-danger" >Flash Sale</div>`
+                                : ""
+                        }${item.product_name}</span>
                     </div>
                 </div>
 
@@ -105,7 +136,9 @@ function renderCartItems() {
 
                 <!-- Giá -->
                 <div class="col-4 col-md-2 text-center">
-                    <div class="price-current">${formatVND(item.price)}</div>
+                    <div class="price-current"><p class="pd-old-price" style="margin-bottom:1px;">${
+                        displayPrice == item.price ? "" : formatVND(item.price)
+                    }</p>${formatVND(displayPrice)}</div>
                 </div>
 
                 <!-- Số lượng -->
@@ -131,13 +164,13 @@ function renderCartItems() {
                 <!-- Tổng phụ -->
                 <div class="col-4 col-md-2 text-center">
                     <span class="fw-semibold">
-                        ${formatVND(item.price * item.sub_quantity)}
+                        ${formatVND(displayPrice * item.sub_quantity)}
                     </span>
                 </div>
             </div>
         </div>
-    `
-        )
+    `;
+        })
         .join("");
 
     $container.html(itemsHtml);
@@ -194,97 +227,149 @@ async function cartChangeQuantity(button, delta) {
     updateCart();
     // Cập nhật lại số lượng và tổng tiền
     await update(cartDetailId, productId, value, size);
-
     // Cập nhật lại giao diện sau khi update
     updateCart();
 }
-
-function renderVouchers() {
+function renderVouchers(availableVouchers) {
     const $container = $("#voucherList");
 
     const vouchersHtml = availableVouchers
-        .map(
-            (voucher) => `
-        <div class="voucher-card ${
-            selectedVoucherId === voucher.id ? "selected" : ""
-        }" 
-             data-voucher-id="${voucher.id}">
-            <div class="d-flex align-items-start gap-3">
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="voucherRadio" 
-                           id="voucher${voucher.id}" ${
-                selectedVoucherId === voucher.id ? "checked" : ""
-            }>
-                </div>
-                <div class="flex-grow-1">
-                    <div class="voucher-code">${voucher.code}</div>
-                    <div class="voucher-description">${
-                        voucher.description
-                    }</div>
-                    <div class="voucher-details">
-                        Đơn tối thiểu: $${voucher.minOrder} • Hết hạn: ${
-                voucher.expiryDate
-            }
+        .map((voucher) => {
+            const isSelected = selectedVoucherId === voucher.promotion_id;
+            const isValid = voucher.is_valid;
+            const formattedMinOrder = Number(
+                voucher.min_order_amount
+            ).toLocaleString("vi-VN");
+            const expiryDate = new Date(voucher.end_date).toLocaleDateString(
+                "vi-VN"
+            );
+
+            return `
+            <div class="voucher-card 
+                        ${isSelected ? "selected" : ""} 
+                        ${isValid ? "valid" : "invalid"}" 
+                 data-voucher-id="${voucher.promotion_id}"
+                 ${!isValid ? "data-disabled='true'" : ""}>
+                <div class="d-flex align-items-start gap-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="voucherRadio" 
+                            id="voucher${voucher.promotion_id}" 
+                            ${isSelected ? "checked" : ""} 
+                            ${!isValid ? "disabled" : ""}>
                     </div>
+                    <div class="flex-grow-1">
+                        <div class="voucher-code">${voucher.code}</div>
+                        <div class="voucher-description">${
+                            voucher.description
+                        }</div>
+                        <div class="voucher-details">
+                            Đơn tối thiểu: ${formattedMinOrder}đ • Hết hạn: ${expiryDate}
+                        </div>
+                    </div>
+                    <div class="voucher-discount">${
+                        voucher.discount_percent
+                    }% OFF</div>
                 </div>
-                <div class="voucher-discount">${voucher.discount}% OFF</div>
-            </div>
-        </div>
-    `
-        )
+            </div>`;
+        })
         .join("");
 
     $container.html(vouchersHtml);
 
-    $(".voucher-card").on("click", function () {
+    // Chỉ cho phép click chọn khi hợp lệ
+    $(".voucher-card.valid").on("click", function () {
         const voucherId = $(this).data("voucher-id");
         selectVoucher(voucherId);
     });
 }
-
-// Chọn voucher
-function selectVoucher(voucherId) {
-    selectedVoucherId = voucherId;
-    renderVouchers();
-}
-
 function applySelectedVoucher() {
-    if (selectedVoucherId) {
-        const voucher = availableVouchers.find(
-            (v) => v.id === selectedVoucherId
-        );
-        if (voucher) {
-            $("#couponInput").val(voucher.code);
-
-            // Đóng modal bằng jQuery
-            $("#voucherModal").modal("hide");
-
-            // Hiển thị thông báo
-            alert(
-                `Đã áp dụng voucher: ${voucher.code} - Giảm ${voucher.discount}%`
-            );
-        }
-    }
-}
-
-function applyCoupon() {
-    const couponCode = $("#couponInput").val().trim();
-
-    if (!couponCode) {
-        alert("Vui lòng nhập mã khuyến mãi");
+    // Lấy ID voucher đang chọn
+    const selectedRadio = $('input[name="voucherRadio"]:checked');
+    if (!selectedRadio.length) {
         return;
     }
 
-    const voucher = availableVouchers.find(
-        (v) => v.code.toLowerCase() === couponCode.toLowerCase()
-    );
+    const voucherId = selectedRadio.closest(".voucher-card").data("voucher-id");
+    const voucher = voucherscart.find((v) => v.promotion_id === voucherId);
 
-    if (voucher) {
-        alert(`Đã áp dụng mã: ${voucher.code} - Giảm ${voucher.discount}%`);
-    } else {
-        alert("Mã khuyến mãi không hợp lệ");
+    if (!voucher || !voucher.is_valid) {
+        alert("Voucher này không hợp lệ hoặc đã hết hạn.");
+        return;
     }
+
+    const totalElement = $("#subtotalAmount");
+    const totalPrice = parseVND(totalElement.text());
+
+    // Tính giảm giá
+    const discountPercent = Number(voucher.discount_percent);
+    const minOrder = Number(voucher.min_order_amount);
+
+    if (totalPrice < minOrder) {
+        alert(
+            `Voucher chỉ áp dụng cho đơn hàng từ ${minOrder.toLocaleString(
+                "vi-VN"
+            )}đ.`
+        );
+        return;
+    }
+
+    // Tính toán
+    const discountAmount = Math.round(totalPrice * (discountPercent / 100));
+    discount = discountAmount;
+    updateCartTotals();
+
+    // Có thể lưu voucher đã chọn vào localStorage nếu cần
+    localStorage.setItem("selectedVoucher", JSON.stringify(voucher));
+
+    // Thông báo nhỏ
+    // const modalEl = document.getElementById("voucherModal");
+    // const modal =
+    //     bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+    // modal.hide();
 }
+
+function selectVoucher(voucherId) {
+    selectedVoucherId = voucherId;
+    renderVouchers(voucherscart);
+}
+
+// function applySelectedVoucher() {
+//     if (selectedVoucherId) {
+//         const voucher = availableVouchers.find(
+//             (v) => v.id === selectedVoucherId
+//         );
+//         if (voucher) {
+//             $("#couponInput").val(voucher.code);
+
+//             // Đóng modal bằng jQuery
+//             $("#voucherModal").modal("hide");
+
+//             // Hiển thị thông báo
+//             alert(
+//                 `Đã áp dụng voucher: ${voucher.code} - Giảm ${voucher.discount}%`
+//             );
+//         }
+//     }
+// }
+
+// function applyCoupon() {
+//     const couponCode = $("#couponInput").val().trim();
+
+//     if (!couponCode) {
+//         alert("Vui lòng nhập mã khuyến mãi");
+//         return;
+//     }
+
+//     const voucher = availableVouchers.find(
+//         (v) => v.code.toLowerCase() === couponCode.toLowerCase()
+//     );
+
+//     if (voucher) {
+//         alert(`Đã áp dụng mã: ${voucher.code} - Giảm ${voucher.discount}%`);
+//     } else {
+//         alert("Mã khuyến mãi không hợp lệ");
+//     }
+// }
 
 // Remove from Cart
 async function removeCart(cartDetailId, productId, size) {
@@ -327,9 +412,26 @@ $(document).on("change", ".shopping-item-size", async function () {
 });
 function updateCartTotals() {
     const cart = getCartFromStorage();
-    const subtotal = cart.total;
-    const discount = 26400;
+    const dataFlashsale = localStorage.getItem("flashsale-product");
+    const products = dataFlashsale ? JSON.parse(dataFlashsale) : [];
+    let subtotal = 0;
 
+    cart.cart_details.forEach((item) => {
+        let price = item.price;
+
+        const flashSaleItem = products.find(
+            (f) =>
+                f.product_id === item.product_id &&
+                (f.size == item.product_size || f.size === "all")
+        );
+
+        if (flashSaleItem) {
+            const discountValue = flashSaleItem.discountValue ?? 0;
+            price = price - discountValue; // giảm trực tiếp giá
+        }
+
+        subtotal += price * item.sub_quantity;
+    });
     const delivery = 0;
     const total = subtotal - discount + delivery;
 
@@ -341,8 +443,8 @@ function updateCartTotals() {
 function updateCartBadge() {
     const cart = getCartFromStorage();
     const totalItems = cart.quantity || 0;
-    const $badge = $(".cart-badge");
-    $(".cart-badge").text(totalItems);
+    const $badge = $("#cartBadge");
+    $("#cartBadge").text(totalItems);
     if (totalItems > 0) {
         $badge.text(totalItems).removeClass("d-none").addClass("badge-update");
     } else {
@@ -350,10 +452,12 @@ function updateCartBadge() {
     }
     setTimeout(() => $badge.removeClass("badge-update"), 150);
 }
-function updateCart() {
+async function updateCart() {
+    discount = 0;
     renderCartItems();
     updateCartTotals();
     updateCartBadge();
+    await getVouchers();
 }
 ////////////////----------------------Xử lí data----------------------------------
 async function getCartAPI() {

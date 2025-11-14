@@ -34,8 +34,10 @@
                 </div>
 
                 <div class="d-flex align-items-center gap-3">
-                    <button class="btn-icon" onclick="location.href='/favorite'">
+
+                    <button class="btn-icon position-relative" onclick="location.href='/favorite'">
                         <i class="fa-solid fa-heart" style="color: #ffffff"></i>
+                        <span class="cart-badge" id="favoriteBadge"></span>
                     </button>
                     <button class="btn-icon position-relative" id="cartButton">
                         <i class="fa-solid fa-cart-shopping" style="color: #ffffff"></i>
@@ -85,4 +87,10 @@
             link.classList.add("active");
         }
     });
+
+    const favorite =
+        JSON.parse(localStorage.getItem("favoriteList")).length || 0;
+    const cart = JSON.parse(localStorage.getItem("cart")).quantity || {};
+    $("#favoriteBadge").text(favorite);
+    $("#cartBadge").text(cart);
 </script>

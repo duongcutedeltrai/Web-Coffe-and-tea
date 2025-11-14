@@ -60,6 +60,12 @@ class ClientHomeController {
         );
         return res.render("client/cart/checkout.ejs", { user });
     };
+    getFavoritesClientPage = async (req: Request, res: Response) => {
+        const user = await UserService.getDetailCustomerById(
+            +(req.user as any)?.id || 0
+        );
+        return res.render("client/favorite/favorites.ejs", { user });
+    }
 }
 
 export default new ClientHomeController();

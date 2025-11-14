@@ -24,6 +24,7 @@ function formatVND(price) {
 // ----------------------------
 // 🧩 INIT SLIDER
 // ----------------------------
+let products = [];
 $(document).ready(async function () {
     await getCateforyAPI();
     const slider = new Slider("#priceSlider", {
@@ -34,7 +35,11 @@ $(document).ready(async function () {
         tooltip: "hide",
         range: true,
     });
-
+    dataFlashsale = localStorage.getItem("flashsale-product");
+    products = dataFlashsale ? JSON.parse(dataFlashsale) : [];
+    const favorite =
+        JSON.parse(localStorage.getItem("favoriteList")).length || 0;
+    $("#favoriteBadge").text(favorite);
     // Hiển thị giá khi kéo
     slider.on("slide", function (values) {
         const [min, max] = values;
@@ -198,9 +203,9 @@ async function applyFilters() {
 
         const res = await fetch(`/api/products?${query.toString()}`);
         console.log(`/api/products?${query.toString()}`);
-        const { products, totalPages, currentPage } = await res.json();
+        const { productsFilter, totalPages, currentPage } = await res.json();
         setTimeout(() => {
-            renderProducts(products);
+            renderProducts(productsFilter);
             renderPagination(totalPages, currentPage);
 
             loader.hide();
@@ -254,27 +259,47 @@ function renderCategories(categories) {
     });
     $(".filter-options").html(html);
 }
-function renderProducts(products) {
+
+function renderProducts(productsFilter) {
+    const favoriteList = JSON.parse(
+        localStorage.getItem("favoriteList") || "[]"
+    );
     const container = $("#productGrid");
     if (!container.length) return;
-    console.log(products.length);
-    if (products.length == 0) {
+    console.log(productsFilter.length);
+    if (productsFilter.length == 0) {
         container.html(`<p class="no_product">
                             Không có sản phẩm đủ điều kiện lọc
                         </p>`);
         return;
     }
-    const html = products
+    const html = productsFilter
         .map((p) => {
+            const isFavorite = favoriteList.some((fav) => fav === p.product_id);
             const sizes = p.price_product
-                .map(
-                    (pp, i) => `
+                .map((pp, i) => {
+                    const flashSaleItem = products.find(
+                        (f) =>
+                            f.product_id === p.product_id &&
+                            (f.size == pp.size || f.size === "all")
+                    );
+
+                    let displayPrice = pp.price;
+                    let oldPrice = null;
+
+                    if (flashSaleItem) {
+                        const discountValue = flashSaleItem.discountValue ?? 0;
+                        oldPrice = pp.price;
+                        displayPrice = pp.price - discountValue;
+                    }
+                    return `
                 <button class="pd-size-btn ${i === 0 ? "active" : ""}" 
-                        data-price="${pp.price}" 
+                        data-price="${displayPrice}" 
+                        data-oldprice="${oldPrice || ""}"
                         onclick="pdSelectSize(this);event.stopPropagation();">
                     ${pp.size}
-                </button>`
-                )
+                </button>`;
+                })
                 .join("");
 
             return `
@@ -286,7 +311,9 @@ function renderProducts(products) {
                             <img src="/images/products/${p.images}" alt="${
                 p.name
             }" class="pd-product-image">
-                            <button class="pd-favorite-btn" onclick="pdToggleFavorite(this)">
+                            <button class="pd-favorite-btn ${
+                                isFavorite ? "active" : ""
+                            }" onclick="pdToggleFavorite(this)">
                                 <i class="far fa-heart"></i>
                             </button>
                         </div>
@@ -326,9 +353,7 @@ function renderProducts(products) {
                                         </button>
                                     </div>
                                 </div>
-                                <div class="pd-product-price">${formatVND(
-                                    p.price_product[0].price
-                                )}</div>
+                                <div class="pd-product-price"></div>
                             </div>
 
                             <button class="pd-btn-add-to-cart" data-productid="${
@@ -343,6 +368,94 @@ function renderProducts(products) {
         .join("");
 
     container.html(html);
+    requestAnimationFrame(() => {
+        document
+            .querySelectorAll(".pd-product-card")
+            .forEach(pdInitPriceDisplay);
+    });
+}
+
+function pdInitPriceDisplay(card) {
+    const activeBtn = card.querySelector(".pd-size-btn.active");
+    const priceDiv = card.querySelector(".pd-product-price");
+    if (!activeBtn || !priceDiv) return;
+    const price = Number(activeBtn.dataset.price);
+    const oldPrice = activeBtn.dataset.oldprice
+        ? Number(activeBtn.dataset.oldprice)
+        : null;
+
+    priceDiv.innerHTML = oldPrice
+        ? `<p class="pd-old-price" id="price-old" style="margin-bottom:0px;">${formatVND(
+              oldPrice
+          )}</p>
+           <p class="pd-sale-price text-danger " style="margin-bottom:2px;">${formatVND(
+               price
+           )}</p>`
+        : `<span id="price-old">${formatVND(price)}</span>`;
+    if (oldPrice) {
+        card.querySelector(".pd-product-image-wrapper").insertAdjacentHTML(
+            "beforeend",
+            `<div class="flashsale-badge"><span>Flash<br/> Sale</span></div>`
+        );
+    }
+}
+let favoriteIds = JSON.parse(localStorage.getItem("favoriteList")) || [];
+
+async function pdToggleFavorite(button) {
+    console.log("Toggling favorite for button:", button);
+    button.classList.toggle("active");
+    const productId = parseInt(
+        button.closest(".pd-product-card").getAttribute("data-id")
+    );
+    const isActive = button.classList.contains("active");
+    try {
+        if (isActive) {
+            // Gọi API thêm
+            const res = await fetch("/api/favorite", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    productId: productId,
+                }),
+            });
+            if (!res.ok) throw new Error("Thêm yêu thích thất bại");
+            const data = await res.json();
+            if (!favoriteIds.includes(productId)) {
+                favoriteIds.push(productId);
+                localStorage.setItem(
+                    "favoriteList",
+                    JSON.stringify(favoriteIds)
+                );
+                $("#favoriteBadge").text(favoriteIds.length);
+            }
+        } else {
+            const res = await fetch(`/api/favorite`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    productId: productId,
+                }),
+            });
+            if (!res.ok) throw new Error("Xóa yêu thích thất bại");
+            favoriteIds = favoriteIds.filter((id) => id !== productId);
+            console.log("Updated favoriteIds:", favoriteIds);
+            localStorage.setItem("favoriteList", JSON.stringify(favoriteIds));
+            $("#favoriteBadge").text(favoriteIds.length);
+        }
+    } catch (err) {
+        console.error("Lỗi khi cập nhật yêu thích:", err);
+        button.classList.toggle("active");
+    }
+
+    // Add animation
+    button.style.transform = "scale(1.2)";
+    setTimeout(() => {
+        button.style.transform = "";
+    }, 200);
 }
 
 // ----------------------------
@@ -355,12 +468,6 @@ function pdGenerateStars(rating) {
         .join("");
 }
 
-function pdToggleFavorite(button) {
-    button.classList.toggle("active");
-    button.style.transform = "scale(1.2)";
-    setTimeout(() => (button.style.transform = ""), 200);
-}
-
 function pdSelectSize(button) {
     const sizeBtns = button
         .closest(".pd-size-options")
@@ -368,9 +475,8 @@ function pdSelectSize(button) {
     sizeBtns.forEach((b) => b.classList.remove("active"));
     button.classList.add("active");
 
-    const card = button.closest(".pd-product-card");
-    const priceEl = card.querySelector(".pd-product-price");
-    priceEl.textContent = formatVND(Number(button.dataset.price));
+    const parent = button.closest(".pd-product-card");
+    pdInitPriceDisplay(parent);
 }
 
 function pdChangeQuantity(button, delta) {

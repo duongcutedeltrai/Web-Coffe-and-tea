@@ -16,7 +16,7 @@
     gap: 20px;
 }
 .fa-search {
-    color: #b71c1c;
+    color: #714024;
 }
 .top-content h1 {
     font-size: 1.7rem;
@@ -242,7 +242,7 @@
     gap: 8px;
     padding: 10px 15px;
     color: white;
-    background: #b71c1c;
+    background: #714024;
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -333,14 +333,14 @@
 }
 
 .add-new-card:hover {
-    border-color: #b71c1c;
+    border-color: #714024;
     transform: none;
 }
 
 .add-icon {
     width: 60px;
     height: 60px;
-    background: #b71c1c;
+    background: #714024;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -424,7 +424,7 @@
 }
 
 .size-btn:hover:not(.active) {
-    border-color: #b71c1c;
+    border-color: #714024;
 }
 
 .product__edit {
@@ -440,7 +440,7 @@
     background-color: #ffe3e3;
     cursor: pointer;
     height: 40px;
-    color: #b71c1c;
+    color: rgb(197, 9, 9);
     width: 100%;
     border-radius: 0px 0px 15px 15px;
     text-align: center;
@@ -462,7 +462,7 @@
 }
 .product_price {
     padding: 5px 4px;
-    background: #b71c1c;
+    background: #714024;
     border-radius: 7px;
     font-size: 10px;
     color: #ffffff;
@@ -476,13 +476,13 @@
 .price {
     font-size: 1.3rem;
     font-weight: 700;
-    color: #b71c1c;
+    color: #714024;
 }
 /* 
 .add-btn {
     width: 35px;
     height: 35px;
-    background: #b71c1c;
+    background: #714024;
     color: #fff;
     border: none;
     border-radius: 50%;
@@ -513,7 +513,7 @@
 /* Previous & Next buttons */
 #pagination-container .tui-prev,
 #pagination-container .tui-next {
-    background-color: #b71c1c; /* hồng */
+    background-color: #714024; /* hồng */
     color: #fff;
     border-radius: 25px;
     padding: 8px 16px;
@@ -541,16 +541,16 @@
 
 /* Active page */
 #pagination-container .tui-is-selected {
-    background-color: #b71c1c;
+    background-color: #714024;
     color: #fff !important;
-    border: 1px solid #b71c1c;
+    border: 1px solid #714024;
 }
 
 /* Hover effect */
 #pagination-container .tui-page-btn:hover,
 #pagination-container .tui-prev:hover,
 #pagination-container .tui-next:hover {
-    background-color: #b71c1c;
+    background-color: #714024;
     color: #fff;
 }
 .default {

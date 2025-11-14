@@ -25,6 +25,7 @@
             rel="stylesheet"
             href="https://unpkg.com/leaflet/dist/leaflet.css"
         />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <!-- Font-->
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -45,7 +46,6 @@
             type="image/x-icon"
         />
 
-     
         <!-- Bootstrap Icons -->
         <link
             rel="stylesheet"
@@ -79,7 +79,7 @@
                                     class="needs-validation"
                                     novalidate
                                 >
-                                    <!-- First Name and Phone -->
+                                    <!-- Full Name and Phone -->
                                     <div class="row mb-4">
                                         <div class="col-md-6">
                                             <label
@@ -92,8 +92,8 @@
                                                 class="form-control form-control-lg bg-light"
                                                 id="firstName"
                                                 name="firstName"
-                                                placeholder="Your first name"
-                                                value="<%= user.name%>"
+                                                placeholder="Your full name"
+                                                value="<%= user?.username || '' %>"
                                                 required
                                             />
                                         </div>
@@ -109,7 +109,7 @@
                                                 id="phone"
                                                 name="phone"
                                                 placeholder="Phone number"
-                                                value="<%= user.phone%>"
+                                                value="<%= user?.phone || '' %>"
                                                 required
                                             />
                                         </div>
@@ -127,8 +127,8 @@
                                             class="form-control form-control-lg bg-light"
                                             id="email"
                                             name="email"
-                                            placeholder="Email Address"
-                                            value="<%= user.email%>"
+                                            placeholder="Email address"
+                                            value="<%= user?.email || '' %>"
                                             required
                                         />
                                     </div>
@@ -144,17 +144,17 @@
                                             type="button"
                                             class="form-control form-control-lg bg-light text-start"
                                             id="addressBtn"
-                                           
                                         >
-                                            <span id="addressDisplay"></span>
-                                                <%= user.address%></span
-                                            >
+                                            <span id="addressDisplay">
+                                                <%= user?.address ? user.address
+                                                : 'Chọn địa chỉ giao hàng' %>
+                                            </span>
                                         </button>
                                         <input
                                             type="hidden"
                                             id="address"
                                             name="address"
-                                            value=""
+                                            value="<%= user?.address || '' %>"
                                         />
                                         <input
                                             type="hidden"
@@ -204,9 +204,8 @@
                                                 <label
                                                     class="form-check-label"
                                                     for="cash"
+                                                    >Cash on Delivery</label
                                                 >
-                                                    Cash on Delivery
-                                                </label>
                                             </div>
                                             <div class="form-check">
                                                 <input
@@ -219,9 +218,8 @@
                                                 <label
                                                     class="form-check-label"
                                                     for="paypal"
+                                                    >Paypal</label
                                                 >
-                                                    Paypal
-                                                </label>
                                             </div>
                                         </div>
                                     </div>
@@ -290,12 +288,12 @@
                                 <button
                                     type="submit"
                                     form="checkoutForm"
+                                    id="checkoutBtn"
                                     class="btn btn-lg w-100"
                                     style="
                                         background-color: #714024;
                                         color: white;
                                     "
-                                    onclick="handlePayment()"
                                 >
                                     Thanh toán đơn hàng
                                 </button>
@@ -308,11 +306,10 @@
 
         <!-- Address Picker Modal -->
         <div
-            class="infoAddress "
+            class="infoAddress"
             id="addressModal"
             tabindex="-1"
             aria-labelledby="addressModalLabel"
- 
         >
             <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content">
@@ -343,6 +340,7 @@
                                     type="text"
                                     class="form-control form-control-lg bg-light"
                                     id="specificAddress"
+                                    name="specificAddress"
                                     placeholder="Nhập địa chỉ"
                                 />
                                 <div class="invalid-feedback">
@@ -350,13 +348,20 @@
                                 </div>
                             </div>
                         </div>
-                        <button type="button" class="btn " style="background-color: #6b4423; color: white; margin-bottom: 10px;"  onclick="getCurrentLocation()">
+                        <button
+                            type="button"
+                            class="btn"
+                            style="
+                                background-color: #6b4423;
+                                color: white;
+                                margin-bottom: 10px;
+                            "
+                            onclick="getCurrentLocation()"
+                        >
                             Lấy vị trí hiện tại
                         </button>
                         <!-- Map Placeholder -->
-                        <div
-                            id="map"
-                        ></div>
+                        <div id="map"></div>
 
                         <!-- Nearby Locations List -->
                         <div>
@@ -374,7 +379,10 @@
                     </div>
 
                     <!-- Modal Footer -->
-                    <div class="modal-footer px-4 p-end-4 " style="margin:0 auto 30px;">
+                    <div
+                        class="modal-footer px-4 p-end-4"
+                        style="margin: 0 auto 30px"
+                    >
                         <button
                             type="button"
                             class="btn btn-secondary py-2 px-5"
@@ -391,7 +399,11 @@
                             type="button"
                             class="btn p-2 px-5"
                             id="confirmAddressBtn"
-                            style="background-color: #7e502a; color: white;margin-left: 20px;"
+                            style="
+                                background-color: #7e502a;
+                                color: white;
+                                margin-left: 20px;
+                            "
                         >
                             Xác nhận địa chỉ
                         </button>
@@ -406,7 +418,7 @@
         <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-        
+
         <!-- Added jQuery library before custom script -->
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
         <script src="/client/js/cart/checkout.js"></script>

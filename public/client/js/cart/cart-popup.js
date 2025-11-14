@@ -1,6 +1,7 @@
 // ============================================================
 // 🛠️ HÀM TIỆN ÍCH
 
+
 // ============================================================
 function parseVND(vndString) {
     return parseInt(vndString.replace(/\./g, "").replace(/\s*đ/g, ""), 10);
@@ -139,7 +140,7 @@ function updateCartBadge() {
         badge.addClass("d-none");
     }
 }
-
+// let products=[];
 function renderCartItems() {
     const cart = getCartFromStorage();
     const $container = $("#cartItems");
@@ -154,7 +155,19 @@ function renderCartItems() {
     }
     const html = cart.cart_details
         .map(
-            (item) => `
+            (item) =>{
+        const flashSaleItem = products.find(
+            (f) => f.product_id === item.product_id && (f.size == item.product_size||f.size==="all")
+        );
+        let displayPrice = item.price;
+        let oldPrice = null;
+        
+        if (flashSaleItem) {
+            const discountValue = flashSaleItem.discountValue ?? 0;
+            oldPrice = item.price;
+            displayPrice = item.price - discountValue;
+        }
+        return `
         <div class="shopping-cart-item" data-product-id="${
             item.product_id
         }" data-size="${item.product_size}">
@@ -196,7 +209,7 @@ function renderCartItems() {
                         }" min="1" max="99" readonly data-cartdetailid="${
                 item.cart_detail_id
             }" data-productid="${item.product_id}" data-priceproduct="${
-                item.price
+                displayPrice
             }" data-size="${item.product_size}">
                     <button class="cart-quantity-btn btn-plus" data-product-id="${
                         item.product_id
@@ -204,7 +217,7 @@ function renderCartItems() {
                         <i class="fas fa-plus"></i>
                     </button>
                 </div>
-                <p class="shopping-item-info mb-0">${formatVND(item.price)}</p>
+                <p class="shopping-item-info mb-0"> <span class="pd-old-price" style="margin-right:8px;">${(displayPrice==item.price)?"":formatVND(item.price)}</span>${formatVND(displayPrice)}</p>
             </div>
 
             <button class="shopping-remove-btn" data-product-id="${
@@ -213,7 +226,7 @@ function renderCartItems() {
                 <i class="bi bi-x fs-4"></i>
             </button>
         </div>
-        `
+        `;}
         )
         .join("");
 
@@ -232,7 +245,15 @@ function updateCartFooter() {
     // Tính tổng số lượng sản phẩm
     const totalItems = cart.quantity;
     // Tính tổng tiền
-    const totalPrice = cart.total;
+    let totalPrice = 0;
+    cart.cart_details.forEach((item) => {
+        const flashSaleItem = products.find(
+            (f) => f.product_id === item.product_id && (f.size == item.product_size || f.size === "all")
+        );
+        const discountValue = flashSaleItem?.discountValue ?? 0;
+        const priceToUse = item.price - discountValue;
+        totalPrice += priceToUse * item.sub_quantity;
+    });
     // Hiển thị footer và cập nhật nội dung
     footer.show();
     $("#cartCount").text(cart.cart_details.length);
@@ -244,6 +265,8 @@ function updateCartFooter() {
 // 🧠 XỬ LÝ CART & API
 // ============================================================
 function openCart() {
+    
+    // updateCart();
     updateCart();
     shoppingCart.isOpen = true;
     $("#cartPopup, #cartOverlay").addClass("active");

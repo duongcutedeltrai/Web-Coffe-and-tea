@@ -103,7 +103,7 @@
                 item.dataset.category = id;
                 item.innerHTML = `
           <div class="category-image">
-            <img src="/images/categories/${c.name}.jpg" alt="${c.name}">
+            <img src="/images/categories/${c.images}" alt="${c.name}">
           </div>
           <span class="menu__item--name">${c.name}</span>
         `;

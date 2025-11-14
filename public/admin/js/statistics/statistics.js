@@ -68,21 +68,28 @@ function initializeRevenueChart() {
                 {
                     label: "Doanh thu",
                     data: chartData.revenueData,
-                    borderColor: "#22c55e",
-                    backgroundColor: "rgba(34,197,94,0.2)",
+                    borderColor: "#16a34a",
+                    backgroundColor: "rgba(22,163,74,0.12)",
                     fill: true,
                     tension: 0.4,
-                    pointBackgroundColor: "#22c55e",
+                    borderWidth: 3, pointBackgroundColor: "#16a34a",
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    pointHoverBackgroundColor: "#15803d",
+                    pointHoverBorderColor: "#fff",
+                    pointHoverBorderWidth: 2,
                 },
             ],
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 title: {
                     display: true,
 
                     text: "Biểu đồ doanh thu",
+                    color: "#374151",
                 },
                 legend: { display: false },
             },
@@ -111,8 +118,11 @@ function initializeOrderChart() {
     }
     if (orderChartInstance) orderChartInstance.destroy();
 
-    orderChartInstance = new Chart(canvas, {
-
+    const ctx = canvas.getContext("2d");
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, "rgba(59, 187, 246, 0.2)");
+    gradient.addColorStop(0.7, "rgba(59, 187, 246, 0)");
+    orderChartInstance = new Chart(ctx, {
         type: "line",
         data: {
             labels: chartData.labels,
@@ -121,11 +131,14 @@ function initializeOrderChart() {
 
                     label: "Đơn hàng",
                     data: chartData.orderData,
-                    borderColor: "#3b82f6",
-                    backgroundColor: "rgba(59,130,246,0.2)",
+                    borderColor: "#0096C7",
+                    backgroundColor: gradient,
+                    borderWidth: 3,
                     fill: true,
                     tension: 0.4,
-                    pointBackgroundColor: "#3b82f6",
+                    pointRadius: 5,
+                    pointHoverRadius: 5,
+                    pointBackgroundColor: "#0096C7",
                 },
             ],
         },
@@ -152,6 +165,13 @@ function initializeOrderChart() {
 
                         display: false,
                     },
+                    ticks: {
+                        color: "#555",
+                        font: {
+                            size: 13,
+                            family: "Poppins, sans-serif",
+                        },
+                    },
                 },
                 y: {
                     beginAtZero: true,
@@ -163,6 +183,16 @@ function initializeOrderChart() {
                         callback: function (value) {
                             return value;
 
+                        },
+                    },
+                    grid: {
+                        color: "rgba(0,0,0,0.05)",
+                    },
+                    ticks: {
+                        color: "#777",
+                        font: {
+                            size: 13,
+                            family: "Poppins, sans-serif",
                         },
                     },
                 },

@@ -296,11 +296,13 @@
                                 <% if (fb.users && fb.users.avatar) { %>
                                 <img
                                     src="<%= fb.users.avatar %>"
+                                    class="reviewer-avatar"
                                     alt="avatar"
                                 />
                                 <% } else { %>
                                 <img
-                                    src="/images/default-avatar.png"
+                                    src="/images/users/avatar-face.jpg"
+                                    class="reviewer-avatar"
                                     alt="default avatar"
                                 />
                                 <% } %>

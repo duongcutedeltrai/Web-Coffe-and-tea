@@ -26,6 +26,7 @@ class FeedbackController {
                 comment,
                 files
             );
+            console.log(feedback);
             return res.status(201).json({
                 message: "Đánh giá thành công",
                 data: feedback,

@@ -1,6 +1,8 @@
+
 let selectedProducts = [];
 let currentProductCategory = "all";
 let promotions = [];
+let flashsale=[];
 let currentEditingId = null;
 
 // Format currency
@@ -387,7 +389,7 @@ function getProductNames(applicableProducts) {
 // Render promotions
 async function fetchPromotions() {
     try {
-        const response = await fetch("/admin/data/promotions");
+        const response = await fetch("/admin/data/promotions/voucher");
         const data = await response.json();
         if (data.success) {
             return data.data;
@@ -398,7 +400,7 @@ async function fetchPromotions() {
     return [];
 }
 
-async function renderPromotions() {
+async function renderPromotionsVoucher() {
     const container = document.getElementById("promotionsContainer");
     const searchTerm = document
         .getElementById("searchInput")
@@ -426,8 +428,8 @@ async function renderPromotions() {
     if (filtered.length === 0) {
         container.innerHTML = `
             <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: #999;">
-                <div style="font-size: 48px; margin-bottom: 16px;">🎁</div>
-                <div style="font-size: 18px; font-weight: 500; margin-bottom: 8px;">Không tìm thấy khuyến mãi</div>
+                <div style="font-size: 48px; margin-bottom: 16px;"></div>
+                <div style="font-size: 18px; font-weight: 500; margin-bottom: 8px;">Không có khuyến mãi nào đã được tạo</div>
                 <div style="font-size: 14px;">Thử thay đổi bộ lọc hoặc tạo khuyến mãi mới</div>
             </div>
         `;
@@ -508,10 +510,10 @@ async function renderPromotions() {
                 <div class="promotion-actions" onclick="event.stopPropagation()">
                     <button class="btn-edit" onclick="editPromotion(${
                         promotion.id
-                    })">✏️ Sửa</button>
+                    })"> Sửa</button>
                     <button class="btn-delete" onclick="deletePromotion(${
                         promotion.id
-                    })">🗑️ Xóa</button>
+                    })"> Xóa</button>
                 </div>
             </div>
         `;
@@ -623,7 +625,7 @@ function editPromotion(id) {
 function deletePromotion(id) {
     if (confirm("Bạn có chắc chắn muốn xóa khuyến mãi này?")) {
         promotions = promotions.filter((p) => p.id !== id);
-        renderPromotions();
+        renderPromotionsVoucher();
     }
 }
 
@@ -638,6 +640,7 @@ async function viewPromotionDetails(id) {
         const data = await res.json();
         if (data.success) {
             promotion = data.data;
+            console.log("Fetched promotion:", promotion);
         } else {
             alert("Không tìm thấy khuyến mãi!");
             return;
@@ -689,7 +692,10 @@ async function viewPromotionDetails(id) {
         </div>
 
         <div class="detail-section">
-            <h3>Điều kiện áp dụng</h3>
+        <div style=" display: flex;
+    justify-content: space-between;
+    align-items: center;"> <h3>Điều kiện áp dụng</h3> </div>
+           
             <div class="detail-grid">
                 <div class="detail-row">
                     <label>Phần trăm giảm giá</label>
@@ -724,7 +730,7 @@ async function viewPromotionDetails(id) {
                 <div class="detail-row">
                     <label>Khách hàng mới</label>
                     <span>${
-                        promotion.is_for_new_user ? "✅ Có" : "❌ Không"
+                        promotion.is_for_new_user ? "Có" : "Không"
                     }</span>
                 </div>
                 <div class="detail-row">
@@ -742,7 +748,61 @@ async function viewPromotionDetails(id) {
     document.getElementById("promotionDetailsContent").innerHTML = content;
     document.getElementById("promotionDetailsOverlay").classList.add("active");
 }
+function togglePromotionType() {
+    const promotionType = document.getElementById('promotionType').value;
+    const codeGroup = document.getElementById('promotionCode').closest('.form-group');
+    const descriptionGroup = document.getElementById('promotionDescription').closest('.form-group');
+    const minOrderGroup = document.getElementById('minOrderAmount').closest('.form-group');
+    const discountPrice = document.getElementById('discountPrice').closest('.form-group');
+    const discountPercent = document.getElementById('discountPercent').closest('.form-group');
+    const targetSection = document.querySelector('.form-section:nth-child(5)'); // Đối tượng áp dụng section
+    const productScopeRadios = document.querySelectorAll('input[name="productScope"]');
+    
+    if (promotionType === 'flashsale') {
+        // Hide elements for flashsale
+        codeGroup.style.display = 'none';
+        codeGroup.querySelector('input').value = null; // Set default code
+        descriptionGroup.style.display = 'none';
+        descriptionGroup.querySelector('textarea').value = "Flash Sale - Giảm giá sốc trong thời gian ngắn!";
+        discountPrice.style.display = 'block';
+        discountPercent.style.display = 'none';
+        discountPercent.querySelector('input').value = 0; // Set percent to 0
+        minOrderGroup.style.display = 'none';
+        minOrderGroup.querySelector('input').value = 0; // Set min order to 0
+        targetSection.style.display = 'none';
+        
+        // Auto select specific products for flashsale
+        const specificProductRadio = document.querySelector('input[name="productScope"][value="specific"]');
+        if (specificProductRadio) {
+            specificProductRadio.checked = true;
+            toggleProductSelection(); // Trigger product selection display
+        }
+        
+        // Disable radio buttons
+        productScopeRadios.forEach(radio => {
+            radio.disabled = true;
+        });
+    } else {
+        // Show elements for voucher
+        codeGroup.style.display = 'block';
+        descriptionGroup.style.display = 'block';
+        minOrderGroup.style.display = 'block';
+        targetSection.style.display = 'block';
+        discountPrice.querySelector('input').value = 0; // Reset discount price
+        discountPrice.style.display = 'none';
+        discountPercent.style.display = 'block';
+        
+        // Enable radio buttons
+        productScopeRadios.forEach(radio => {
+            radio.disabled = false;
+        });
+    }
+}
 
+// Call this function on page load to set initial state
+document.addEventListener('DOMContentLoaded', () => {
+    togglePromotionType();
+});
 // Close promotion details
 function closePromotionDetails() {
     document
@@ -774,7 +834,10 @@ async function submitPromotions() {
         end_date: document.getElementById("endDate").value,
         discount_percent: Number.parseInt(
             document.getElementById("discountPercent").value
-        ),
+        )||0,
+        discount_price: Number.parseInt(
+            document.getElementById("discountPrice").value
+        ) || 0,
         min_order_amount:
             Number.parseInt(document.getElementById("minOrderAmount").value) ||
             0,
@@ -789,6 +852,8 @@ async function submitPromotions() {
                 ? selectedMemberships
                 : ["bronze", "silver", "gold", "platinum"],
         applicable_products: applicableProducts,
+        type:document.getElementById("promotionType").value||"voucher",
+
     };
 
     if (currentEditingId) {
@@ -811,7 +876,7 @@ async function submitPromotions() {
 
             alert("Cập nhật khuyến mãi thành công!");
             closePromotionDrawer();
-            await renderPromotions();
+            await renderPromotionsVoucher();
         } catch (error) {
             console.error("❌ Error updating promotion:", error);
             alert("Có lỗi xảy ra khi cập nhật khuyến mãi: " + error.message);
@@ -837,7 +902,7 @@ async function submitPromotions() {
             }
             alert("Tạo khuyến mãi thành công!");
             closePromotionDrawer();
-            renderPromotions();
+            renderPromotionsVoucher();
         } catch (error) {
             console.error("Error creating promotion:", error);
             alert("Có lỗi xảy ra khi tạo khuyến mãi: " + error.message);
@@ -855,13 +920,13 @@ document.addEventListener("DOMContentLoaded", () => {
 // Event listeners
 document
     .getElementById("searchInput")
-    .addEventListener("input", renderPromotions);
+    .addEventListener("input", renderPromotionsVoucher);
 document
     .getElementById("statusFilter")
-    .addEventListener("change", renderPromotions);
+    .addEventListener("change", renderPromotionsVoucher);
 document
     .getElementById("membershipFilter")
-    .addEventListener("change", renderPromotions);
+    .addEventListener("change", renderPromotionsVoucher);
 
 // Close drawer on Escape key
 document.addEventListener("keydown", (e) => {
@@ -884,7 +949,7 @@ document.querySelectorAll(".menu-item").forEach((item) => {
 // Initialize
 document.addEventListener("DOMContentLoaded", async () => {
     await fetchProductsCatalog();
-    await renderPromotions();
+    await renderPromotionsVoucher();
     // Phân tích đường dẫn
     const pathParts = window.location.pathname.split("/");
     const lastPart = pathParts[pathParts.length - 1];

@@ -33,6 +33,11 @@ ClientHomeRouter.get(
     ClientHomeController.getMenuClientPage
 );
 ClientHomeRouter.get(
+    "/favorite",
+    authMiddleware,
+    ClientHomeController.getFavoritesClientPage
+);
+ClientHomeRouter.get(
     "/products/:id",
     authMiddleware,
     ClientHomeController.getProductDetailPage

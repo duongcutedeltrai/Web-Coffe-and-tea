@@ -137,6 +137,17 @@ class OrderService {
                     })
                 )
             );
+            // 2.5. Cập nhật số lượng bán (sold)
+            await prisma.$transaction(
+                data.products.map((p: any) =>
+                    prisma.products.update({
+                        where: { product_id: p.product_id },
+                        data: {
+                            sold: { increment: p.quantity },
+                        },
+                    })
+                )
+            );
 
             // 3. Ghi nhận lịch sử trạng thái
             await prisma.order_status_history.create({

@@ -134,6 +134,9 @@ body {
 
 /* Filters Section */
 .filters-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     background: white;
     margin: 0 30px 30px;
     padding: 25px;
@@ -164,7 +167,7 @@ body {
 
 .filters-row {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr auto;
+    grid-template-columns: 2fr  ;
     gap: 20px;
     align-items: end;
 }
@@ -199,7 +202,7 @@ body {
 .search-input:focus,
 .filter-select:focus {
     outline: none;
-    border-color: #c53030;
+    border-color: #714024;
     box-shadow: 0 0 0 3px rgba(197, 48, 48, 0.1);
 }
 
@@ -237,7 +240,7 @@ body {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #c53030 0%, #9c2626 100%);
+    background: linear-gradient(135deg, #714024 0%, #714024 100%);
     color: white;
 }
 
@@ -275,7 +278,8 @@ body {
 }
 
 .table-title {
-    font-size: 18px;
+    font-size: 20px;
+    margin-left: 20px;
     font-weight: 600;
     color: #2d3748;
 }
@@ -286,11 +290,11 @@ body {
 }
 
 .customer-table th {
-    background: #f7fafc;
+    background: #714024;
     padding: 15px;
     text-align: center;
     font-weight: 600;
-    color: #4a5568;
+    color: #ffffff;
     font-size: 13px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -451,7 +455,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: linear-gradient(135deg, #c53030 0%, #9c2626 100%);
+    background: linear-gradient(135deg, #714024 0%, #9c2626 100%);
     color: white;
 }
 
@@ -564,7 +568,7 @@ body {
 
 .form-input:focus {
     outline: none;
-    border-color: #c53030;
+    border-color: #714024;
     box-shadow: 0 0 0 3px rgba(197, 48, 48, 0.1);
 }
 
@@ -573,7 +577,7 @@ body {
     padding: 20px;
     border-radius: 12px;
     margin-bottom: 20px;
-    border-left: 4px solid #c53030;
+    border-left: 4px solid #714024;
 }
 
 .info-card h4 {
@@ -635,10 +639,10 @@ body {
 }
 
 .pagination li a.active {
-    background: #b22222;
+    background: #714024;
     /* đỏ đậm */
     color: #fff;
-    border-color: #b22222;
+    border-color: #714024;
 }
 
 .pagination li a.disabled {
@@ -722,15 +726,17 @@ body {
 }
 
 .card-header {
-    background: #f1f5f9;
+   
+    background: #714024;
     padding: 1.5rem;
+    color: white;
     border-bottom: 1px solid #e2e8f0;
 }
 
 .card-title {
     font-size: 1.25rem;
     font-weight: 600;
-    color: #1e293b;
+    color: #ffffff;
 }
 
 .schedule-table {
