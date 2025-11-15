@@ -1,0 +1,238 @@
+/* Color Variables */
+:root {
+    --brown-primary: #7d5347;
+    --orange-primary: #ff8c42;
+    --orange-hover: #e67a35;
+}
+
+/* Page Title */
+.cart-title {
+    text-align: center;
+    margin-bottom: 30px;
+}
+.page-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.text-orange {
+    color: #7d5347;
+}
+
+/* Card Styles */
+.card {
+    border: 1px solid #dee2e6a8;
+    border-radius: 10px;
+}
+.card-header-brown {
+    background-color: #714024;
+    padding: 0.6rem 1.5rem 1.2rem;
+    border-radius: 10px 10px 0 0;
+}
+.cart-badge.badge-update {
+    transform: scale(1.2);
+    transition: transform 0.15s;
+}
+
+/* Cart Item Styles */
+.cart-item {
+    padding: 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+.btn-brown {
+    background-color: #8b4513;
+    color: #fff;
+}
+.btn-brown:hover {
+    background-color: #a0522d;
+    color: #fff;
+}
+
+.product-image {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.cart-quantity-btn {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 50%;
+    color: #2c3749;
+    border: 1px solid #e2e2e2;
+    background-color: #ffffff;
+    font-size: 0.75rem;
+    cursor: pointer;
+}
+.cart-quantity-input-i {
+    width: 36px;
+    /* padding-left: 13px; */
+    /* Firefox */
+    font-size: 0.85rem;
+    height: 36px;
+    text-align: center;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--color-text);
+    background: #ffffff;
+}
+.cart-quantity-input-i[type="number"] {
+    -moz-appearance: textfield;
+    padding: 0; /* reset padding */
+}
+
+.cart-quantity-input-i::-webkit-inner-spin-button,
+.cart-quantity-input-i::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.btn-remove {
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0;
+    font-size: 1.25rem;
+    transition: color 0.3s;
+}
+
+.btn-remove:hover {
+    color: #dc3545;
+}
+
+.price-current {
+    color: #714024;
+    font-weight: 600;
+}
+
+.price-original {
+    font-size: 0.875rem;
+    color: #6c757d;
+    text-decoration: line-through;
+}
+
+.quantity-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #dee2e6;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+}
+
+.quantity-btn:hover {
+    background-color: #f8f9fa;
+}
+
+.quantity-value {
+    min-width: 48px;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Button Styles */
+.btn-orange {
+    background-color: #714024;
+    border-color: #714024;
+    color: white;
+    font-weight: 500;
+}
+
+.btn-orange:hover {
+    background-color: #7d5347;
+    border-color: #714024;
+    color: white;
+}
+
+.btn-outline-orange {
+    border-color: #714024;
+    color: #714024;
+    background-color: transparent;
+    font-weight: 500;
+}
+
+.btn-outline-orange:hover {
+    background-color: rgba(255, 140, 66, 0.1);
+    border-color: #714024;
+    color: #714024;
+}
+
+/* Voucher Card Styles */
+.voucher-card {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 0.75rem;
+}
+
+.voucher-card:hover {
+    border-color: #714024;
+}
+
+.voucher-card.selected {
+    border-color: #714024;
+    background-color: rgba(255, 140, 66, 0.05);
+}
+
+.voucher-code {
+    color: #714024;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.voucher-description {
+    font-size: 0.875rem;
+    color: #575a5d;
+    max-width: 300px;
+    margin-bottom: 0.25rem;
+}
+
+.voucher-details {
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+.voucher-discount {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #714024;
+}
+
+.voucher-card.invalid {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+/* Radio Button Custom Style */
+.form-check-input:checked {
+    background-color: #714024;
+    border-color: #714024;
+}
+.card-footer {
+    margin: auto;
+    background-color: #ffffff;
+    border-top: 1px solid #dee2e6;
+}
+/* Responsive */
+@media (max-width: 768px) {
+    .cart-item .row > div {
+        margin-bottom: 0.5rem;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+    }
+}

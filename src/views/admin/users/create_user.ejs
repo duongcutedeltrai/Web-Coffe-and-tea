@@ -1,0 +1,121 @@
+<div id="userModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle">Thêm người dùng mới</h2>
+            <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="userForm" action="/admin/create-user" method="post" enctype="multipart/form-data">
+                <div class="avatar-upload">
+                    <div class="avatar-preview" id="avatarPreview">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="avatarFileLimit">
+                        <input type="file" id="avatarInput" accept="image/*" style="display: none;" name="avatar"
+                            onchange="previewAvatar(this)">
+                        <button type="button" class="avatar-upload-btn"
+                            onclick="document.getElementById('avatarInput').click()">
+                            Chọn ảnh đại diện
+                        </button>
+                        <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                            JPG, PNG tối đa 2MB
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Họ và tên *</label>
+                        <input name="username" type="text" class="form-input" id="userName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email *</label>
+                        <input name="email" type="email" class="form-input" id="userEmail" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Số điện thoại</label>
+                        <input name="phone" type="tel" class="form-input" id="userPhone">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Vai trò *</label>
+
+
+                        <div class="form-group">
+                            <select class="form-input" name="position" required>
+                                <option value="">Chọn vai trò</option>
+                                <option value="Pha chế">Pha chế</option>
+                                <option value="Phục vụ">Phục vụ</option>
+                                <option value="Bảo vệ">Bảo vệ</option>
+                                <option value="Lao công">Lao công</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Gender</label>
+
+
+                        <select name="gender" class="form-input" class="form-select">
+                            <% genderOptions.forEach((gen,index)=> { %>
+                                <option value="<%-gen.value %>" <%=gen.value===staffs.gender ? 'selected' : '' %>
+                                    >
+                                    <%- gen.name %>
+                                </option>
+                                <%})%>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ngày sinh</label>
+                        <input name="birthday" type="date" class="form-input" id="userBirthdate">
+                    </div>
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group" id="passwordGroup">
+                        <label class="form-label">Mật khẩu *</label>
+                        <input name="password" type="password" class="form-input" id="userPassword"
+                            placeholder="Tối thiểu 6 ký tự">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Lương cơ bản :</label>
+                        <input name="salary" type="text" class="form-input" placeholder="Nhập Lương đầy đủ">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ca làm việc :</label>
+                    <select name="shiftId" class="form-input" required>
+                        <option value="">Chọn ca làm việc</option>
+                        <% workShifts.forEach((shift)=> { %>
+                            <option value="<%= shift.shift_id %>">
+                                <%= shift.name %>
+                            </option>
+                            <% }) %>
+                    </select>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="form-label">Địa chỉ</label>
+                    <input name="address" type="text" class="form-input" id="userAddress"
+                        placeholder="Nhập địa chỉ đầy đủ">
+                </div>
+
+
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Hủy</button>
+                    <button type="submit" class="btn-save" onclick="saveUser()">Lưu</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>

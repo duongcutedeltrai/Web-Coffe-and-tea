@@ -1,0 +1,71 @@
+{
+  "name": "pbl-coffeandtea",
+  "version": "1.0.0",
+  "main": "./src/app.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon",
+    "dev": "nodemon",
+    "start:debug": "nodemon --inspect=9229 -e ts,tsx --exec node -r ts-node/register -r tsconfig-paths/register ./src/app.ts"
+  },
+  "nodemon": {
+    "watch": [
+      "src"
+    ],
+    "ext": "ts",
+    "ignore": [
+      "node_modules"
+    ],
+    "exec": "npx ts-node -r tsconfig-paths/register ./src/app.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@prisma/client": "^6.15.0",
+    "@quixo3/prisma-session-store": "^3.1.13",
+    "@toast-ui/calendar": "^2.1.3",
+    "bcrypt": "^6.0.0",
+    "cloudinary": "^2.7.0",
+    "cookie": "^1.0.2",
+    "cookie-parser": "^1.4.7",
+    "crypto": "^1.0.1",
+    "date-fns": "^4.1.0",
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "jquery-toast-plugin": "^1.3.2",
+    "jsonwebtoken": "^9.0.2",
+    "leaflet": "^1.9.4",
+    "multer": "^2.0.2",
+    "mysql2": "^3.14.4",
+    "nodemailer": "^7.0.9",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
+    "pg": "^8.16.3",
+    "querystring": "^0.2.1",
+    "react-leaflet": "^5.0.0",
+    "socket.io": "^4.8.1",
+    "sweetalert2": "^11.23.0",
+    "uuid": "^11.1.0",
+    "vnpay": "^2.4.4",
+    "zod": "^4.1.9"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/ejs": "^3.1.5",
+    "@types/express": "^5.0.3",
+    "@types/express-session": "^1.18.2",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^24.3.1",
+    "@types/passport": "^1.0.17",
+    "@types/passport-local": "^1.0.38",
+    "nodemon": "^3.1.10",
+    "prisma": "^6.15.0",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.9.2"
+  }
+}

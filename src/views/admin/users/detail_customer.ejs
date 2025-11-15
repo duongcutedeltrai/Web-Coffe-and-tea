@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Phê La - Thông tin chi tiết Khách hàng</title>
+        <link rel="stylesheet" href="/admin/css/style.css" />
+        <link rel="stylesheet" href="/admin/css/users/detailUser.css" />
+
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+            integrity="sha512-2SwdPD6INVr   V/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        />
+        <!--Favicon-->
+        <link
+            rel="shortcut icon"
+            href="/images/favicon/favicon.ico"
+            type="image/x-icon"
+        />
+        <link
+            rel="icon"
+            href="/images/favicon/favicon.ico"
+            type="image/x-icon"
+        />
+    </head>
+
+    <body>
+        <div class="container">
+            <%- include('../layout/sidebar.ejs'); -%>
+            <!-- Main Content -->
+
+            <main class="main-content">
+                <h2 style="margin-bottom: 20px">Chi tiết khách hàng</h2>
+                <div class="container_detail">
+                    <!-- Header -->
+                    <div class="header_detail">
+                        <div class="header-content">
+                            <img
+                                src="<%= user.avatar ? '/images/users/' + user.avatar : '/images/users/avatar-face.jpg' %>"
+                                alt="Customer Avatar"
+                                class="customer-avatar"
+                                id="customerAvatar"
+                            />
+
+                            <div class="customer-info">
+                                <h1 id="customerName"><%= user.username %></h1>
+                                <p id="customerEmail"> <%= user.email %></p>
+                                <p id="customerPhone"> <%= user.phone %></p>
+                                <p id="customerJoinDate">
+                                     <%= user.birthday ?
+                                    user.birthday.toLocaleDateString("vi-VN") :
+                                    "" %>
+                                </p>
+                            </div>
+                            <div class="actions">
+                                <button
+                                    class="btn btn-primary"
+                                    onclick="goBack()"
+                                >
+                                    ← Quay lại
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="content">
+                        <!-- Tabs -->
+                        <div class="tabs">
+                            <div class="tab active" onclick="switchTab('info')">
+                                Thông tin cơ bản
+                            </div>
+                            <div class="tab" onclick="switchTab('orders')">
+                                Lịch sử đơn hàng
+                            </div>
+                            <div class="tab" onclick="switchTab('loyalty')">
+                                Điểm thưởng
+                            </div>
+                        </div>
+
+                        <!-- Tab Content -->
+                        <div id="info" class="tab-content active">
+                            <div class="info-grid">
+                                <div class="info-card">
+                                    <h3>🏠 Thông tin cá nhân</h3>
+                                    <div class="info-item">
+                                        <span class="info-label"
+                                            >Họ và tên:</span
+                                        >
+                                        <span class="info-value">
+                                            <%= user.username %>
+                                        </span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label"
+                                            >Giới tính:</span
+                                        >
+                                        <span class="info-value">
+                                            <%= user.gender %>
+                                        </span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label"
+                                            >Ngày sinh:</span
+                                        >
+                                        <span class="info-value">
+                                            <%= user.birthday ?
+                                            user.birthday.toLocaleDateString("vi-VN")
+                                            : "" %>
+                                        </span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Địa chỉ:</span>
+                                        <span class="info-value">
+                                            <%= user.address %>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="info-card">
+                                    <h3>📊 Thống kê tài khoản</h3>
+                                    <div class="info-item">
+                                        <span class="info-label"
+                                            >Tổng đơn hàng:</span
+                                        >
+                                        <span class="info-value">
+                                            <%= user.orders.length %> đơn
+                                        </span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label"
+                                            >Tổng chi tiêu:</span
+                                        >
+                                        <span class="info-value">
+                                            <% const
+                                            total=user.orders.reduce((sum,
+                                            order)=> sum + order.total_amount,
+                                            0); %> <%= new
+                                            Intl.NumberFormat('vi-VN', { style:
+                                            'currency' , currency: 'VND'
+                                            }).format(total) %>
+                                        </span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label"
+                                            >Đơn hàng trung bình:</span
+                                        >
+                                        <span class="info-value">
+                                            <% const
+                                            totalCount=user.orders.reduce((sum,
+                                            order)=> sum + order.total_amount,
+                                            0); const totalAvg = totalCount /
+                                            user.orders.length; %> <%= new
+                                            Intl.NumberFormat('vi-VN', { style:
+                                            'currency' , currency: 'VND'
+                                            }).format(totalAvg) %>
+                                        </span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label"
+                                            >Lần mua cuối:</span
+                                        >
+                                        <span class="info-value">
+                                            <% let last=null; if (user.orders &&
+                                            user.orders.length> 0) { last =
+                                            user.orders[user.orders.length -
+                                            1].orderDate; } %> <%= last ? new
+                                            Date(last).toLocaleDateString("vi-VN")
+                                            : "" %>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="orders" class="tab-content">
+                            <table class="orders-table">
+                                <thead>
+                                    <tr>
+                                        <th>Mã đơn</th>
+                                        <th>Ngày đặt</th>
+                                        <th>Sản phẩm</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% user.orders.forEach(order=> { %> <%
+                                    order.order_details.forEach(detail=> { %>
+                                    <tr>
+                                        <td>
+                                            #<%= "MD" +
+                                            order.order_id.toString().padStart(3,
+                                            '0' ) %>
+                                        </td>
+                                        <td>
+                                            <%= new
+                                            Date(order.orderDate).toLocaleDateString("vi-VN")
+                                            %>
+                                        </td>
+                                        <td>
+                                            <%= detail.products.name %> x<%=
+                                            detail.quantity %>
+                                        </td>
+                                        <td>
+                                            <%= new Intl.NumberFormat("vi-VN", {
+                                            style: "currency" , currency: "VND"
+                                            }).format(detail.price *
+                                            detail.quantity) %>
+                                        </td>
+                                        <td>
+                                            <span
+                                                class="order-status status-<%= order.status %>"
+                                            >
+                                                <%= order.status %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button
+                                                class="btn"
+                                                style="
+                                                    padding: 8px 16px;
+                                                    font-size: 0.9rem;
+                                                "
+                                            >
+                                                Xem chi tiết
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <% }) %> <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div id="loyalty" class="tab-content">
+                            <div class="info-grid">
+                                <div class="info-card">
+                                    <h3>🏆 Điểm thưởng hiện tại</h3>
+
+                                    <% user.point_history.forEach((point)=> { %>
+                                    <div class="info-item">
+                                        <span class="info-label"
+                                            >Điểm tích lũy:</span
+                                        >
+                                        <span class="info-value">
+                                            <%= user.point %> điểm
+                                        </span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label"
+                                            >Hạng thành viên:</span
+                                        >
+                                        <span class="info-value">Vàng</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label"
+                                            >Ưu đãi hiện tại:</span
+                                        >
+                                        <span class="info-value">Chưa có</span>
+                                    </div>
+                                    <% }); %>
+                                </div>
+
+                                <div class="info-card">
+                                    <h3>📈 Lịch sử điểm</h3>
+                                    <% user.point_history.forEach((point)=> { %>
+                                    <div class="info-item">
+                                        <span class="info-label">
+                                            <%= new
+                                            Date(point.created_at).toLocaleDateString("vi-VN")
+                                            %>
+                                        </span>
+                                        <span class="info-value"
+                                            >+ <%= point.change %> điểm</span
+                                        >
+                                    </div>
+                                    <% }); %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <script src="/admin/js/users/user_details.js"></script>
+    </body>
+</html>

@@ -1,0 +1,184 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+
+body {
+    font-family: "Inter", sans-serif;
+    background-color: #ffffff;
+}
+a {
+    text-decoration: none;
+    color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    background: #714024;
+    color: white;
+    padding: 20px 0;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.menu {
+    padding: 0;
+}
+
+.menu-item {
+    display: flex;
+    justify-content: flex-start;
+    /* align-items: center; */
+    padding: 20px 25px;
+    padding-left: 50px;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+    transition: all 0.3s ease;
+}
+
+
+.menu-item.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-left-color: white;
+   
+}
+.menu-item.active *{
+ transform: translateX(5px);
+ font-weight: 600;
+ font-size: 16px;
+}
+.menu-item:hover{
+      background-color: rgba(255, 255, 255, 0.1);
+}
+.menu-item span {
+    margin-left: 15px;
+    font-size: 14px;
+}
+
+/* header */
+.header {
+    position: fixed;
+    background: white;
+    color: #fff;
+    background-color: #b22830;
+    padding: 25px 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    right: 0;
+    left: 260px;
+    z-index: 1000;
+}
+.breadcrumb {
+    color: #fffefe;
+    font-size: 14px;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.notification {
+    width: 24px;
+    height: 24px;
+    background: #ffffff;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    background: #ffffff;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* Sidebar Footer - user info */
+.sidebar-footer {
+    margin-top: auto; /* luôn dính đáy sidebar */
+    padding: 15px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* User box */
+.sidebar-footer .user-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Avatar */
+.sidebar-footer .user-avatar-sidebar {
+    width: 36px;  /* nhỏ hơn */
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+}
+
+/* User info */
+.sidebar-footer .user-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap:10px;
+    line-height: 1.2;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.sidebar-footer .user-info .name {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar-footer .user-info .role {
+    font-size: 11px;
+    opacity: 0.7;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Logout button */
+.sidebar-footer .logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    color: white;
+    font-size: 13px;
+    transition: 0.2s;
+}
+
+.sidebar-footer .logout-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.sidebar-footer .logout-btn i {
+    font-size: 14px;
+}

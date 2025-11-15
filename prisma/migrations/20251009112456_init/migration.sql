@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `orders` ADD COLUMN `order_source` ENUM('STAFF', 'CUSTOMER') NOT NULL DEFAULT 'STAFF',
+    ADD COLUMN `order_type` ENUM('DINE_IN', 'TAKE_AWAY') NOT NULL DEFAULT 'DINE_IN';

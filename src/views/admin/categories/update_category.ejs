@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Phê La - Chỉnh sửa Danh mục</title>
+        <link rel="stylesheet" href="/admin/css/categories/categories.css" />
+        <link rel="stylesheet" href="/admin/css/style.css" />
+        <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+        />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <link
+            rel="shortcut icon"
+            href="/images/favicon/favicon.ico"
+            type="image/x-icon"
+        />
+        <link
+            rel="icon"
+            href="/images/favicon/favicon.ico"
+            type="image/x-icon"
+        />
+    </head>
+    <body>
+        <div class="container">
+            <%- include('../layout/sidebar.ejs'); -%>
+
+            <div class="content">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div class="page-title">
+                        <h1>Chỉnh sửa nhóm sản phẩm</h1>
+                        <p class="page-description">
+                            Cập nhật thông tin nhóm sản phẩm
+                        </p>
+                    </div>
+                    <a href="/admin/categories" class="btn-secondary">
+                        <i class="fas fa-arrow-left"></i>
+                        Quay lại
+                    </a>
+                </div>
+
+                <!-- Added comparison layout with current info on left and edit form on right -->
+                <div class="comparison-container">
+                    <!-- Current Information (Left Side) -->
+                    <div class="current-info-section">
+                        <h3>Thông tin hiện tại</h3>
+                        <div class="info-card">
+                            <div class="info-group">
+                                <label>Tên nhóm hiện tại</label>
+                                <div
+                                    class="current-value"
+                                    id="currentGroupName"
+                                >
+                                    <%=category.name%>
+                                </div>
+                            </div>
+                            <div class="info-group">
+                                <label>Mô tả hiện tại</label>
+                                <div
+                                    class="current-value"
+                                    id="currentGroupDescription"
+                                >
+                                    <%=category.description%>
+                                </div>
+                            </div>
+                            <div class="info-group">
+                                <label>Hình ảnh hiện tại</label>
+                                <div
+                                    class="current-image"
+                                    id="currentGroupImage"
+                                >
+                                    <i class="fas fa-image"></i>
+                                    <span>Chưa có hình ảnh</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Edit Form (Right Side) -->
+                    <div class="edit-form-section">
+                        <h3>Thông tin mới</h3>
+                        <div class="form-container">
+                            <form
+                                id="editGroupForm"
+                                class="category-form"
+                                method="post"
+                                action="/admin/categories/update/<%= category.category_id %>"
+                                enctype="multipart/form-data"
+                            >
+                                <input type="hidden" id="editGroupId" />
+                                <div class="form-group">
+                                    <label for="editGroupName">Tên nhóm</label>
+                                    <input
+                                        type="text"
+                                        id="editGroupName"
+                                        name="groupName"
+                                        required
+                                    />
+                                </div>
+                                <div class="form-group">
+                                    <label for="editGroupDescription"
+                                        >Mô tả</label
+                                    >
+                                    <textarea
+                                        id="editGroupDescription"
+                                        name="groupDescription"
+                                        rows="3"
+                                    ></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editGroupImage"
+                                        >Hình ảnh tượng trưng</label
+                                    >
+                                    <div class="image-upload-container">
+                                        <input
+                                            type="file"
+                                            id="editGroupImage"
+                                            name="groupImage"
+                                            accept="image/*"
+                                            multiple
+                                            class="image-input"
+                                        />
+                                        <div
+                                            class="image-preview"
+                                            id="editImagePreview"
+                                        >
+                                            <i class="fas fa-image"></i>
+                                            <span>Chọn hình ảnh</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <a
+                                        href="/admin/categories"
+                                        class="btn-secondary"
+                                        >Hủy</a
+                                    >
+                                    <button type="submit" class="btn-primary">
+                                        Cập nhật
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            document
+                .getElementById("editGroupImage")
+                .addEventListener("change", function (event) {
+                    const previewContainer =
+                        document.getElementById("editImagePreview");
+                    previewContainer.innerHTML = ""; // Xóa nội dung cũ
+
+                    const files = event.target.files; // Lấy danh sách file được chọn
+                    if (files.length > 0) {
+                        Array.from(files).forEach((file) => {
+                            const img = document.createElement("img");
+                            img.style.maxWidth = "120px";
+                            img.style.maxHeight = "160px";
+                            img.style.marginRight = "10px";
+                            img.style.objectFit = "cover";
+
+                            // Tạo URL tạm để preview ảnh
+                            img.src = URL.createObjectURL(file);
+
+                            previewContainer.appendChild(img);
+                        });
+                    } else {
+                        previewContainer.innerHTML = `<i class="fas fa-image"></i><span>Chọn hình ảnh</span>`;
+                    }
+                });
+        </script>
+    </body>
+</html>
