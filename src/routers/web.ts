@@ -18,7 +18,6 @@ import { ClientHomeRouter } from "./client/home.route";
 import { productAPI } from "./client/product.route";
 import cartRouteAPI from "./client/cart.route";
 import chatRouteAPI from "./client/chat.route";
-import { authMiddleware, roleMiddleware, authAndRoleMiddleware, adminStaffGuard } from "../middleware/auth.middleware";
 import feedbackRoute from "./client/feedback.route";
 import statisticsRouter from "./admin/statistics.route";
 import { paymentAPI } from "./client/payment.route";
@@ -26,7 +25,7 @@ import favoriteRouteAPI from "./client/favorite.route";
 const router = express.Router();
 const webRouter = (app: Express) => {
     ////admin
-    app.use("/admin", authAndRoleMiddleware, adminStaffGuard);
+    // app.use("/admin", authAndRoleMiddleware, adminStaffGuard);
     app.use("/admin", productRoute);
     app.use("/api/admin", productRouteAPI);
     app.use("/admin", categoryRoute);

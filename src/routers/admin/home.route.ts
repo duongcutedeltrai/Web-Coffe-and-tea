@@ -4,5 +4,5 @@ import { authMiddleware, roleMiddleware, authAndRoleMiddleware, adminStaffGuard 
 const homeRoute = express.Router();
 
 
-homeRoute.get("", adminStaffGuard, AdminHomeController.getHomeAdminPage);
+homeRoute.get("", authAndRoleMiddleware, adminStaffGuard, AdminHomeController.getHomeAdminPage);
 export default homeRoute;

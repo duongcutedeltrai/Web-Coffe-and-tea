@@ -60,9 +60,9 @@ class AuthController {
       (req as any).user = decoded;
 
       if (req.user && (req.user as any).role === 1) {
-        return res.redirect("/admin/customer");
+        return res.redirect("/admin/");
       } else if (req.user && (req.user as any).role === 2) {
-        return res.redirect("/admin/customer");
+        return res.redirect("/admin/");
       } else {
         return res.redirect("/home");
       }

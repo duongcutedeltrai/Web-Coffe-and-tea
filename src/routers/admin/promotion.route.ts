@@ -1,12 +1,15 @@
 import express from "express";
 import promotionController from "../../controller/admin/promotion.controller";
-import { authMiddleware } from "../../middleware/auth.middleware";
+import { authMiddleware, roleMiddleware, authAndRoleMiddleware, adminStaffGuard } from "../../middleware/auth.middleware";
+
+
 const promotionRoute = express.Router();
 const promotionDataRoute = express.Router();
 
-promotionRoute.get("/promotions", promotionController.getCreatePromotionPage);
+promotionRoute.get("/promotions", authAndRoleMiddleware, adminStaffGuard, promotionController.getCreatePromotionPage);
 promotionRoute.get(
   "/promotions/:id",
+  authAndRoleMiddleware, adminStaffGuard,
   promotionController.getCreatePromotionPage
 );
 promotionRoute.get(
@@ -16,10 +19,12 @@ promotionRoute.get(
 );
 promotionRoute.get(
   "/promotions/update/:id",
+  authAndRoleMiddleware, adminStaffGuard,
   promotionController.getCreatePromotionPage
 );
 promotionRoute.get(
   "/promotions/create",
+  authAndRoleMiddleware, adminStaffGuard,
   promotionController.getCreatePromotionPage
 );
 
