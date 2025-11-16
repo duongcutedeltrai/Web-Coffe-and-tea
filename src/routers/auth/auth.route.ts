@@ -14,5 +14,5 @@ authRoute.post("/register", AuthController.register);
 authRoute.get("/logout", AuthController.logout);
 authRoute.post("/forgot-password", AuthController.forgotPassword);
 authRoute.post("/reset-password", AuthController.resetPassword);
-
+authRoute.get("/user-token",AuthController.getUserToken)
 export default authRoute;

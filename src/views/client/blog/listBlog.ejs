@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Phê La | Tin tức</title>
+        <link rel="stylesheet" href="styles.css" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+            rel="stylesheet"
+        />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-slider@11.0.2/dist/css/bootstrap-slider.min.css"
+        />
+        <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+        <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="/client/css/style.css" />
+        <link rel="stylesheet" href="/client/css/blog/listBlog.css" />
+        <link rel="stylesheet" href="/client/css/cart/cart-popup.css" />
+        <!-- Font-->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+            rel="stylesheet"
+        />
+        <link
+            rel="shortcut icon"
+            href="/images/favicon/favicon.ico"
+            type="image/x-icon"
+        />
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <style>
+
+        </style>
+    </head>
+    <body>
+        <% if (!user) { %> <%- include('../layout/navbar.ejs'); -%> <% } else {
+        %> <%- include('../layout/navbar_login.ejs'); -%><% } %><%-
+        include('../cart/cart-popup.ejs'); -%>
+        <div class="header_menu">
+            <img src="/images/header-news.png" alt="" class="header_img" />
+        </div>
+        <main class="min-h-screen bg-background">
+    <div class="container" style="padding-top: 0px;">
+      <!-- Header -->
+     
+        <div class="space-y" style="text-align: center;margin-bottom: 170px;">
+          <div>
+            <h1 class="title">Tin tức & Bài viết mới</h1>
+            <div class="accent-bars" style="display: flex;
+            justify-content: center;">
+              <div class="bar bar-1"></div>
+              <div class="bar bar-2"></div>
+            </div>
+          </div>
+          <p class="subtitle" style="margin: auto;">
+            Nơi bạn tìm thấy những góc nhìn thú vị về văn hoá cà phê, phong cách sống và câu chuyện thương hiệu.<br/>
+            Cập nhật những chương trình ưu đãi hấp dẫn, sự kiện đặc biệt và câu chuyện thú vị từ quán cà phê của chúng tôi.<br/>
+
+          </p>
+        </div>
+      
+
+      <!-- Blog posts -->
+      <section id="blog-list"></section>
+
+      <!-- Footer -->
+    
+    </div>
+  </main>
+    <%- include('../layout/footer.ejs'); -%>
+        <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap-slider@11.0.2/dist/bootstrap-slider.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="/client/js/cart/cart-popup.js"></script>
+        <script src="/client/js/blog/listBlog.js"></script>
+        <script src="/client/js/favorite/favorites.js"></script>
+    </body>
+</html>

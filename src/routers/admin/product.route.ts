@@ -1,15 +1,20 @@
 import express from "express";
 import AdminProductController from "../../controller/admin/product.controller";
 import { fileUploadProductMiddleware } from "../../middleware/multer";
+import { authMiddleware,   roleMiddleware,
+    authAndRoleMiddleware,
+    adminStaffGuard, } from "../../middleware/auth.middleware";
 
 const productRoute = express.Router();
 const productRouteAPI = express.Router();
 
-productRoute.get("/products", (req, res) => {
+productRoute.get("/products", authAndRoleMiddleware,
+    adminStaffGuard,(req, res) => {
     res.render("admin/products/products.ejs");
 });
 
-productRoute.get("/products/:id", AdminProductController.getDetailProductPage);
+productRoute.get("/products/:id", authAndRoleMiddleware,
+    adminStaffGuard,AdminProductController.getDetailProductPage);
 productRoute.put(
     "/products/:id",
     fileUploadProductMiddleware("image"),

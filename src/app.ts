@@ -7,11 +7,21 @@ import cookieParser from "cookie-parser";
 import { Server } from "socket.io";
 import http from "http";
 import { setupSocket } from "./socket";
+import session from "express-session";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);
 //config view enginee
+app.use(session({
+  secret: "vnpay-secret-key",
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    secure: false,       // true nếu dùng HTTPS
+    maxAge: 1000 * 60 * 15  // 15 phút
+  }
+}));
 app.set("views", __dirname + "/views");
 app.set("view engine", "ejs");
 

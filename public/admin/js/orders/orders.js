@@ -446,7 +446,7 @@ async function viewOrderDetails(orderId) {
             <div class="modal-summary">
               <div class="modal-summary-row">
                 <span>Tổng cộng:</span>
-                <span class="modal-summary-total" id="modalTotal"></span>
+                <span class="modal-summary-total" id="modalTotal">${Number(order.data.payment[0].total_amount).toLocaleString("vi-VN")} ₫</span>
               </div>
               <div class="modal-summary-row">
                 <span>Thanh toán:</span>
@@ -726,6 +726,8 @@ function openCreateOrderDrawer() {
     resetCreateOrderForm();
     updateOrderTotal();
 
+    document.getElementById("voucherCode").value = "";
+
     if (window.location.pathname !== "/admin/orders/create") {
         history.pushState({ action: "create" }, "", "/admin/orders/create");
     }
@@ -766,6 +768,7 @@ function resetCreateOrderForm() {
     selectedProducts = [];
     renderSelectedProducts();
     updateOrderTotal();
+    document.getElementById("voucherCode").value = "";
 }
 
 // Update category buttons
@@ -1009,7 +1012,15 @@ async function applyVoucher() {
     }
     const voucherCode = document.querySelector("#voucherCode").value.trim();
     const customerPhone = document.getElementById("customerPhone").value.trim();
+    const customerName = document.getElementById("customerName").value.trim();
+
     const userId = null;
+
+    const products = selectedProducts.map((p) => ({
+        product_id: p.product_id,
+        size: p.size,
+        quantity: p.quantity,
+    }));
 
     const response = await fetch(`/admin/data/promotions/apply`, {
         method: "POST",
@@ -1021,14 +1032,27 @@ async function applyVoucher() {
             orderAmount: totalAmount,
             userId,
             phone: customerPhone,
+            products,
         }),
     });
+    console.log("Request body:", {
+        code: voucherCode,
+        orderAmount: totalAmount,
+        userId,
+        phone: customerPhone,
+        products,
+    });
+
     const result = await response.json();
     if (!response.ok || !result.success) {
         alert(result.message || "Mã voucher không hợp lệ");
+        delete selectedProducts.promotion;
+        updateOrderTotal(); // Reset lại tổng tiền
         return;
     }
-    const { discountAmount, finalAmount } = result.data;
+    console.log("Voucher applied successfully:", result.data);
+
+    const { discountAmount, finalAmount } = result.data.data;
     alert(
         `Áp dụng voucher thành công! Giảm ${formatCurrency(discountAmount)}.`
     );
@@ -1037,7 +1061,7 @@ async function applyVoucher() {
     document.getElementById("orderTotal").textContent =
         formatCurrency(finalAmount);
 
-    selectedProducts.promotion = result.data;
+    selectedProducts.promotion = result.data.data;
 
     return result.data;
 }
@@ -1113,6 +1137,7 @@ async function submitCreateOrder() {
         }
 
         alert("Đơn hàng đã được tạo thành công!");
+        delete selectedProducts.promotion;
         closeCreateOrderDrawer();
         renderOrders(currentTab, typeFilter);
     } catch (err) {

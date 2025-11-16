@@ -42,4 +42,29 @@ ClientHomeRouter.get(
     authMiddleware,
     ClientHomeController.getProductDetailPage
 );
+ClientHomeRouter.get(
+    "/voucher",
+    authMiddleware,
+    ClientHomeController.getVoucherPage
+);
+ClientHomeRouter.get(
+    "/blogs/:id",
+    authMiddleware,
+    ClientHomeController.getBlogDetailPage
+);
+ClientHomeRouter.get(
+    "/blogs",
+    authMiddleware,
+    ClientHomeController.getBlogPage
+);
+ClientHomeRouter.get(
+    "/checkout-success",
+    authMiddleware,
+    ClientHomeController.getSuccessPage
+);
+ClientHomeRouter.get(
+    "/orders",
+    authMiddleware,
+    ClientHomeController.getOrderPage
+);
 export { ClientHomeRouter };

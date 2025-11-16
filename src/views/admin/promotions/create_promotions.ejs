@@ -9,7 +9,7 @@
             href="/admin/css/promotions/create_promotions.css"
         />
         <link rel="stylesheet" href="/admin/css/style.css" />
-         <!--Favicon-->
+        <!--Favicon-->
         <link
             rel="shortcut icon"
             href="/images/favicon/favicon.ico"
@@ -20,6 +20,9 @@
             href="/images/favicon/favicon.ico"
             type="image/x-icon"
         />
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+            integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+            crossorigin="anonymous" referrerpolicy="no-referrer" />
     </head>
     <body>
         <div class="container">
@@ -58,19 +61,81 @@
                             <option value="platinum">Bạch kim</option>
                         </select>
                     </div>
-                     <div class="tabs-list">
-                                <button
-                                    class="tab-trigger active"
-                                    data-tab="Voucher"
+                    <div class="tabs-list">
+                        <button
+                            class="tab-trigger active"
+                            data-tab="Voucher"
+                            onclick="switchTab('Voucher')"
+                        >
+                            Voucher
+                        </button>
+                        <button
+                            class="tab-trigger"
+                            data-tab="FlashSale"
+                            onclick="switchTab('FlashSale')"
+                        >
+                            FlashSale
+                        </button>
+                    </div>
+
+                    <!-- Thêm container cho bảng flash sale -->
+                    <div id="voucherTab" class="tab-content active">
+                        <div
+                            class="promotions-container"
+                            id="promotionsContainer"
+                        >
+                            Promotions will be rendered here by JavaScript
+                        </div>
+                    </div>
+
+                    <div
+                        id="flashsaleTab"
+                        class="tab-content"
+                        style="display: none"
+                    >
+                        <div class="flashsale-table-wrapper">
+                            <table class="flashsale-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tên sản phẩm</th>
+                                        <th>Size</th>
+                                        <th>Giá gốc</th>
+                                        <th>Giá giảm</th>
+                                        <th>Bắt đầu</th>
+                                        <th>Kết thúc</th>
+                                        <th>Số lượng</th>
+                                        <th>Số tiền giảm</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="flashsaleTableBody">
+                                    <!-- Dữ liệu sẽ được render bởi JavaScript -->
+                                </tbody>
+                            </table>
+                            <div
+                                id="flashsaleEmptyState"
+                                class="empty-state"
+                                style="display: none"
+                            >
+                                <div
+                                    style="font-size: 48px; margin-bottom: 16px"
                                 >
-                                    Voucher
-                                </button>
-                                <button class="tab-trigger" data-tab="FlashSale">
-                                    FlashSale
-                                </button>  
+                                    📦
+                                </div>
+                                <div
+                                    style="
+                                        font-size: 18px;
+                                        font-weight: 500;
+                                        margin-bottom: 8px;
+                                    "
+                                >
+                                    Không có flash sale nào
+                                </div>
+                                <div style="font-size: 14px; color: #999">
+                                    Tạo flash sale mới để bắt đầu
+                                </div>
                             </div>
-                    <div class="promotions-container" id="promotionsContainer">
-                        Promotions will be rendered here by JavaScript
+                        </div>
                     </div>
                 </div>
             </div>
@@ -93,11 +158,20 @@
 
                     <div class="form-section">
                         <h3>Thông tin cơ bản</h3>
-                         <div class="form-group">
-                            <label for="promotionType">Chọn loại khuyến mãi</label>
-                            <select id="promotionType" onchange="togglePromotionType()">
-                                <option value="voucher" selected>Voucher (nhập mã giảm giá)</option>
-                                <option value="flashsale">Flash Sale (giảm giá chớp nhoáng)</option>
+                        <div class="form-group">
+                            <label for="promotionType"
+                                >Chọn loại khuyến mãi</label
+                            >
+                            <select
+                                id="promotionType"
+                                onchange="togglePromotionType()"
+                            >
+                                <option value="voucher" selected>
+                                    Voucher (nhập mã giảm giá)
+                                </option>
+                                <option value="flashsale">
+                                    Flash Sale (giảm giá chớp nhoáng)
+                                </option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -172,7 +246,8 @@
                                     placeholder="VD: 20"
                                     required
                                 />
-                            </div><div class="form-group">
+                            </div>
+                            <div class="form-group">
                                 <label for="discountPrice"
                                     >Giá khuyến mãi (VNĐ)
                                     <span class="required">*</span></label
@@ -196,11 +271,9 @@
                                     placeholder="VD: 100"
                                 />
                             </div>
-                            
                         </div>
 
                         <div class="form-row">
-
                             <div class="form-group">
                                 <label for="currentUsage"
                                     >Số lần đã sử dụng</label
@@ -333,6 +406,29 @@
             </div>
         </div>
 
+        <!-- Thêm modal chi tiết flash sale -->
+        <div
+            class="modal-overlay"
+            id="flashsaleDetailsOverlay"
+            onclick="closeFlashsaleDetails()"
+        >
+            <div
+                class="modal"
+                id="flashsaleDetailsModal"
+                onclick="event.stopPropagation()"
+            >
+                <div class="modal-header">
+                    <h2>Chi tiết Flash Sale</h2>
+                    <button class="close-btn" onclick="closeFlashsaleDetails()">
+                        ×
+                    </button>
+                </div>
+                <div class="modal-content" id="flashsaleDetailsContent">
+                    Content will be populated by JavaScript
+                </div>
+            </div>
+        </div>
+
         <div
             class="modal-overlay"
             id="promotionDetailsOverlay"
@@ -354,7 +450,6 @@
                 </div>
             </div>
         </div>
-
         <script src="/admin/js/promotions/create_promotions.js"></script>
     </body>
 </html>

@@ -1,9 +1,10 @@
-
 let selectedProducts = [];
-let currentProductCategory = "all";
+const currentProductCategory = "all";
 let promotions = [];
-let flashsale=[];
+let flashsale = [];
 let currentEditingId = null;
+let currentTab = "Voucher"; // Thêm biến theo dõi tab hiện tại
+let currentEditingType = "Voucher"; // hoặc "FlashSale"
 
 // Format currency
 function formatCurrency(amount) {
@@ -23,6 +24,31 @@ function formatDate(dateString) {
         hour: "2-digit",
         minute: "2-digit",
     });
+}
+
+function switchTab(tabName) {
+    currentTab = tabName;
+    currentEditingId = null;
+    // Cập nhật UI của tab buttons
+    document.querySelectorAll(".tab-trigger").forEach((btn) => {
+        btn.classList.remove("active");
+        if (btn.getAttribute("data-tab") === tabName) {
+            btn.classList.add("active");
+        }
+    });
+
+    // Hiển thị/ẩn nội dung tab
+    document.querySelectorAll(".tab-content").forEach((tab) => {
+        tab.style.display = "none";
+    });
+
+    if (tabName === "Voucher") {
+        document.getElementById("voucherTab").style.display = "block";
+        // Ẩn các filter cho voucher nếu không cần
+    } else if (tabName === "FlashSale") {
+        document.getElementById("flashsaleTab").style.display = "block";
+        renderFlashSaleTable();
+    }
 }
 
 // Get promotion status
@@ -399,6 +425,300 @@ async function fetchPromotions() {
     }
     return [];
 }
+//--------------------------------- Flash Sale Table Rendering ---------------------------------
+async function renderFlashSaleTable() {
+    const tableBody = document.getElementById("flashsaleTableBody");
+    const emptyState = document.getElementById("flashsaleEmptyState");
+
+    try {
+        const response = await fetch("/admin/data/promotions/flashsale");
+        const result = await response.json();
+        flashsale =
+            result.success && Array.isArray(result.data) ? result.data : [];
+        console.log("Fetched flash sales:", flashsale);
+        flashsale.sort(
+            (a, b) => new Date(b.start_date) - new Date(a.start_date)
+        );
+    } catch (error) {
+        console.error("Error fetching flash sales:", error);
+        flashsale = [];
+    }
+
+    if (flashsale.length === 0) {
+        tableBody.innerHTML = "";
+        emptyState.style.display = "block";
+        return;
+    }
+
+    emptyState.style.display = "none";
+
+    tableBody.innerHTML = flashsale
+        .map((item, index) => {
+            // Mỗi promotion có thể áp dụng cho nhiều sản phẩm
+            return item.promotion_products
+                .map((p) => {
+                    console.log(item);
+                    const product = p.products || {};
+                    const productName =
+                        product.name || `Sản phẩm #${p.product_id}`;
+                    const startDate = formatDate(item.start_date);
+                    const endDate = formatDate(item.end_date);
+
+                    // Nếu có price_product, lấy size và giá
+                    let priceInfo = "";
+                    if (
+                        product.price_product &&
+                        product.price_product.length > 0
+                    ) {
+                        const priceObj = product.price_product.find(
+                            (pr) => pr.size === p.size
+                        );
+                        if (priceObj) {
+                            priceInfo = {
+                                original_price: priceObj.price,
+                                size: priceObj.size,
+                            };
+                        }
+                    }
+
+                    const originalPrice = priceInfo?.original_price || 0;
+                    const discountPrice = item.discount_price || 0;
+                    const discountAmount = originalPrice - discountPrice;
+
+                    return `
+            <tr class="flashsale-row" >
+              <td class="cell-product-name">${productName}</td>
+              <td>${priceInfo?.size || p.size || "N/A"}</td>
+              <td class="cell-original-price">${formatCurrency(
+                  originalPrice
+              )}</td>
+              <td class="cell-discount-price">${formatCurrency(
+                  discountAmount
+              )}</td>
+              <td class="cell-start-date">${startDate}</td>
+              <td class="cell-end-date">${endDate}</td>
+              <td class="cell-quantity">${item.current_usage}/${
+                        item.max_usage_count || 0
+                    }</td>
+              <td class="cell-discount-amount">${formatCurrency(
+                  discountPrice
+              )}</td>
+              <td class="cell-actions" onclick="event.stopPropagation()">
+                <button class="btn-action btn-edit" onclick="editFlashsale('${
+                    item.promotion_id || index
+                }')">Sửa</button>
+                <button class="btn-action btn-delete" onclick="deleteFlashsale('${
+                    item.promotion_id || index
+                }')">Xóa</button>
+              </td>
+            </tr>
+          `;
+                })
+                .join(""); // nối các sản phẩm trong cùng một promotion
+        })
+        .join(""); // nối tất cả promotions
+}
+
+// async function viewFlashsaleDetails(id) {
+//   let item = flashsale.find(
+//     (f, index) => f.id === id || index.toString() === id.toString()
+//   );
+
+//   if (!item) {
+//     try {
+//       const res = await fetch(`/admin/data/promotions/${id}`);
+//       const data = await res.json();
+//       if (data.success) {
+//         item = data.data;
+//         console.log("Fetched flash sale item:", item);
+//       } else {
+//         alert("Không tìm thấy flash sale!");
+//         return;
+//       }
+//     } catch (error) {
+//       console.error("Error loading flash sale details:", error);
+//       alert("Lỗi khi tải chi tiết flash sale");
+//       return;
+//     }
+//   }
+
+//   const product = productsCatalog.find((p) => p.product_id === item.product_id);
+//   const productName = product ? product.name : `Sản phẩm #${item.product_id}`;
+//   const discountAmount = item.original_price - item.discount_price;
+//   const totalDiscount = Math.round(discountAmount * (item.quantity || 1));
+
+//   const content = `
+//     <div class="detail-section">
+//       <h3>Thông tin sản phẩm</h3>
+//       <div class="detail-grid">
+//         <div class="detail-row">
+//           <label>Tên sản phẩm</label>
+//           <span>${productName}</span>
+//         </div>
+//         <div class="detail-row">
+//           <label>Size</label>
+//           <span>${item.size || "N/A"}</span>
+//         </div>
+//       </div>
+//     </div>
+
+//     <div class="detail-section">
+//       <h3>Giá cả</h3>
+//       <div class="detail-grid">
+//         <div class="detail-row">
+//           <label>Giá gốc</label>
+//           <span>${formatCurrency(item.original_price)}</span>
+//         </div>
+//         <div class="detail-row">
+//           <label>Giá giảm</label>
+//           <span style="color: #b22830; font-weight: 600; font-size: 18px;">${formatCurrency(
+//             item.discount_price
+//           )}</span>
+//         </div>
+//         <div class="detail-row">
+//           <label>Tiền giảm trên 1 sản phẩm</label>
+//           <span>${formatCurrency(discountAmount)}</span>
+//         </div>
+//         <div class="detail-row">
+//           <label>Tổng tiền giảm</label>
+//           <span style="color: #b22830; font-weight: 600;">${formatCurrency(
+//             totalDiscount
+//           )}</span>
+//         </div>
+//       </div>
+//     </div>
+
+//     <div class="detail-section">
+//       <h3>Thông tin flash sale</h3>
+//       <div class="detail-grid">
+//         <div class="detail-row">
+//           <label>Số lượng</label>
+//           <span>${item.quantity || 0}</span>
+//         </div>
+//         <div class="detail-row">
+//           <label>Bắt đầu</label>
+//           <span>${formatDate(item.start_date)}</span>
+//         </div>
+//         <div class="detail-row">
+//           <label>Kết thúc</label>
+//           <span>${formatDate(item.end_date)}</span>
+//         </div>
+//         <div class="detail-row">
+//           <label>Mô tả</label>
+//           <span>${item.description || "N/A"}</span>
+//         </div>
+//       </div>
+//     </div>
+//   `;
+
+//   document.getElementById("flashsaleDetailsContent").innerHTML = content;
+//   document.getElementById("flashsaleDetailsOverlay").classList.add("active");
+// }
+
+function closeFlashsaleDetails() {
+    document
+        .getElementById("flashsaleDetailsOverlay")
+        .classList.remove("active");
+}
+
+async function deleteFlashsale(id) {
+    if (confirm("Bạn có chắc chắn muốn xóa flash sale này?")) {
+        try {
+            const response = await fetch(`/admin/data/flashsales/${id}`, {
+                method: "DELETE",
+            });
+            const result = await response.json();
+            if (!response.ok) {
+                throw new Error(
+                    result.message || "Failed to delete flash sale"
+                );
+            }
+            alert("Xóa flash sale thành công!");
+            renderFlashSaleTable();
+        } catch (error) {
+            console.error("Error deleting flash sale:", error);
+            alert("Có lỗi xảy ra khi xóa flash sale: " + error.message);
+        }
+    }
+}
+
+async function editFlashsale(id) {
+    currentEditingId = id;
+    currentEditingType = "FlashSale";
+    window.history.pushState(
+        { flashsaleId: id },
+        "",
+        `/admin/promotions/update/${id}`
+    );
+    document.getElementById("drawerTitle").textContent = "Chỉnh sửa Flash Sale";
+
+    // 🔹 Set loại khuyến mãi sang flashsale trước khi fill data
+    const typeSelect = document.getElementById("promotionType");
+    if (typeSelect) {
+        typeSelect.value = "flashsale";
+        togglePromotionType(); // 👈 cập nhật lại giao diện form cho Flash Sale
+    }
+
+    // 🔹 Tìm flashsale từ danh sách đã load
+    let flash = flashsale.find((f) => f.promotion_id === id || f.id === id);
+
+    // Nếu chưa có đầy đủ dữ liệu thì fetch chi tiết
+    if (!flash) {
+        try {
+            const res = await fetch(`/admin/data/promotions/${id}`);
+            const json = await res.json();
+            if (json.success) flash = json.data;
+        } catch (err) {
+            console.error("Error fetching flash sale details:", err);
+            alert("Không thể tải thông tin flash sale");
+            return;
+        }
+    }
+
+    if (!flash) {
+        alert("Không tìm thấy flash sale!");
+        return;
+    }
+
+    // 🔹 Fill dữ liệu vào form
+    document.getElementById("promotionDescription").value =
+        flash.description || "Flash Sale - Giảm giá sốc trong thời gian ngắn!";
+    document.getElementById("startDate").value = formatDateForInput(
+        flash.start_date
+    );
+    document.getElementById("endDate").value = formatDateForInput(
+        flash.end_date
+    );
+    document.getElementById("discountPrice").value = flash.discount_price || 0;
+    document.getElementById("maxUsageCount").value = flash.max_usage_count || 0;
+    document.getElementById("currentUsage").value = flash.current_usage || 0;
+
+    // 🔹 Sản phẩm áp dụng
+    if (flash.promotion_products && flash.promotion_products.length > 0) {
+        selectedProducts = flash.promotion_products.map((p) => ({
+            productId: p.product_id,
+            size: p.size,
+            price:
+                p.products?.price_product?.find((pp) => pp.size === p.size)
+                    ?.price || 0,
+        }));
+    } else {
+        selectedProducts = [];
+    }
+
+    renderProductSelection();
+
+    // 🔹 Disable vùng chọn sản phẩm all/specific cho Flash Sale
+    const radios = document.querySelectorAll('input[name="productScope"]');
+    radios.forEach((r) => {
+        r.disabled = true;
+        if (r.value === "specific") r.checked = true;
+    });
+
+    // 🔹 Mở drawer
+    document.getElementById("promotionDrawerOverlay").classList.add("active");
+    document.getElementById("promotionDrawer").classList.add("active");
+}
 
 async function renderPromotionsVoucher() {
     const container = document.getElementById("promotionsContainer");
@@ -458,9 +778,9 @@ async function renderPromotionsVoucher() {
                     : "";
 
             return `
-            <div class="promotion-card" onclick="viewPromotionDetails(${
-                promotion.id
-            })">
+            <div class="promotion-card" onclick="viewPromotionDetails('${
+                promotion.promotion_id
+            }')">
                 <div class="promotion-header">
                     <div class="promotion-code">${promotion.code}</div>
                     <span class="promotion-status status-${status}">${getStatusText(
@@ -508,12 +828,12 @@ async function renderPromotionsVoucher() {
                 </div>
                 ${applicableProductsHtml}
                 <div class="promotion-actions" onclick="event.stopPropagation()">
-                    <button class="btn-edit" onclick="editPromotion(${
-                        promotion.id
-                    })"> Sửa</button>
-                    <button class="btn-delete" onclick="deletePromotion(${
-                        promotion.id
-                    })"> Xóa</button>
+                   <button class="btn-edit" onclick="editPromotion('${
+                       promotion.promotion_id
+                   }')">Sửa</button>
+                    <button class="btn-delete" onclick="deletePromotion('${
+                        promotion.promotion_id
+                    }')"> Xóa</button>
                 </div>
             </div>
         `;
@@ -526,6 +846,7 @@ function openCreatePromotionDrawer() {
     window.history.pushState({}, "", `/admin/promotions/create`);
     currentEditingId = null;
     selectedProducts = []; // Reset selected products
+    currentEditingType = "Voucher";
     document.getElementById("drawerTitle").textContent = "Tạo khuyến mãi mới";
     document.getElementById("promotionForm").reset();
     document.getElementById("promotionId").value = "";
@@ -543,6 +864,9 @@ function closePromotionDrawer() {
         .classList.remove("active");
     document.getElementById("promotionDrawer").classList.remove("active");
     window.history.pushState({}, "", "/admin/promotions");
+
+    currentEditingId = null;
+    currentEditingType = "Voucher";
 }
 
 function formatDateForInput(dateString) {
@@ -562,7 +886,6 @@ function editPromotion(id) {
     const promotion = promotions.find(
         (p) => p.id === id || p.promotion_id === id
     );
-    console.log("promotion:", promotion);
     if (!promotion) return;
     window.history.pushState(
         { promotionId: id },
@@ -570,7 +893,13 @@ function editPromotion(id) {
         `/admin/promotions/update/${promotion.promotion_id}`
     );
     currentEditingId = promotion.promotion_id;
+    currentEditingType = "Voucher";
     document.getElementById("drawerTitle").textContent = "Chỉnh sửa khuyến mãi";
+    const typeSelect = document.getElementById("promotionType");
+    if (typeSelect) {
+        typeSelect.value = "voucher"; // Đảm bảo set về voucher
+        togglePromotionType(); // Trigger để update UI
+    }
     document.getElementById("promotionId").value = promotion.id;
     document.getElementById("promotionCode").value = promotion.code;
     document.getElementById("promotionDescription").value =
@@ -729,9 +1058,7 @@ async function viewPromotionDetails(id) {
             <div class="detail-grid">
                 <div class="detail-row">
                     <label>Khách hàng mới</label>
-                    <span>${
-                        promotion.is_for_new_user ? "Có" : "Không"
-                    }</span>
+                    <span>${promotion.is_for_new_user ? "Có" : "Không"}</span>
                 </div>
                 <div class="detail-row">
                     <label>Hạng thành viên</label>
@@ -740,7 +1067,7 @@ async function viewPromotionDetails(id) {
             </div>
             <div class="detail-row" style="margin-top: 12px;">
                 <label>Sản phẩm áp dụng</label>
-                <span>${getProductNames(promotion.applicable_products)}</span>
+                <span>${getProductNames(promotion.promotion_products)}</span>
             </div>
         </div>
     `;
@@ -749,58 +1076,73 @@ async function viewPromotionDetails(id) {
     document.getElementById("promotionDetailsOverlay").classList.add("active");
 }
 function togglePromotionType() {
-    const promotionType = document.getElementById('promotionType').value;
-    const codeGroup = document.getElementById('promotionCode').closest('.form-group');
-    const descriptionGroup = document.getElementById('promotionDescription').closest('.form-group');
-    const minOrderGroup = document.getElementById('minOrderAmount').closest('.form-group');
-    const discountPrice = document.getElementById('discountPrice').closest('.form-group');
-    const discountPercent = document.getElementById('discountPercent').closest('.form-group');
-    const targetSection = document.querySelector('.form-section:nth-child(5)'); // Đối tượng áp dụng section
-    const productScopeRadios = document.querySelectorAll('input[name="productScope"]');
-    
-    if (promotionType === 'flashsale') {
+    const promotionType = document.getElementById("promotionType").value;
+    const codeGroup = document
+        .getElementById("promotionCode")
+        .closest(".form-group");
+    const descriptionGroup = document
+        .getElementById("promotionDescription")
+        .closest(".form-group");
+    const minOrderGroup = document
+        .getElementById("minOrderAmount")
+        .closest(".form-group");
+    const discountPrice = document
+        .getElementById("discountPrice")
+        .closest(".form-group");
+    const discountPercent = document
+        .getElementById("discountPercent")
+        .closest(".form-group");
+    const targetSection = document.querySelector(".form-section:nth-child(5)"); // Đối tượng áp dụng section
+    const productScopeRadios = document.querySelectorAll(
+        'input[name="productScope"]'
+    );
+
+    if (promotionType === "flashsale") {
         // Hide elements for flashsale
-        codeGroup.style.display = 'none';
-        codeGroup.querySelector('input').value = null; // Set default code
-        descriptionGroup.style.display = 'none';
-        descriptionGroup.querySelector('textarea').value = "Flash Sale - Giảm giá sốc trong thời gian ngắn!";
-        discountPrice.style.display = 'block';
-        discountPercent.style.display = 'none';
-        discountPercent.querySelector('input').value = 0; // Set percent to 0
-        minOrderGroup.style.display = 'none';
-        minOrderGroup.querySelector('input').value = 0; // Set min order to 0
-        targetSection.style.display = 'none';
-        
+        codeGroup.style.display = "none";
+        codeGroup.querySelector("input").value = `FLASH_${Date.now()}`; // Set default code
+        descriptionGroup.style.display = "none";
+        descriptionGroup.querySelector("textarea").value =
+            "Flash Sale - Giảm giá sốc trong thời gian ngắn!";
+        discountPrice.style.display = "block";
+        discountPercent.style.display = "none";
+        discountPercent.querySelector("input").value = 0; // Set percent to 0
+        minOrderGroup.style.display = "none";
+        minOrderGroup.querySelector("input").value = 0; // Set min order to 0
+        targetSection.style.display = "none";
+
         // Auto select specific products for flashsale
-        const specificProductRadio = document.querySelector('input[name="productScope"][value="specific"]');
+        const specificProductRadio = document.querySelector(
+            'input[name="productScope"][value="specific"]'
+        );
         if (specificProductRadio) {
             specificProductRadio.checked = true;
             toggleProductSelection(); // Trigger product selection display
         }
-        
+
         // Disable radio buttons
-        productScopeRadios.forEach(radio => {
+        productScopeRadios.forEach((radio) => {
             radio.disabled = true;
         });
     } else {
         // Show elements for voucher
-        codeGroup.style.display = 'block';
-        descriptionGroup.style.display = 'block';
-        minOrderGroup.style.display = 'block';
-        targetSection.style.display = 'block';
-        discountPrice.querySelector('input').value = 0; // Reset discount price
-        discountPrice.style.display = 'none';
-        discountPercent.style.display = 'block';
-        
+        codeGroup.style.display = "block";
+        descriptionGroup.style.display = "block";
+        minOrderGroup.style.display = "block";
+        targetSection.style.display = "block";
+        discountPrice.querySelector("input").value = 0; // Reset discount price
+        discountPrice.style.display = "none";
+        discountPercent.style.display = "block";
+
         // Enable radio buttons
-        productScopeRadios.forEach(radio => {
+        productScopeRadios.forEach((radio) => {
             radio.disabled = false;
         });
     }
 }
 
 // Call this function on page load to set initial state
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
     togglePromotionType();
 });
 // Close promotion details
@@ -809,6 +1151,18 @@ function closePromotionDetails() {
         .getElementById("promotionDetailsOverlay")
         .classList.remove("active");
     window.history.pushState({}, "", "/admin/promotions");
+}
+
+async function refreshPromotions() {
+    try {
+        const res = await fetch("/admin/data/promotions");
+        const data = await res.json();
+        promotions = data; // Cập nhật lại mảng global
+        renderPromotionsVoucher();
+        renderFlashSaleTable();
+    } catch (error) {
+        console.error("❌ Lỗi khi tải lại danh sách khuyến mãi:", error);
+    }
 }
 
 // Handle form submission
@@ -832,12 +1186,12 @@ async function submitPromotions() {
         description: document.getElementById("promotionDescription").value,
         start_date: document.getElementById("startDate").value,
         end_date: document.getElementById("endDate").value,
-        discount_percent: Number.parseInt(
-            document.getElementById("discountPercent").value
-        )||0,
-        discount_price: Number.parseInt(
-            document.getElementById("discountPrice").value
-        ) || 0,
+        discount_percent:
+            Number.parseInt(document.getElementById("discountPercent").value) ||
+            0,
+        discount_price:
+            Number.parseInt(document.getElementById("discountPrice").value) ||
+            0,
         min_order_amount:
             Number.parseInt(document.getElementById("minOrderAmount").value) ||
             0,
@@ -852,13 +1206,10 @@ async function submitPromotions() {
                 ? selectedMemberships
                 : ["bronze", "silver", "gold", "platinum"],
         applicable_products: applicableProducts,
-        type:document.getElementById("promotionType").value||"voucher",
-
+        type: document.getElementById("promotionType").value || "voucher",
     };
 
     if (currentEditingId) {
-        // Update existing promotion
-        console.log("Updating promotion:", currentEditingId, promotionData);
         try {
             const response = await fetch(
                 `/admin/data/promotions/update/${currentEditingId}`,
@@ -868,15 +1219,19 @@ async function submitPromotions() {
                     body: JSON.stringify(promotionData),
                 }
             );
-
+            if (currentEditingType === "FlashSale") {
+                await renderFlashSaleTable();
+                switchTab("FlashSale");
+            } else {
+                await renderPromotionsVoucher();
+                switchTab("Voucher");
+            }
             const result = await response.json();
             if (!response.ok) {
                 throw new Error(result.message || "Failed to update promotion");
             }
-
             alert("Cập nhật khuyến mãi thành công!");
             closePromotionDrawer();
-            await renderPromotionsVoucher();
         } catch (error) {
             console.error("❌ Error updating promotion:", error);
             alert("Có lỗi xảy ra khi cập nhật khuyến mãi: " + error.message);
@@ -896,16 +1251,24 @@ async function submitPromotions() {
                 },
                 body: JSON.stringify(newPromotion),
             });
+            if (promotionData.type === "flashsale") {
+                await renderFlashSaleTable(); // Fetch lại tất cả flash sales (bao gồm cái mới)
+                switchTab("FlashSale");
+            } else {
+                promotions.unshift(newPromotion); // Thêm vào mảng local
+                await renderPromotionsVoucher(); // Render lại UI
+                switchTab("Voucher");
+            }
             const result = await response.json();
             if (!response.ok) {
                 throw new Error(result.message || "Failed to create promotion");
             }
+
             alert("Tạo khuyến mãi thành công!");
             closePromotionDrawer();
-            renderPromotionsVoucher();
         } catch (error) {
             console.error("Error creating promotion:", error);
-            alert("Có lỗi xảy ra khi tạo khuyến mãi: " + error.message);
+            alert(error.message);
         }
     }
 }
@@ -933,6 +1296,7 @@ document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
         closePromotionDrawer();
         closePromotionDetails();
+        closeFlashsaleDetails();
     }
 });
 

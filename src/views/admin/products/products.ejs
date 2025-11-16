@@ -28,7 +28,7 @@
             href="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.css"
         />
         <script src="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.min.js"></script>
-         <!--Favicon-->
+        <!--Favicon-->
         <link
             rel="shortcut icon"
             href="/images/favicon/favicon.ico"
@@ -41,6 +41,7 @@
         />
     </head>
     <body>
+        <% if (isAdmin) { %>
         <div class="container">
             <%- include('../layout/sidebar.ejs'); -%> <%-
             include('./create_product.ejs'); -%>
@@ -100,7 +101,7 @@
             </div>
             <!-- Header -->
         </div>
-
+        <% } %>
         <!-- Embedded JavaScript to avoid 404 errors -->
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="/admin/js/products/products.js"></script>

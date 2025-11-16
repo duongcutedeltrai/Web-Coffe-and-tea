@@ -162,9 +162,44 @@ const fileUploadFeedbackMiddleware = () => {
         });
     };
 };
+
+const fileUploadBlogMiddleware = (
+  fieldName: string,
+  dir: string = "images/blogs"
+) => {
+  return multer({
+    storage: multer.diskStorage({
+      destination: "public/" + dir,
+      filename: (req, file, cb) => {
+        const extension = path.extname(file.originalname);
+        cb(null, v4() + extension);
+      },
+    }),
+    limits: {
+      fileSize: 1024 * 1024 * 5, //5mb
+    },
+    fileFilter: (
+      req: Express.Request,
+      file: Express.Multer.File,
+      cb: Function
+    ) => {
+      if (
+        file.mimetype === "image/png" ||
+        file.mimetype === "image/jpg" ||
+        file.mimetype === "image/jpeg"
+      ) {
+        cb(null, true);
+      } else {
+        cb(new Error("Only JPEG and PNG images are allowed."), false);
+      }
+    },
+  }).single(fieldName);
+};
+
 export {
     fileUploadProductMiddleware,
     fileUploadCategoriesMiddleware,
     fileUploadUserMiddleware,
     fileUploadFeedbackMiddleware,
+    fileUploadBlogMiddleware,
 };

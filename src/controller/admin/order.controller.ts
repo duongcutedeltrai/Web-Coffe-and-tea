@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import OrderService from "../../services/order.service";
+import userService from "../../services/user.service";
 
 class OrderController {
     async getOrdersPage(req: Request, res: Response) {
@@ -116,6 +117,32 @@ class OrderController {
             });
         }
     }
+      async  getOrderUsersData(req: Request, res: Response) {
+        try {
+              const user = await userService.getDetailCustomerById(
+                    +(req.user as any)?.id || 0
+                );
+            const status = req.query.status as string | undefined;
+            const type = req.query.type as string | undefined;
+            const search = req.query.search as string | undefined;
+            const orders = await OrderService.getAllOrdersByUser(
+                status,
+                type,
+                search,+(req.user as any)?.id
+            );
+            return res.json({
+                success: true,
+                data: orders,
+            });
+        } catch (error) {
+            console.error("Error getting orders data:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Không thể lấy dữ liệu đơn hàng",
+            });
+        }
+    }
+  
 }
 
 export default new OrderController();
