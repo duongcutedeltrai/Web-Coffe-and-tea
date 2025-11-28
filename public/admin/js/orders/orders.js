@@ -3,7 +3,7 @@ let typeFilter = "all";
 let currentTab = "all";
 let activeDropdown = null;
 
-// Selected products state and category filter
+
 let selectedProducts = [];
 let selectedCategory = "all";
 //Định dạng số tiền sang kiểu tiền tệ Việt Nam
@@ -14,7 +14,7 @@ function formatCurrency(amount) {
     }).format(amount);
 }
 
-//Chuyển status tiếng Anh từ database sang tiếng Việt hiển thị.
+
 function mapOrderStatus(status) {
     const statusMap = {
         pending: "Đang xử lý",
@@ -25,7 +25,7 @@ function mapOrderStatus(status) {
     };
     return statusMap[status] || status;
 }
-//Chuyển phương thức/thông tin thanh toán sang tiếng Việt.
+
 function mapPaymentMethod(method) {
     const methodMap = {
         cod: "Tiền mặt",

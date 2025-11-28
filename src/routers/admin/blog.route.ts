@@ -31,5 +31,8 @@ blogDataRoute.put(
   BlogController.updateBlog
 );
 blogDataRoute.delete("/data/blogs/:id", BlogController.deleteBlog);
-
+blogDataRoute.post(
+  "/generate-blog-ai",
+  BlogController.createBlogAI
+);
 export { blogRoute, blogDataRoute };

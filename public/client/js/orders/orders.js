@@ -376,16 +376,43 @@ async function viewOrderDetails(orderId) {
     console.log("Data chi tiết đơn hàng từ server:", order);
 
     const itemsHTML = order.data.order_details.map(
-        (item) => `
+        (item) =>{
+            const promo=order.data.promotion_usage.find((p)=>p.product_id===item.product_id);
+    const discountText = promo? promo.promotion.discount_price : 0;
+              const flashSaleBadge = promo
+    ? `<span class="flash-sale-tag">(Flash Sale)</span>`
+    : "";
+            return`
     <div class="modal-items-row">
-      <span>${item.products?.name || "Sản phẩm"}</span>
+      <span>${item.products?.name || "Sản phẩm"} ${flashSaleBadge}</span>
       <span>${item.size}</span>
       <span>${item.quantity}</span>
-      <span style="margin-right:20px;">${formatCurrency(item.price)}</span>
-      <span>${formatCurrency(item.price * item.quantity)}</span>
-    </div>`
-    );
+      <span style="display: flex;flex-direction: column;gap: 8px;">
+            <span style="margin-right:20px;  ${promo ? 'text-decoration: line-through; color: #999;' : ''}">${formatCurrency(item.price)}</span>
+             <span style=" margin-right:20px;color: #d32f2f; font-weight: 600;">
+    ${promo ? formatCurrency(item.price - discountText) : ''}
+  </span>
+      </span>
+      
+      <span>${formatCurrency(item.price * item.quantity - discountText* item.quantity)}</span>
+    </div> `
+    
+});
+const globalPromo = order.data.promotion_usage.find(
+    (p) => p.product_id === null
+);
 
+let globalDiscountHTML = "";
+if (globalPromo) {
+   
+
+    globalDiscountHTML = `
+        <div class="modal-summary-row">
+            <span>Voucher: ${globalPromo.promotion.code} </span>
+            <span>- ${globalPromo.promotion.discount_percent}%</span>
+        </div>
+    `;
+}
     document.getElementById("orderModal").classList.remove("hidden");
     document.getElementsByClassName("modal-body").item(0).innerHTML = `
           <div class="modal-section">
@@ -449,7 +476,7 @@ async function viewOrderDetails(orderId) {
                 <span>Sản phẩm</span>
                 <span>Size</span>
                 <span>SL</span>
-                <span>Đơn giá</span>
+                <span style="margin-right:20px;">Đơn giá</span>
                 <span>Thành tiền</span>
               </div>
               <div id="modalItemsList">${itemsHTML.join("")}</div>
@@ -464,6 +491,7 @@ async function viewOrderDetails(orderId) {
                 <span class="modal-summary-total" id="modalTotal">  ${Number(order.data.payment[0].total_amount).toLocaleString("vi-VN")} ₫
 </span>
               </div>
+               ${globalDiscountHTML}
               <div class="modal-summary-row">
                 <span>Thanh toán:</span>
                 <span id="modalPaymentMethod">

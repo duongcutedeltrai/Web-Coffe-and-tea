@@ -148,8 +148,12 @@
                 </div>
                 <div class="drawer-content">
                     <form id="blogForm" class="blog-form">
+                                     <button type="button" id="aiBlogBtn" class="ai-blog-btn">
+            Soạn blog bằng AI
+        </button>
                         <div class="form-section">
                             <h3 class="form-section-title">Thông tin cơ bản</h3>
+               
                             <div class="form-group">
                                 <label for="title">Tiêu đề *</label>
                                 <input
@@ -311,6 +315,23 @@
                 </div>
             </div>
         </div>
+        <div id="aiBlogModal" class="ai-modal" >
+    <div class="ai-modal-content">
+        <h4>Soạn blog bằng AI</h4>
+        <textarea id="aiPrompt" rows="4" placeholder="Mô tả nội dung bạn muốn viết..."></textarea>
+        <div class="ai-modal-actions">
+            <button id="aiCancelBtn">Hủy</button>
+            <button id="aiGenerateBtn">Tạo blog</button>
+        </div>
+    </div>
+    <div id="aiLoader" class="ai-loader" style="display:none;">
+    <div class="ai-glasses"></div>
+</div>
+
+</div>
+
+</div>
+
         <% } %>
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

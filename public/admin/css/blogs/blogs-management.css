@@ -21,6 +21,169 @@ a {
     justify-content: center;
     align-items: center;
 }
+.ai-blog-btn {
+    padding: 10px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 10px;
+    background-color: #714024;
+    color: #fff;
+    border: none;
+    transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+.ai-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* mờ đen */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 9999;
+}
+
+/* Khi show modal */
+.ai-modal.show {
+    opacity: 1;
+    z-index: 1000000000;
+    pointer-events: all;
+}
+
+/* Nội dung modal */
+.ai-modal-content {
+    background: #ffffff;
+    padding: 25px 30px;
+    border-radius: 12px;
+    width: 450px;
+    max-width: 90%;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+}
+
+/* Khi show modal */
+.ai-modal.show .ai-modal-content {
+    transform: scale(1);
+}
+
+/* Tiêu đề modal */
+.ai-modal-content h4 {
+    margin: 0 0 15px 0;
+    font-size: 20px;
+    color: #333;
+    font-weight: 600;
+}
+
+/* Textarea */
+.ai-modal-content textarea {
+    width: 100%;
+    resize: vertical;
+    min-height: 100px;
+    padding: 12px 15px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.ai-modal-content textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0,123,255,0.3);
+}
+
+/* Nút hành động */
+.ai-modal-actions {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.ai-modal-actions button {
+    padding: 8px 18px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#aiCancelBtn {
+    background: #e0e0e0;
+    color: #333;
+}
+
+#aiCancelBtn:hover {
+    background: #d5d5d5;
+}
+
+#aiGenerateBtn {
+    background: #007bff;
+    color: #fff;
+    margin-left: 10px;
+}
+
+#aiGenerateBtn:hover {
+    background: #0069d9;
+    box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+}
+/* Nền loader full overlay */
+.ai-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+/* Hình tròn quay */
+.ai-glasses {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 6px solid rgba(255,255,255,0.2);
+    border-top: 6px solid #007bff; /* màu chủ đạo AI */
+    border-left: 6px solid #00d8ff;
+    position: relative;
+    animation: spin 1s linear infinite;
+}
+
+/* Hiệu ứng kính */
+.ai-glasses::before,
+.ai-glasses::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.6);
+    top: 30px;
+}
+
+.ai-glasses::before {
+    left: 18px;
+    transform: rotate(15deg);
+}
+
+.ai-glasses::after {
+    right: 18px;
+    transform: rotate(-15deg);
+}
+
+/* Animation quay */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 
 /* Header */
 .header1 {

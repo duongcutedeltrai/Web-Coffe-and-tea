@@ -1,6 +1,7 @@
 import { da } from "zod/v4/locales";
 import { prisma } from "../config/client";
 import slugify from "slugify";
+import axios from "axios";
 
 class BlogService {
   async createBlog(data: any) {
@@ -91,5 +92,78 @@ class BlogService {
       where: { blog_id: blogId },
     });
   }
+async  generateBlogAI(prompt) {
+    const apiKey = process.env.HF_API_KEY;
+    if (!apiKey) {
+        console.error("Missing HF_API_KEY");
+        return { error: "Lỗi cấu hình API." };
+    }
+
+    const model = "mistralai/mistral-7b-instruct:free";
+    console.log("Using OpenRouter model:", model);
+
+    try {
+        const response = await axios.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            {
+                model: model,
+                messages: [
+                    { role: "system", content: "Bạn là trợ lý viết blog." },
+                    {
+                        role: "user",
+                        content: `Viết blog theo prompt sau, trả về **chỉ JSON thuần** với các trường: title, slug, description, content (HTML), meta_title, meta_description. Nội dung blog cho quán cà phê Phê La: ${prompt}`
+                    }
+                ],
+                max_tokens: 1100,
+                temperature: 0.7
+            },
+            {
+                headers: {
+                    "Authorization": `Bearer ${apiKey}`,
+                    "Content-Type": "application/json"
+                }
+            }
+        );
+
+        // OpenRouter trả về array choices
+        const text = response.data.choices?.[0]?.message?.content || "{}";
+        console.log(text);
+const cleanedText = cleanAIJSON(text);
+        // Try parse JSON
+        try {
+            return JSON.parse(cleanedText);
+        } catch (parseErr) {
+            console.warn("Không parse được JSON, trả về text thô:", parseErr);
+            return {
+                title: "",
+                slug: "",
+                description: "",
+                content: text,
+                meta_title: "",
+                meta_description: ""
+            };
+        }
+
+    } catch (err) {
+        console.error("Lỗi khi gọi OpenRouter:", err.message || err);
+        return {
+            title: "",
+            slug: "",
+            description: "",
+            content: "",
+            meta_title: "",
+            meta_description: ""
+        };
+    }
 }
+}
+function cleanAIJSON(text: string) {
+    // Remove instruction tokens và code block
+    return text
+        .replace(/<s>\s*\[\/INST\]\s*/g, "") // bỏ <s> [/INST]
+        .replace(/```json\s*/i, "")          // bỏ ```json
+        .replace(/```/g, "")                  // bỏ ```
+        .trim();
+}
+
 export default new BlogService();

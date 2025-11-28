@@ -126,6 +126,13 @@ a {
     gap: 1rem;
 
 }
+.flash-sale-tag {
+    color: rgb(175, 6, 6);
+    padding: 2px 6px;
+    font-size: 15px;
+    border-radius: 4px;
+    margin-left: 6px;
+}
 
 .filter-group {
     display: flex;

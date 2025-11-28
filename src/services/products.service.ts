@@ -23,6 +23,21 @@ class ProductService {
             throw error;
         }
     };
+    getAllProducts=async()=>{
+        try{
+            const product=await prisma.products.findMany({
+                include:{
+                    price_product:true,
+                    categories:true,
+                }
+            });
+            return product;     
+        }
+       catch (error) {
+            console.error("Error search products:", error);
+            throw error;
+        }
+    }
     getProductsSearch = async (q, currentPage: number) => {
         try {
             const pageSize = TOTAL_ITEMS_PER_PAGE;

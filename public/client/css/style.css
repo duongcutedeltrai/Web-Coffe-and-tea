@@ -485,3 +485,138 @@ body {
 .star-icon.active {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FFD700' stroke='%23FFD700' stroke-width='2'%3E%3Cpolygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/%3E%3C/svg%3E");
 }
+
+#chat-widget {
+      position: fixed;
+      right: 40px;
+      bottom: 70px;
+      width: 390px;
+      height: 500px;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+ font-family: Roboto, sans-serif;
+z-index: 10000000000;
+      background: #fff;      /* bắt đầu mờ */
+    transform: translateY(30px); /* bắt đầu thấp hơn */
+    transition: display 0.5s ease, transform 0.5s ease;
+    }
+    #chat-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      padding: 12px;
+      background: #714024;
+      color: white;
+      font-weight: bold;
+    }
+    #chat-body {
+      padding: 12px;
+      flex: 1;
+       display: flex;
+    flex-direction: column;
+    gap: 15px;
+      overflow-y: auto;
+      background: #fafafa;
+    }
+    .msg {  max-width: 90%;
+    padding: 13px 17px 10PX 14PX;
+    border-radius: 12px;
+     line-height: 1.4; 
+    word-wrap: break-word;
+    white-space: pre-wrap;
+
+    display: inline-block;}
+    .msg.bot-wrapper {
+    display: flex;
+    padding-left: 0px;
+    align-items: flex-start;
+}
+
+.bot-wrapper .avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    margin-right: 8px;
+    object-fit: cover;
+}
+
+.bot-wrapper .msg.bot {
+    background: #eaeaea;
+    color: #000;
+}
+    .user {  background: #714024;
+    color: #fff;
+    align-self: flex-end; /* đẩy sang phải */
+    text-align: right; }
+    .bot { margin-right: auto; background: #fff; border: 1px solid #eee; align-self: flex-start; /* đẩy về trái */
+    text-align: left; }
+    #chat-input { display:flex; border-top: 1px solid #eee; }
+    #chat-input input { flex:1; padding:15px 20px; border:none; outline:none; }
+    #chat-input button { background:#714024; color:white; border:none; padding:10px 14px; cursor:pointer; }
+    #toggle-btn { position: fixed; right: 40px; bottom: 70px; width:65px; height:65px; border-radius:50% 50% 0 50%; background:#714024; color:white; border:none; box-shadow: 0 8px 20px rgba(0,0,0,0.2); cursor:pointer; z-index: 1000000;overflow: hidden; animation: pulse 1.5s infinite, bounce 2s infinite;}
+  
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--accent-r),var(--accent-g),var(--accent-b), var(--accent-alpha));
+  }
+  70% {
+    /* đỉnh rộng nhất tại 70% */
+    box-shadow: 0 0 0 18px rgba(var(--accent-r),var(--accent-g),var(--accent-b), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--accent-r),var(--accent-g),var(--accent-b), 0);
+  }
+}
+
+/* bounce (scale) đặt đỉnh ở cùng 70% để khớp nhịp với pulse */
+.icon{
+  display: inline-block;
+  transform-origin: center;
+  animation: bounce var(--anim-duration) var(--anim-ease) infinite;
+}
+:root{
+  --accent-r: 192;
+  --accent-g: 100;
+  --accent-b: 39;
+  --accent-alpha: 0.7;
+
+  /* chỉnh chỗ này để thay đổi "nhịp" chung */
+  --anim-duration: 1.6s;   /* tổng thời gian 1 chu kỳ */
+  --anim-ease: cubic-bezier(.22,.9,.3,1); /* mượt hơn */
+}
+@keyframes bounce {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.05); }   /* giữa chu kỳ nhẹ */
+  70%  { transform: scale(1.14); }   /* ĐỈNH: khớp với pulse 70% */
+  100% { transform: scale(1); }
+}
+.typing {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.dot-chat {
+    width: 5px!important;
+    height: 5px;
+    background: #555;
+    border-radius: 50%;
+    animation: blink 1.4s infinite both;
+}
+
+.dot-chat:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.dot-chat:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes blink {
+    0%   { opacity: .2; transform: translateY(0); }
+    20%  { opacity: 1; transform: translateY(-3px); }
+    100% { opacity: .2; transform: translateY(0); }
+}

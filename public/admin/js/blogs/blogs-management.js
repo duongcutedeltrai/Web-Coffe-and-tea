@@ -527,3 +527,55 @@ window.addEventListener("popstate", () => {
     openBlogModal(id);
   }
 });
+
+const aiBtn = document.getElementById("aiBlogBtn");
+const modal = document.getElementById("aiBlogModal");
+const loader = document.getElementById("aiLoader");
+const generateBtn = document.getElementById("aiGenerateBtn");
+const promptInput = document.getElementById("aiPrompt");
+const cancelBt = document.getElementById("aiCancelBtn");
+ const fillForm = (data) => {
+        document.getElementById("title").value = data.title || "";
+        document.getElementById("slug").value = data.slug || "";
+        document.getElementById("description").value = data.description || "";
+      if (editor) {
+    editor.setData(data.content);
+  }
+         document.getElementById("metaTitle").value = data.meta_title || "";
+        document.getElementById("metaDescription").value = data.meta_description || "";
+    };
+aiBtn.addEventListener("click", () => {
+   modal.classList.add("show");
+});
+
+cancelBt.addEventListener("click", () => {
+     modal.classList.remove("show");
+});
+let editorInstance;
+
+
+generateBtn.addEventListener("click", async () => {
+    const prompt = promptInput.value.trim();
+    if(!prompt) return alert("Vui lòng nhập mô tả blog.");
+  loader.style.display = "flex";
+    try {
+        const res = await fetch("/admin/generate-blog-ai", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt })
+        });
+        const data = await res.json();
+
+        // Điền vào form
+       fillForm(data);
+
+        modal.style.display = "none";
+        promptInput.value = "";
+    } catch(err) {
+        console.error(err);
+        alert("Có lỗi xảy ra khi tạo blog.");
+    }
+    finally {
+        loader.style.display = "none"; // hide loader
+    }
+});

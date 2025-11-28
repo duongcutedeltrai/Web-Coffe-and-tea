@@ -142,27 +142,31 @@ class PromotionService {
                     },
                 },
             });
+ const validPromotions = promotionsRaw.filter(
+                (p) => p.current_usage < p.max_usage_count
+            );
 
-            // Lọc các sản phẩm user chưa dùng
-            const remainingProducts = promotionsRaw.flatMap((promotion) => {
-                // Danh sách product_id user đã dùng (loại bỏ null)
-                const usedProductIds = promotion.promotion_usage
-                    .map((u: any) => (u as any).product_id)
-                    .filter(
-                        (id): id is number => id !== null && id !== undefined
-                    );
+             const allPromotionProducts = [];
 
-                // Lọc sản phẩm chưa dùng
-                return (promotion.promotion_products || [])
-                    .filter((pp) => !usedProductIds.includes(pp.product_id))
-                    .map((pp) => ({
+        for (const promo of validPromotions) {
+            for (const pp of promo.promotion_products) {
+                // Kiểm tra user đã dùng chưa cho đúng product
+                const usedByUser = promo.promotion_usage.some(
+                    (u) =>  u.product_id === pp.product_id
+                );
+
+                if (!usedByUser) {
+                    allPromotionProducts.push({
                         ...pp,
-                        discount_price: promotion.discount_price ?? 0,
-                        promotion_id: promotion.promotion_id,
-                    }));
-            });
-
-            return remainingProducts;
+                        discount_price: promo.discount_price,
+                        start_date: promo.start_date,
+                        end_date: promo.end_date,
+                    });
+                }
+            }
+        }
+ console.log(allPromotionProducts);
+            return allPromotionProducts;
         } catch (error) {
             console.error("Error fetching promotions:", error);
             return [];
@@ -701,11 +705,14 @@ class PromotionService {
                 promotion_products: true,
             },
         });
-
+        const usedBefore = await prisma.promotion_usage.findMany({
+            where: { user_id: userId },
+        });
         // 3️⃣ Duyệt từng voucher và kiểm tra điều kiện
         const result = vouchers.map((voucher) => {
             let isValid = true;
-
+            const usedVoucher=usedBefore.some((u)=>u.promotion_id===voucher.promotion_id);
+            if(usedVoucher) isValid=false;
             // ⚡ Kiểm tra active
             if (!voucher.is_active) isValid = false;
 
