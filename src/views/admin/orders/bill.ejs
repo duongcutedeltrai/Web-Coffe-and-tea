@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hóa đơn đơn hàng <%= order.order_id %>
+    </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        h1,
+        h2 {
+            text-align: center;
+        }
+
+        .invoice-header,
+        .invoice-footer {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .invoice-details,
+        .customer-details,
+        .payment-details {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #f5f5f5;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .total {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="invoice-header">
+        <h1>HÓA ĐƠN ĐƠN HÀNG</h1>
+        <h2>Mã đơn hàng: <%= order.order_id %>
+        </h2>
+    </div>
+
+    <table class="customer-details">
+        <tr>
+            <th>Người nhận</th>
+            <td>
+                <%= order.receiver_name %>
+            </td>
+        </tr>
+        <tr>
+            <th>Số điện thoại</th>
+            <td>
+                <%= order.receiver_phone %>
+            </td>
+        </tr>
+        <tr>
+            <th>Địa chỉ</th>
+            <td>
+                <%= order.delivery_address %>
+            </td>
+        </tr>
+        <% if(order.users) { %>
+            <tr>
+                <th>Khách hàng</th>
+                <td>
+                    <%= order.users.username %> (<%= order.users.email %>)
+                </td>
+            </tr>
+            <% } %>
+                <tr>
+                    <th>Ngày đặt hàng</th>
+                    <td>
+                        <%= order.orderDate ? order.orderDate.toLocaleString() : '' %>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Trạng thái</th>
+                    <td>
+                        <%= order.status %>
+                    </td>
+                </tr>
+    </table>
+
+    <table class="invoice-details">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Sản phẩm</th>
+                <th>Size</th>
+                <th>Số lượng</th>
+                <th>Đơn giá</th>
+                <th>Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% order.order_details.forEach((item, index)=> { %>
+                <tr>
+                    <td>
+                        <%= index + 1 %>
+                    </td>
+                    <td>
+                        <%= item.products.name %>
+                    </td>
+                    <td>
+                        <%= item.size %>
+                    </td>
+                    <td>
+                        <%= item.quantity %>
+                    </td>
+                    <td class="text-right">
+                        <%= item.price.toLocaleString() %>₫
+                    </td>
+                    <td class="text-right">
+                        <%= (item.price * item.quantity).toLocaleString() %>₫
+                    </td>
+                </tr>
+                <% }) %>
+        </tbody>
+    </table>
+
+    <table class="payment-details">
+        <tr>
+            <th>Tổng tiền gốc</th>
+            <td class="text-right">
+                <%= order.original_amount.toLocaleString() %>₫
+            </td>
+        </tr>
+        <tr>
+            <th>Giảm giá</th>
+            <td class="text-right">
+                <%= order.discount_amount ? order.discount_amount.toLocaleString() : 0 %>₫
+            </td>
+        </tr>
+        <tr class="total">
+            <th>Thành tiền</th>
+            <td class="text-right">
+                <%= order.final_amount.toLocaleString() %>₫
+            </td>
+        </tr>
+        <tr>
+            <th>Phương thức thanh toán</th>
+            <td class="text-right">
+                <%= order.payment?.[0]?.method.toUpperCase() || 'N/A' %>
+            </td>
+        </tr>
+    </table>
+
+    <div class="invoice-footer">
+        <p>Cảm ơn bạn đã mua hàng!</p>
+        <p>Liên hệ: support@yourshop.com | 0123 456 789</p>
+    </div>
+</body>
+
+</html>

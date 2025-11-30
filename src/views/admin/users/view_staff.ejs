@@ -27,20 +27,18 @@
 <body>
     <% if (isAdmin) { %>
         <div class="container">
-
             <!-- Sidebar -->
             <%- include('../layout/sidebar.ejs'); -%>
 
                 <!-- Main Content -->
                 <main class="main-content">
-
                     <!-- Create User Modal -->
                     <%- include('create_user.ejs', { roles, staffs, workShifts, genderOptions }); -%>
 
                         <!-- Filters Section -->
                         <section class="filters-section">
                             <div class="filters-section_header">
-                                <div class="filters-header" style="margin-top:10px;">
+                                <div class="filters-header" style="margin-top: 10px">
                                     <h3>Bộ lọc và tìm kiếm</h3>
                                     <p>Tìm kiếm và lọc khách hàng theo các tiêu chí</p>
                                 </div>
@@ -59,19 +57,18 @@
 
                         <!-- Staff Table Section -->
                         <section class="table-section">
-
                             <!-- Tabs -->
                             <div class="table-header">
                                 <div class="tab-buttons">
-                                    <button class="tab-btn active" data-tab="all">Tất cả nhân viên</button>
-                                    <button class="tab-btn" data-tab="calendar">Lịch làm việc</button>
+                                    <button class="tab-btn active" data-tab="all">
+                                        Tất cả nhân viên
+                                    </button>
+                                    <button class="tab-btn" data-tab="calendar">
+                                        Lịch làm việc
+                                    </button>
                                 </div>
 
                                 <div style="display: flex; gap: 10px">
-                                    <button class="btn btn-secondary">
-                                        <i class="fas fa-download"></i> Xuất Excel
-                                    </button>
-
                                     <button class="btn btn-primary" onclick="openAddModal()">
                                         <i class="fas fa-plus"></i> Thêm tài khoản
                                     </button>
@@ -94,7 +91,7 @@
                                     <tbody id="staffTableBody">
                                         <% staffs.forEach(staff=> { %>
                                             <tr onclick="window.location='/admin/staff/detail_staff/<%= staff.user_id %>'"
-                                                style="cursor: pointer;">
+                                                style="cursor: pointer">
                                                 <td>
                                                     <%= staff.username %>
                                                 </td>
@@ -110,29 +107,36 @@
                                                     <%= staff.gender %>
                                                 </td>
                                                 <td>
-                                                    <div
-                                                        style="display: flex; gap: 20px; position: relative; left: 100px;">
+                                                    <div style="
+                                                display: flex;
+                                                gap: 20px;
+                                                position: relative;
+                                                left: 100px;
+                                            ">
                                                         <% if (staff.status==="ACTIVE" ) { %>
                                                             <form action="/admin/staff/lock-staff/<%= staff.user_id %>"
                                                                 method="post">
-                                                                <button type="submit"
-                                                                    class="btn btn-warning btn-lock">Khóa</button>
+                                                                <button type="submit" class="btn btn-warning btn-lock">
+                                                                    Khóa
+                                                                </button>
                                                             </form>
                                                             <% } else { %>
                                                                 <form
                                                                     action="/admin/staff/unlock-staff/<%= staff.user_id %>"
                                                                     method="post">
                                                                     <button type="submit"
-                                                                        class="btn btn-success btn-unlock">Mở
-                                                                        khóa</button>
+                                                                        class="btn btn-success btn-unlock">
+                                                                        Mở khóa
+                                                                    </button>
                                                                 </form>
                                                                 <% } %>
 
                                                                     <form
                                                                         action="/admin/staff/delete-staff/<%= staff.user_id %>"
                                                                         method="post">
-                                                                        <button type="submit"
-                                                                            class="btn btn-danger">Xóa</button>
+                                                                        <button type="submit" class="btn btn-danger">
+                                                                            Xóa
+                                                                        </button>
                                                                     </form>
                                                     </div>
                                                 </td>
@@ -144,7 +148,6 @@
 
                             <!-- Tab: Calendar -->
                             <div class="tab-content" id="calendarTab">
-
                                 <%- include('modal_calender.ejs', { roles, staffCalender, workShifts, genderOptions })
                                     %>
 
@@ -165,7 +168,9 @@
 
                                     <div class="schedule-card">
                                         <div class="card-header">
-                                            <h2 class="card-title">Lịch Làm Việc Hàng Tuần</h2>
+                                            <h2 class="card-title">
+                                                Lịch Làm Việc Hàng Tuần
+                                            </h2>
                                         </div>
 
                                         <div class="responsive-table">
@@ -203,13 +208,11 @@
                                                                 </div>
                                                             </td>
 
-                                                            <% staff.staff_detail?.staff_schedules.forEach(day=> { %>
+                                                            <% staff.staff_detail?.staff_schedules.forEach(day=>
+                                                                { %>
                                                                 <td>
-                                                                    <div class="shift-cell <%= 
-                                                        day.work_shifts.name.includes('Sáng') ? 'shift-morning' :
-                                                        day.work_shifts.name.includes('Chiều') ? 'shift-afternoon' :
-                                                        day.work_shifts.name.includes('Tối') ? 'shift-night' : 'shift-off' 
-                                                    %>" data-staff-id="<%= staff.user_id %>"
+                                                                    <div class="shift-cell <%= day.work_shifts.name.includes('Sáng') ? 'shift-morning' : day.work_shifts.name.includes('Chiều') ? 'shift-afternoon' : day.work_shifts.name.includes('Tối') ? 'shift-night' : 'shift-off' %>"
+                                                                        data-staff-id="<%= staff.user_id %>"
                                                                         data-day-of-week="<%= day.day_of_week %>">
                                                                         <%= day.work_shifts.name %>
                                                                     </div>
@@ -248,7 +251,6 @@
                                             </a>
                                         </li>
                             </ul>
-
                         </section>
                 </main>
         </div>

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { decodedJWT } from "../services/decodedJWT.service";
 import AdminUserService from "../services/user.service";
-
+import { prisma } from "../config/client";
 export function authMiddleware(
   req: Request,
   res: Response,
@@ -24,7 +24,6 @@ export function authMiddleware(
     (req as any).user = null;
     next();
   }
-
 }
 export const roleMiddleware =
   (...roles: number[]) =>
@@ -38,7 +37,6 @@ export const roleMiddleware =
       }
       next();
     };
-
 
 export async function authAndRoleMiddleware(
   req: Request,
@@ -67,11 +65,14 @@ export async function authAndRoleMiddleware(
   res.locals.roleIdAuthor = roleId;
   res.locals.isAdmin = roleId === 1;
   res.locals.isStaff = roleId === 2;
-
   next();
 }
 
-export function adminStaffGuard(req: Request, res: Response, next: NextFunction) {
+export function adminStaffGuard(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const { isAdmin, isStaff } = res.locals;
 
   if (!isAdmin && !isStaff) {

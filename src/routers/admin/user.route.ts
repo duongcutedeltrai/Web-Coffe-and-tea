@@ -1,12 +1,19 @@
 import express from "express";
 import { fileUploadUserMiddleware } from "../../middleware/multer";
 import AdminUserController from "../../controller/admin/user.controller";
-import { authMiddleware, roleMiddleware, authAndRoleMiddleware, adminStaffGuard } from "../../middleware/auth.middleware";
-
+import {
+    authMiddleware,
+    roleMiddleware,
+    authAndRoleMiddleware,
+    adminStaffGuard,
+} from "../../middleware/auth.middleware";
 const userRoute = express.Router();
 
-userRoute.get("/customer", authAndRoleMiddleware, adminStaffGuard, AdminUserController.getAdminCustomerPage);
-userRoute.get("/staff", authAndRoleMiddleware, adminStaffGuard, AdminUserController.getAdminStaffPage);
+userRoute.get("/customer", authAndRoleMiddleware,
+    adminStaffGuard, AdminUserController.getAdminCustomerPage);
+userRoute.get("/staff",
+    authAndRoleMiddleware,
+    adminStaffGuard, AdminUserController.getAdminStaffPage);
 userRoute.post(
     "/create-user",
     fileUploadUserMiddleware("avatar"),
@@ -38,25 +45,23 @@ userRoute.post(
 
 userRoute.get(
     "/customer/customer-detail/:id",
-    authAndRoleMiddleware, adminStaffGuard,
+    authAndRoleMiddleware,
+    adminStaffGuard,
     AdminUserController.getViewDetailCustomerAdminPage
 );
 userRoute.get(
     "/staff/detail_staff/:id",
-    authAndRoleMiddleware, adminStaffGuard,
+    authAndRoleMiddleware,
+    adminStaffGuard,
     AdminUserController.getViewDetailStaffAdminPage
 );
-
 
 userRoute.get("/staff/search", AdminUserController.getSearchStaff);
 userRoute.get("/customer/search", AdminUserController.getCustomerSearch);
 
-
 userRoute.get("/staff-revenue", AdminUserController.getStaffRevenue);
 userRoute.get("/staff-revenue/api", AdminUserController.getStaffRevenueAPI);
 
-userRoute.post("/staff/update-calander/:id", AdminUserController.postUpdateStaffCalander);
-
-
+userRoute.get("/customer/export-customer", AdminUserController.exportCustomerData);
 
 export default userRoute;

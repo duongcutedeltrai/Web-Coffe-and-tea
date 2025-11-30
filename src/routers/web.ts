@@ -1,27 +1,31 @@
 import express, { Express } from "express";
-
 import { Request, Response } from "express";
 
 ///admin
 import { productRoute, productRouteAPI } from "./admin/product.route";
 import categoryRoute from "./admin/category.route";
 import userRoute from "./admin/user.route";
-import { blogRoute, blogDataRoute } from "./admin/blog.route";
-
-import homeRoute from "./admin/home.route";
+import DashboardRoute from "./admin/dashboard.route";
 import authRoute from "./auth/auth.route";
 import { orderRoute, orderDataRoute } from "./admin/order.route";
 import { promotionDataRoute, promotionRoute } from "./admin/promotion.route";
-
+import { blogRoute, blogDataRoute } from "./admin/blog.route";
 ///client
 import { ClientHomeRouter } from "./client/home.route";
 import { productAPI } from "./client/product.route";
 import cartRouteAPI from "./client/cart.route";
 import chatRouteAPI from "./client/chat.route";
+import {
+    authMiddleware,
+    roleMiddleware,
+    authAndRoleMiddleware,
+    adminStaffGuard,
+} from "../middleware/auth.middleware";
 import feedbackRoute from "./client/feedback.route";
 import statisticsRouter from "./admin/statistics.route";
 import { paymentAPI } from "./client/payment.route";
 import favoriteRouteAPI from "./client/favorite.route";
+
 const router = express.Router();
 const webRouter = (app: Express) => {
     ////admin
@@ -30,15 +34,18 @@ const webRouter = (app: Express) => {
     app.use("/api/admin", productRouteAPI);
     app.use("/admin", categoryRoute);
     app.use("/admin", userRoute);
+    app.use("/admin", DashboardRoute);
 
-    app.use("/admin", homeRoute);
     app.use("/admin", orderRoute);
     app.use("/admin", orderDataRoute);
     app.use("/admin", promotionDataRoute);
     app.use("/admin", promotionRoute);
     app.use("/admin", statisticsRouter);
-    /////client
-    app.use("/", homeRoute);
+
+    app.use("/admin", blogRoute);
+    app.use("/admin", blogDataRoute);
+    /////clientauthMiddleware,
+    app.use("/", ClientHomeRouter);
     app.use("/", feedbackRoute);
     app.use("/", ClientHomeRouter);
     app.use("/api", productAPI);
@@ -47,8 +54,6 @@ const webRouter = (app: Express) => {
     app.use("/api/payment", paymentAPI);
     app.use("/api/chat", chatRouteAPI);
     app.use("/products", categoryRoute);
-    app.use("/admin", blogRoute);
-    app.use("/admin", blogDataRoute);
 
     app.use("/auth", authRoute);
 
@@ -64,7 +69,6 @@ const webRouter = (app: Express) => {
             .status(404)
             .render("auth/404_page.ejs", { url: req.originalUrl });
     });
-
 };
 
 export default webRouter;

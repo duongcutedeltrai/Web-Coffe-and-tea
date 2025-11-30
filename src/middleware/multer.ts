@@ -1,4 +1,3 @@
-
 import multer from "multer";
 import path from "path";
 import { v4 } from "uuid";
@@ -201,6 +200,6 @@ export {
   fileUploadProductMiddleware,
   fileUploadCategoriesMiddleware,
   fileUploadUserMiddleware,
+  fileUploadFeedbackMiddleware,
   fileUploadBlogMiddleware,
-  fileUploadFeedbackMiddleware
 };

@@ -9,10 +9,10 @@ paymentAPI.post(
     authMiddleware,
     paymentController.createPayment
 );
-paymentAPI.post(
-    "/vnpay/create_order",
+paymentAPI.get(
+    "/vnpay/return",
     authMiddleware,
-    paymentController.createOrder
+    paymentController.paymentReturn
 );
 
 export { paymentAPI };

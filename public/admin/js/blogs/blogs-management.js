@@ -238,6 +238,10 @@ async function submitBlog() {
   submitFormData.append("status", formData.get("status"));
   submitFormData.append("content", content);
   submitFormData.append("meta_title", formData.get("metaTitle") || "");
+
+  const pathParts = window.location.pathname.split('/');
+  const blogId = pathParts[3];
+
   submitFormData.append(
     "meta_description",
     formData.get("metaDescription") || ""
@@ -253,9 +257,12 @@ async function submitBlog() {
     if (currentEditingId) {
       // GỌI API UPDATE
 
+      submitFormData.append("blog_id", blogId);
+      console.log(submitFormData);
       const response = await fetch(`/admin/data/blogs/update`, {
         method: "PUT",
         body: submitFormData,
+
       });
 
       const result = await response.json();
@@ -338,16 +345,16 @@ async function viewBlogDetails(id) {
         <div class="blog-detail-header">
             <h2 class="blog-detail-title">${blog.title}</h2>
             <div class="blog-detail-meta">
-                <span class="detail-badge">📝 ${getTypeLabel(blog.type)}</span>
-                <span class="detail-badge">📅 ${publishDate}</span>
-                <span class="detail-badge">👁️ ${blog.view_count} lượt xem</span>
-                <span class="detail-badge">✍️ ${blog.author}</span>
+
+                <span class="detail-badge"><i class="fa-solid fa-pen" style="color: #714024;"></i> ${getTypeLabel(blog.type)}</span>
+                <span class="detail-badge"><i class="fa-solid fa-calendar" style="color: #714024;"></i> ${publishDate}</span>
+                <span class="detail-badge"><i class="fa-solid fa-eye" style="color: #714024;"></i> ${blog.view_count} lượt xem</span>
+            
             </div>
         </div>
-        ${
-          blog.thumbnail
-            ? `<img src="${blog.thumbnail}" alt="${blog.title}" class="blog-detail-thumbnail">`
-            : ""
+        ${blog.thumbnail
+          ? `<img src="${blog.thumbnail}" alt="${blog.title}" class="blog-detail-thumbnail">`
+          : ""
         }
         <div class="blog-detail-content">
             ${blog.content}
@@ -412,31 +419,27 @@ async function renderBlogs() {
       .map(
         (blog) => `
         <div class="blog-card">
-            <div class="blog-thumbnail" style="background-image: url('${
-              blog.thumbnail
-            }'); background-size: cover; background-position: center;"></div>
+            <div class="blog-thumbnail" style="background-image: url('${blog.thumbnail
+          }'); background-size: cover; background-position: center;"></div>
             <div class="blog-card-content">
                 <span class="blog-type">${getTypeLabel(blog.type)}</span>
                 <h3 class="blog-title">${blog.title}</h3>
                 <p class="blog-description">${blog.description}</p>
                 <div class="blog-meta">
                     <span>${new Date(blog.created_at).toLocaleDateString(
-                      "vi-VN"
-                    )}</span>
+            "vi-VN"
+          )}</span>
                     <span class="blog-status ${blog.status.toLowerCase()}">${getStatusLabel(
-          blog.status
-        )}</span>
+            blog.status
+          )}</span>
                 </div>
                 <div class="blog-card-actions">
-                    <button class="btn-icon btn-view" onclick="viewBlogDetails('${
-                      blog.blog_id
-                    }')">Xem</button>
-                    <button class="btn-icon btn-edit" onclick="openEditBlogDrawer('${
-                      blog.blog_id
-                    }')">Sửa</button>
-                    <button class="btn-icon btn-delete" onclick="handleDeleteBlog('${
-                      blog.blog_id
-                    }')">Xóa</button>
+                    <button class="btn-icon btn-view" onclick="viewBlogDetails('${blog.blog_id
+          }')">Xem</button>
+                    <button class="btn-icon btn-edit" onclick="openEditBlogDrawer('${blog.blog_id
+          }')">Sửa</button>
+                    <button class="btn-icon btn-delete" onclick="handleDeleteBlog('${blog.blog_id
+          }')">Xóa</button>
                 </div>
             </div>
         </div>
@@ -521,4 +524,5 @@ window.addEventListener("popstate", () => {
     const id = path.match(/\/admin\/blogs\/(\d+)$/)[1];
     openBlogModal(id);
   }
+
 });

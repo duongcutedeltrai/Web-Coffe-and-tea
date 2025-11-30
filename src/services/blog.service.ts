@@ -1,3 +1,4 @@
+import { da } from "zod/v4/locales";
 import { prisma } from "../config/client";
 import slugify from "slugify";
 
@@ -16,11 +17,36 @@ class BlogService {
         status: data.status,
         meta_title: data.meta_title,
         meta_description: data.meta_description,
-        author_id: 21,
+        author_id: data.author_id,
       } as any,
     });
   }
-
+  async incrementView(blogId: string) {
+    return prisma.blogs.update({
+      where: { blog_id: blogId },
+      data: {
+        view_count: {
+          increment: 1, // tăng 1
+        },
+      },
+    });
+  }
+  async getPublishedBlogs() {
+    try {
+      const blogs = await prisma.blogs.findMany({
+        where: {
+          status: "PUBLISHED", // chỉ lấy blog đã xuất bản
+        },
+        orderBy: {
+          published_at: "desc", // sắp xếp theo ngày xuất bản mới nhất
+        },
+      });
+      return blogs;
+    } catch (error) {
+      console.error("Error fetching published blogs:", error);
+      throw error;
+    }
+  }
   async getBlogByID(blogID: string) {
     return await prisma.blogs.findUnique({
       where: { blog_id: blogID },

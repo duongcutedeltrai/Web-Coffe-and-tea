@@ -60,9 +60,9 @@ class AuthController {
       (req as any).user = decoded;
 
       if (req.user && (req.user as any).role === 1) {
-        return res.redirect("/admin/");
+        return res.redirect("/admin/dashboard");
       } else if (req.user && (req.user as any).role === 2) {
-        return res.redirect("/admin/");
+        return res.redirect("/admin/dashboard");
       } else {
         return res.redirect("/home");
       }
@@ -122,6 +122,38 @@ class AuthController {
       await AuthService.resetPassword(newPassword, token);
       return res.redirect("/auth/login");
     } catch (error) {
+      console.error("Reset password error:", error.message);
+      return res.status(401).json({
+        message: error.message,
+      });
+    }
+  }
+  async getUserToken(req: Request, res: Response) {
+    try {
+      const token = req.cookies.token;
+
+      if (!token) {
+        (req as any).user = null;
+        return res.redirect("/auth/login");
+      }
+
+      const decoded = decodedJWT(token);
+      if (!decoded) {
+        (req as any).user = null;
+        return res.redirect("/auth/login");
+      }
+
+      (req as any).user = decoded;
+
+      // Redirect dựa vào role
+      const role = (req as any).user.role;
+      if (role === 1 || role === 2) {
+        return res.redirect("/admin/customer");
+      }
+
+      // Nếu role không hợp lệ, logout hoặc redirect login
+      return res.json();
+    } catch (error: any) {
       console.error("Reset password error:", error.message);
       return res.status(401).json({
         message: error.message,

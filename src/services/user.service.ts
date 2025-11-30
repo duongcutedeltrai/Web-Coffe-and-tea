@@ -231,27 +231,33 @@ class AdminUserService {
         });
     };
 
-    getDetailCustomerById = async (id: number) => {
-        const viewDetail = prisma.users.findUnique({
-            where: {
-                user_id: id,
-            },
-            include: {
-                orders: {
-                    include: {
-                        order_details: {
-                            include: {
-                                products: true,
+    getDetailCustomerById = async (id?: number) => {
+        try {
+
+            const viewDetail = prisma.users.findFirst({
+
+                where: {
+                    user_id: id,
+                },
+                include: {
+                    orders: {
+                        include: {
+                            order_details: {
+                                include: {
+                                    products: true,
+                                },
                             },
                         },
                     },
-                },
 
-                point_history: true,
-                staff_detail: true,
-            },
-        });
-        return viewDetail;
+                    point_history: true,
+                    staff_detail: true,
+                },
+            });
+            return viewDetail;
+        } catch (err) {
+            throw err;
+        }
     };
 
     handleUpdateStaffById = async (

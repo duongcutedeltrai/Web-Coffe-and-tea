@@ -99,7 +99,6 @@ CREATE TABLE `orders` (
     `receiver_phone` VARCHAR(20) NOT NULL,
     `order_type` ENUM('DINE_IN', 'TAKE_AWAY', 'DELIVERY') NOT NULL DEFAULT 'DINE_IN',
     `order_source` ENUM('STAFF', 'CUSTOMER') NOT NULL DEFAULT 'STAFF',
-    `promotion_id` INTEGER NULL,
     `original_amount` DECIMAL(10, 2) NOT NULL,
     `discount_amount` DECIMAL(10, 2) NOT NULL DEFAULT 0,
     `final_amount` DECIMAL(10, 2) NOT NULL,
@@ -112,7 +111,7 @@ CREATE TABLE `orders` (
 CREATE TABLE `payment` (
     `payment_id` INTEGER NOT NULL AUTO_INCREMENT,
     `order_id` VARCHAR(50) NOT NULL,
-    `method` ENUM('cod', 'banking', 'momo', 'paypal') NOT NULL,
+    `method` ENUM('cod', 'vnpay', 'momo', 'paypal') NOT NULL,
     `status` ENUM('pending', 'success', 'failed') NOT NULL DEFAULT 'pending',
     `total_amount` INTEGER NOT NULL,
     `transaction_date` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
@@ -188,6 +187,7 @@ CREATE TABLE `promotion_usage` (
     `usage_id` INTEGER NOT NULL AUTO_INCREMENT,
     `promotion_id` VARCHAR(191) NOT NULL,
     `order_id` VARCHAR(191) NOT NULL,
+    `product_id` INTEGER NULL,
     `user_id` INTEGER NULL,
     `user_phone` VARCHAR(20) NULL,
     `used_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
@@ -195,7 +195,7 @@ CREATE TABLE `promotion_usage` (
     INDEX `promotion_usage_promotion_id_idx`(`promotion_id`),
     INDEX `promotion_usage_order_id_idx`(`order_id`),
     INDEX `promotion_usage_user_id_idx`(`user_id`),
-    UNIQUE INDEX `promotion_usage_promotion_id_user_id_key`(`promotion_id`, `user_id`),
+    UNIQUE INDEX `promotion_usage_promotion_id_user_id_product_id_key`(`promotion_id`, `user_id`, `product_id`),
     PRIMARY KEY (`usage_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -355,7 +355,7 @@ CREATE TABLE `blogs` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `cart` ADD CONSTRAINT `cart_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `cart` ADD CONSTRAINT `cart_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE `cart_details` ADD CONSTRAINT `cart_details_ibfk_1` FOREIGN KEY (`cart_id`) REFERENCES `cart`(`cart_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -398,6 +398,9 @@ ALTER TABLE `promotion_products` ADD CONSTRAINT `promotion_products_ibfk_1` FORE
 
 -- AddForeignKey
 ALTER TABLE `promotion_products` ADD CONSTRAINT `promotion_products_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products`(`product_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE `promotion_usage` ADD CONSTRAINT `promotion_usage_product_id_fkey` FOREIGN KEY (`product_id`) REFERENCES `products`(`product_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `promotion_usage` ADD CONSTRAINT `promotion_usage_promotion_id_fkey` FOREIGN KEY (`promotion_id`) REFERENCES `promotions`(`promotion_id`) ON DELETE NO ACTION ON UPDATE CASCADE;

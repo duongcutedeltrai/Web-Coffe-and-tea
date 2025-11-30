@@ -11,7 +11,7 @@ class BlogController {
     try {
       console.log(req.body);
       console.log(req.file);
-
+      const user_id = (req.user as any)?.id;
       let thumbnailUrl = null;
 
       // Nếu có file ảnh được upload
@@ -29,9 +29,10 @@ class BlogController {
       // Cập nhật data với URL Cloudinary
       const blogData = {
         ...req.body,
+        author_id: user_id,
         thumbnail: thumbnailUrl,
       };
-
+      console.log(blogData)
       const blog = await BlogService.createBlog(blogData);
       return res.status(201).json(blog);
     } catch (error) {

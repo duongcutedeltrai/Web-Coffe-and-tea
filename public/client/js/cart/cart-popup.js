@@ -1,7 +1,25 @@
 // ============================================================
 // 🛠️ HÀM TIỆN ÍCH
+// Lấy cookie theo tên
+async function getUserFromServer() {
+    try {
+        const res = await fetch("/api/auth/user-token", {
+            method: "GET",
+            credentials: "include", // gửi cookie HttpOnly
+        });
 
+        if (!res.ok) {
+            // Nếu token hết hạn hoặc không có
+            return null;
+        }
 
+        const user = await res.json();
+        return user; // { id, username, role }
+    } catch (err) {
+        console.error("Failed to fetch user:", err);
+        return null;
+    }
+}
 // ============================================================
 function parseVND(vndString) {
     return parseInt(vndString.replace(/\./g, "").replace(/\s*đ/g, ""), 10);
@@ -137,7 +155,7 @@ function updateCartBadge() {
     if (totalItems > 0) {
         badge.text(totalItems).removeClass("d-none");
     } else {
-        badge.addClass("d-none");
+        badge.text(totalItems).removeClass("d-none");
     }
 }
 // let products=[];
@@ -154,20 +172,21 @@ function renderCartItems() {
         return;
     }
     const html = cart.cart_details
-        .map(
-            (item) =>{
-        const flashSaleItem = products.find(
-            (f) => f.product_id === item.product_id && (f.size == item.product_size||f.size==="all")
-        );
-        let displayPrice = item.price;
-        let oldPrice = null;
-        
-        if (flashSaleItem) {
-            const discountValue = flashSaleItem.discountValue ?? 0;
-            oldPrice = item.price;
-            displayPrice = item.price - discountValue;
-        }
-        return `
+        .map((item) => {
+            const flashSaleItem = products.find(
+                (f) =>
+                    f.product_id === item.product_id &&
+                    (f.size == item.product_size || f.size === "all")
+            );
+            let displayPrice = item.price;
+            let oldPrice = null;
+
+            if (flashSaleItem) {
+                const discountValue = flashSaleItem.discountValue ?? 0;
+                oldPrice = item.price;
+                displayPrice = item.price - discountValue;
+            }
+            return `
         <div class="shopping-cart-item" data-product-id="${
             item.product_id
         }" data-size="${item.product_size}">
@@ -208,16 +227,20 @@ function renderCartItems() {
                             item.sub_quantity
                         }" min="1" max="99" readonly data-cartdetailid="${
                 item.cart_detail_id
-            }" data-productid="${item.product_id}" data-priceproduct="${
-                displayPrice
-            }" data-size="${item.product_size}">
+            }" data-productid="${
+                item.product_id
+            }" data-priceproduct="${displayPrice}" data-size="${
+                item.product_size
+            }">
                     <button class="cart-quantity-btn btn-plus" data-product-id="${
                         item.product_id
                     }" data-size="${item.product_size}">
                         <i class="fas fa-plus"></i>
                     </button>
                 </div>
-                <p class="shopping-item-info mb-0"> <span class="pd-old-price" style="margin-right:8px;">${(displayPrice==item.price)?"":formatVND(item.price)}</span>${formatVND(displayPrice)}</p>
+                <p class="shopping-item-info mb-0"> <span class="pd-old-price" style="margin-right:8px;">${
+                    displayPrice == item.price ? "" : formatVND(item.price)
+                }</span>${formatVND(displayPrice)}</p>
             </div>
 
             <button class="shopping-remove-btn" data-product-id="${
@@ -226,8 +249,8 @@ function renderCartItems() {
                 <i class="bi bi-x fs-4"></i>
             </button>
         </div>
-        `;}
-        )
+        `;
+        })
         .join("");
 
     $container.html(html);
@@ -248,7 +271,9 @@ function updateCartFooter() {
     let totalPrice = 0;
     cart.cart_details.forEach((item) => {
         const flashSaleItem = products.find(
-            (f) => f.product_id === item.product_id && (f.size == item.product_size || f.size === "all")
+            (f) =>
+                f.product_id === item.product_id &&
+                (f.size == item.product_size || f.size === "all")
         );
         const discountValue = flashSaleItem?.discountValue ?? 0;
         const priceToUse = item.price - discountValue;
@@ -264,8 +289,8 @@ function updateCartFooter() {
 // ============================================================
 // 🧠 XỬ LÝ CART & API
 // ============================================================
-function openCart() {
-    
+async function openCart() {
+    await getUserFromServer();
     // updateCart();
     updateCart();
     shoppingCart.isOpen = true;
@@ -286,6 +311,7 @@ async function getCartAPI() {
 
         if (data.success && data.cart) {
             const cart = data.cart;
+            console.log(data.cart);
             const simplifiedCart = {
                 total: cart.total,
                 quantity: cart.quantity,
@@ -306,7 +332,9 @@ async function getCartAPI() {
                 })),
             };
             localStorage.setItem("cart", JSON.stringify(simplifiedCart));
+
             updateCart();
+
             console.log("✅ Cart loaded from DB:", simplifiedCart); // render lại giao diện giỏ hàng
         } else {
             console.error("Không thể tải giỏ hàng:", data.message);
@@ -358,11 +386,12 @@ function updateCartSummary(cart) {
 
 // 🔹 Thêm sản phẩm vào giỏ hàng
 function addToCart(cart, product) {
-    const existing = cart.cart_details.find(
-        (d) =>
-            d.product_id === product.product_id &&
-            d.product_size === product.product_size
-    );
+    const existing =
+        cart?.cart_details?.find(
+            (d) =>
+                d.product_id === product.product_id &&
+                d.product_size === product.product_size
+        ) || null;
 
     if (existing) {
         existing.sub_quantity += product.sub_quantity;
@@ -456,9 +485,16 @@ function updateProductSize(cart, product_id, oldSize, newSize) {
 
 // 🔹 Lấy giỏ hàng từ localStorage (nếu có)
 function getCartFromStorage() {
-    const stored = localStorage.getItem("cart");
-    if (!stored) return { total: 0, quantity: 0, cart_details: [] };
-    return JSON.parse(stored);
+    const stored = localStorage.getItem("cart") || "[]";
+    const cart = JSON.parse(stored);
+    if (!cart.cart_details) {
+        // Nếu chưa có, khởi tạo mặc định và lưu vào localStorage
+        const defaultCart = { total: 0, quantity: 0, cart_details: [] };
+
+        localStorage.setItem("cart", JSON.stringify(defaultCart));
+        return defaultCart;
+    }
+    return cart;
 }
 
 // 🔹 Lưu giỏ hàng lại (nếu cần)

@@ -1,32 +1,26 @@
 import { prisma } from "../config/client";
 
-
 class DashboardService {
-
     getCustomerCount = async () => {
         const customers = await prisma.users.count({
             where: {
-                role_id: 3
-            }
+                role_id: 3,
+            },
         });
         return customers;
-    }
+    };
 
     getStaff = async () => {
-        const staffs = await prisma.staff_detail.findMany({
+        const staffs = await prisma.staff_detail.findMany({});
 
-        });
-
-        return staffs
-    }
+        return staffs;
+    };
 
     getStaffDetail = async () => {
-        const staffDetail = await prisma.staff_detail.findMany({
-        });
+        const staffDetail = await prisma.staff_detail.findMany({});
 
-        return staffDetail
-
-    }
+        return staffDetail;
+    };
 
     getTrendingProducts = async () => {
         const bestSellers = await prisma.order_details.groupBy({
@@ -63,10 +57,8 @@ class DashboardService {
             bestSellerIds,
             bestSellers,
             topProducts,
-
-        }
-
-    }
+        };
+    };
 
     getProductFromOrderDetails = async () => {
         const product = await prisma.orders.findMany({
@@ -74,13 +66,18 @@ class DashboardService {
                 order_details: {
                     include: {
                         products: true,
-                    }
+                    },
                 },
-            }
+            },
         });
         return product;
-    }
+    };
 
+    getAllBlogs = async () => {
+        return await prisma.blogs.findMany({
+
+        });
+    }
 }
 
 export default new DashboardService();

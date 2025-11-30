@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Phê la - Lịch sử đơn hàng</title>
+     
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+            rel="stylesheet"
+        />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-slider@11.0.2/dist/css/bootstrap-slider.min.css"
+        />
+        <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+        <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="/client/css/style.css" />
+    
+        <link rel="stylesheet" href="/client/css/cart/cart-popup.css" />
+        <!-- Font-->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+            rel="stylesheet"
+        />
+        <link
+            rel="shortcut icon"
+            href="/images/favicon/favicon.ico"
+            type="image/x-icon"
+        />
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script
+  src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.5/dist/dotlottie-wc.js"
+  type="module"
+></script>
+           <link rel="stylesheet" href="/client/css/orders/orders.css" />
+    </head>
+    <body>
+         <% if (!user) { %> <%- include('../layout/navbar.ejs'); -%> <% } else {
+        %> <%- include('../layout/navbar_login.ejs'); -%><% } %><%-
+        include('../cart/cart-popup.ejs'); -%>
+        <div class="container">
+                
+            <div class="content">
+                <div class="main-wrapper">
+                    <main class="main-content">
+                        <div class="filters-section">
+                            <div class=" cart-title">
+                <h1 class="page-title">Lịch sử hóa đơn</h1>
+                <p class="text-muted">Bao gồm các hóa đơn đã mua của khách hàng</p>
+                <hr>
+            </div>
+                            <div class="filters-left">
+                                <div class="search-wrapper">
+                                    <svg
+                                        class="search-icon"
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                    >
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <path d="m21 21-4.35-4.35"></path>
+                                    </svg>
+                                    <input
+                                        type="text"
+                                        id="searchInput"
+                                        class="search-input"
+                                        placeholder="Tìm kiếm đơn hàng..."
+                                    />
+                                </div>                            
+                            </div>
+
+                            
+                        </div>
+                            <div class="tab-content active" id="tab-all">
+                                <div
+                                    class="orders-grid"
+                                    id="ordersGridAll"
+                                ></div>
+                            </div>
+
+                            <div class="tab-content" id="tab-pending">
+                                <div
+                                    class="orders-grid"
+                                    id="ordersGridPending"
+                                ></div>
+                            </div>
+
+                            <div class="tab-content" id="tab-ready">
+                                <div
+                                    class="orders-grid"
+                                    id="ordersGridReady"
+                                ></div>
+                            </div>
+
+                            <div class="tab-content" id="tab-completed">
+                                <div
+                                    class="orders-grid"
+                                    id="ordersGridCompleted"
+                                ></div>
+                            </div>
+
+                            <div class="tab-content" id="tab-canceled">
+                                <div
+                                    class="orders-grid"
+                                    id="ordersGridCanceled"
+                                ></div>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        </div>
+
+       
+        <!-- Order Details Modal -->
+        <div id="orderModal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="modalTitle">
+                        Chi tiết đơn hàng
+                    </h2>
+                    <button class="modal-close" onclick="closeOrderModal()">
+                        <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="modal-body"></div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" onclick="closeOrderModal()">
+                        Đóng
+                    </button>
+                   
+                </div>
+            </div>
+        </div>
+          <%- include('../layout/footer.ejs'); -%>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap-slider@11.0.2/dist/bootstrap-slider.min.js"></script>
+        <script src="/client/js/orders/orders.js"></script>
+                 <script src="/client/js/cart/cart-popup.js"></script>
+    </body>
+</html>

@@ -38,7 +38,7 @@ $(document).ready(async function () {
     dataFlashsale = localStorage.getItem("flashsale-product");
     products = dataFlashsale ? JSON.parse(dataFlashsale) : [];
     const favorite =
-        JSON.parse(localStorage.getItem("favoriteList")).length || 0;
+        JSON.parse(localStorage.getItem("favoriteList")||"[]").length || 0;
     $("#favoriteBadge").text(favorite);
     // Hiển thị giá khi kéo
     slider.on("slide", function (values) {
@@ -62,19 +62,17 @@ $(document).ready(async function () {
     $(document).on("change", "input[name='category']", function () {
         state.category = $(this).val();
         state.currentPage = 1;
+         console.log("hi");
         applyFilters();
     });
 
     $("#sortSelect").on("change", function () {
         state.sort = $(this).val();
         state.currentPage = 1;
+       
         applyFilters();
     });
-    slider.on("slide", function (values) {
-        const [min, max] = values;
-        $("#minPrice").text(min.toLocaleString("vi-VN") + "đ");
-        $("#maxPrice").text(max.toLocaleString("vi-VN") + "đ");
-    });
+   
 
     $(".search-container button").on("click", function () {
         state.keyword = $("#searchInput").val().trim();
@@ -186,6 +184,7 @@ $(document).ready(async function () {
 // ----------------------------
 async function applyFilters() {
     try {
+ 
         const grid = $("#productGrid");
         const loader = $("#productLoading");
 

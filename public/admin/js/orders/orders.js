@@ -440,7 +440,7 @@ async function viewOrderDetails(orderId) {
             <div class="modal-summary">
               <div class="modal-summary-row">
                 <span>Tổng cộng:</span>
-                <span class="modal-summary-total" id="modalTotal"></span>
+                <span class="modal-summary-total" id="modalTotal">${Number(order.data.payment[0].total_amount).toLocaleString("vi-VN")} ₫</span>
               </div>
               <div class="modal-summary-row">
                 <span>Thanh toán:</span>
@@ -468,7 +468,19 @@ function closeOrderModal() {
 
 // Print order (placeholder)
 function printOrder() {
-  alert("Chức năng in đơn hàng đang được phát triển");
+  const id = document.getElementById("modalOrderId").textContent;
+
+  fetch(`/admin/order/${id}/pdf`)
+    .then((res) => res.blob())
+    .then((blob) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `order_${id}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    })
+    .catch((err) => console.error("PDF download error:", err));
 }
 
 // Initialize event listeners
@@ -717,6 +729,9 @@ function openCreateOrderDrawer() {
   resetCreateOrderForm();
   updateOrderTotal();
 
+
+  document.getElementById("voucherCode").value = "";
+
   if (window.location.pathname !== "/admin/orders/create") {
     history.pushState({ action: "create" }, "", "/admin/orders/create");
   }
@@ -753,10 +768,12 @@ function closeCreateOrderDrawer() {
 
 // Reset create order form
 function resetCreateOrderForm() {
+
   document.getElementById("createOrderForm").reset();
   selectedProducts = [];
   renderSelectedProducts();
   updateOrderTotal();
+  document.getElementById("voucherCode").value = "";
 }
 
 // Update category buttons
@@ -990,6 +1007,7 @@ function generateOrderId(orderType) {
 }
 
 async function applyVoucher() {
+
   const totalAmount = updateOrderTotal();
   if (totalAmount === 0) {
     alert("Vui lòng chọn sản phẩm trước khi áp dụng voucher");
@@ -997,7 +1015,15 @@ async function applyVoucher() {
   }
   const voucherCode = document.querySelector("#voucherCode").value.trim();
   const customerPhone = document.getElementById("customerPhone").value.trim();
+  const customerName = document.getElementById("customerName").value.trim();
+
   const userId = null;
+
+  const products = selectedProducts.map((p) => ({
+    product_id: p.product_id,
+    size: p.size,
+    quantity: p.quantity,
+  }));
 
   const response = await fetch(`/admin/data/promotions/apply`, {
     method: "POST",
@@ -1009,14 +1035,27 @@ async function applyVoucher() {
       orderAmount: totalAmount,
       userId,
       phone: customerPhone,
+      products,
     }),
   });
+  console.log("Request body:", {
+    code: voucherCode,
+    orderAmount: totalAmount,
+    userId,
+    phone: customerPhone,
+    products,
+  });
+
   const result = await response.json();
   if (!response.ok || !result.success) {
     alert(result.message || "Mã voucher không hợp lệ");
+    delete selectedProducts.promotion;
+    updateOrderTotal(); // Reset lại tổng tiền
     return;
   }
-  const { discountAmount, finalAmount } = result.data;
+  console.log("Voucher applied successfully:", result.data);
+
+  const { discountAmount, finalAmount } = result.data.data;
   alert(
     `Áp dụng voucher thành công! Giảm ${formatCurrency(discountAmount)}.`
   );
@@ -1025,7 +1064,8 @@ async function applyVoucher() {
   document.getElementById("orderTotal").textContent =
     formatCurrency(finalAmount);
 
-  selectedProducts.promotion = result.data;
+
+  selectedProducts.promotion = result.data.data;
 
   return result.data;
 }
@@ -1040,12 +1080,14 @@ async function submitCreateOrder() {
   const orderType = document.querySelector(
     'input[name="orderType"]:checked'
   ).value;
+
   const paymentMethodRaw = document.getElementById("paymentMethod").value;
   let paymentMethod;
   if (paymentMethodRaw === "Chuyển khoản") paymentMethod = "banking";
   else if (paymentMethodRaw === "Tiền mặt") paymentMethod = "cod";
   else if (paymentMethodRaw === "Ví điện tử") paymentMethod = "momo";
   else paymentMethod = "paypal";
+
   const paymentStatus = document.getElementById("paymentStatus").value;
   const orderId = generateOrderId(orderType);
 
@@ -1071,8 +1113,7 @@ async function submitCreateOrder() {
     delivery_address: deliveryAddress || "Không có",
     order_type: orderType,
     payment_method: paymentMethod,
-    payment_status:
-      paymentStatus === "Đã thanh toán" ? "success" : "pending",
+    payment_status: paymentStatus === "Đã thanh toán" ? "success" : "pending",
     total_amount: totalAmount,
     products: selectedProducts.map((p) => ({
       product_id: p.product_id,
@@ -1081,13 +1122,16 @@ async function submitCreateOrder() {
       price: p.price,
     })),
   };
+
   if (selectedProducts.promotion) {
     orderData.promotion_code = selectedProducts.promotion.code;
     orderData.promotion_id = selectedProducts.promotion.promotionId;
     orderData.discount_amount = selectedProducts.promotion.discountAmount;
     orderData.final_amount = selectedProducts.promotion.finalAmount;
   }
+
   console.log("Submitting order data:", orderData);
+
   try {
     const response = await fetch("/admin/data/orders/create", {
       method: "POST",
@@ -1100,14 +1144,70 @@ async function submitCreateOrder() {
       throw new Error(result.message || "Tạo đơn hàng thất bại");
     }
 
-    alert("Đơn hàng đã được tạo thành công!");
-    closeCreateOrderDrawer();
-    renderOrders(currentTab, typeFilter);
+    if (selectedProducts.length === 0) {
+      alert("Vui lòng chọn ít nhất một sản phẩm");
+      return;
+    }
+
+    const totalAmount = selectedProducts.reduce(
+      (sum, p) => sum + p.price * p.quantity,
+      0
+    );
+
+    const orderData = {
+      order_id: orderId,
+      receiver_name: customerName,
+      receiver_phone: customerPhone,
+      delivery_address: deliveryAddress || "Không có",
+      order_type: orderType,
+      payment_method: paymentMethod,
+      payment_status:
+        paymentStatus === "Đã thanh toán" ? "success" : "pending",
+      total_amount: totalAmount,
+      products: selectedProducts.map((p) => ({
+        product_id: p.product_id,
+        size: p.size,
+        quantity: p.quantity,
+        price: p.price,
+      })),
+    };
+
+    if (selectedProducts.promotion) {
+      orderData.promotion_code = selectedProducts.promotion.code;
+      orderData.promotion_id = selectedProducts.promotion.promotionId;
+      orderData.discount_amount = selectedProducts.promotion.discountAmount;
+      orderData.final_amount = selectedProducts.promotion.finalAmount;
+    }
+
+    console.log("Submitting order data:", orderData);
+
+    try {
+      const response = await fetch("/admin/data/orders/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderData),
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "Tạo đơn hàng thất bại");
+      }
+
+      alert("Đơn hàng đã được tạo thành công!");
+      delete selectedProducts.promotion;
+      closeCreateOrderDrawer();
+      renderOrders(currentTab, typeFilter);
+    } catch (err) {
+      console.error("Error creating order:", err);
+      alert("Không thể tạo đơn hàng");
+    }
   } catch (err) {
     console.error("Error creating order:", err);
     alert("Không thể tạo đơn hàng");
   }
 }
+
+
 
 // Scroll to product selector (for mobile)
 function scrollToProductSelector() {

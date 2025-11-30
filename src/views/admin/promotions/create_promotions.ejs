@@ -46,15 +46,57 @@
             </select>
           </div>
           <div class="tabs-list">
-            <button class="tab-trigger active" data-tab="Voucher">
+            <button class="tab-trigger active" data-tab="Voucher" onclick="switchTab('Voucher')">
               Voucher
             </button>
-            <button class="tab-trigger" data-tab="FlashSale">
+            <button class="tab-trigger" data-tab="FlashSale" onclick="switchTab('FlashSale')">
               FlashSale
             </button>
           </div>
-          <div class="promotions-container" id="promotionsContainer">
-            Promotions will be rendered here by JavaScript
+
+          <!-- Thêm container cho bảng flash sale -->
+          <div id="voucherTab" class="tab-content active">
+            <div class="promotions-container" id="promotionsContainer">
+              Promotions will be rendered here by JavaScript
+            </div>
+          </div>
+
+          <div id="flashsaleTab" class="tab-content" style="display: none">
+            <div class="flashsale-table-wrapper">
+              <table class="flashsale-table">
+                <thead>
+                  <tr>
+                    <th>Tên sản phẩm</th>
+                    <th>Size</th>
+                    <th>Giá gốc</th>
+                    <th>Giá giảm</th>
+                    <th>Bắt đầu</th>
+                    <th>Kết thúc</th>
+                    <th>Số lượng</th>
+                    <th>Số tiền giảm</th>
+                    <th>Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody id="flashsaleTableBody">
+                  <!-- Dữ liệu sẽ được render bởi JavaScript -->
+                </tbody>
+              </table>
+              <div id="flashsaleEmptyState" class="empty-state" style="display: none">
+                <div style="font-size: 48px; margin-bottom: 16px">
+                  📦
+                </div>
+                <div style="
+                                        font-size: 18px;
+                                        font-weight: 500;
+                                        margin-bottom: 8px;
+                                    ">
+                  Không có flash sale nào
+                </div>
+                <div style="font-size: 14px; color: #999">
+                  Tạo flash sale mới để bắt đầu
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -76,8 +118,12 @@
           <div class="form-group">
             <label for="promotionType">Chọn loại khuyến mãi</label>
             <select id="promotionType" onchange="togglePromotionType()">
-              <option value="voucher" selected>Voucher (nhập mã giảm giá)</option>
-              <option value="flashsale">Flash Sale (giảm giá chớp nhoáng)</option>
+              <option value="voucher" selected>
+                Voucher (nhập mã giảm giá)
+              </option>
+              <option value="flashsale">
+                Flash Sale (giảm giá chớp nhoáng)
+              </option>
             </select>
           </div>
           <div class="form-group">
@@ -128,11 +174,9 @@
               <label for="maxUsageCount">Số lần sử dụng tối đa</label>
               <input type="number" id="maxUsageCount" min="1" placeholder="VD: 100" />
             </div>
-
           </div>
 
           <div class="form-row">
-
             <div class="form-group">
               <label for="currentUsage">Số lần đã sử dụng</label>
               <input type="number" id="currentUsage" min="0" value="0" readonly />
@@ -212,6 +256,21 @@
     </div>
   </div>
 
+  <!-- Thêm modal chi tiết flash sale -->
+  <div class="modal-overlay" id="flashsaleDetailsOverlay" onclick="closeFlashsaleDetails()">
+    <div class="modal" id="flashsaleDetailsModal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Chi tiết Flash Sale</h2>
+        <button class="close-btn" onclick="closeFlashsaleDetails()">
+          ×
+        </button>
+      </div>
+      <div class="modal-content" id="flashsaleDetailsContent">
+        Content will be populated by JavaScript
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="promotionDetailsOverlay" onclick="closePromotionDetails()">
     <div class="modal" id="promotionDetailsModal" onclick="event.stopPropagation()">
       <div class="modal-header">
@@ -225,7 +284,6 @@
       </div>
     </div>
   </div>
-
   <script src="/admin/js/promotions/create_promotions.js"></script>
 </body>
 

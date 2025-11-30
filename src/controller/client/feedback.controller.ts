@@ -5,7 +5,7 @@ class FeedbackController {
     postFeedback = async (req: Request, res: Response) => {
         try {
             const user_id = (req.user as any)?.id;
-            console.log("hi");
+           
             const { product_id, rating, comment } = req.body;
 
             const files = req.files as Express.Multer.File[];

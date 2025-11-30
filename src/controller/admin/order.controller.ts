@@ -1,5 +1,8 @@
 import { Request, Response } from "express";
 import OrderService from "../../services/order.service";
+import userService from "../../services/user.service";
+import pdf from "html-pdf";
+
 
 class OrderController {
   async getOrdersPage(req: Request, res: Response) {
@@ -116,6 +119,70 @@ class OrderController {
       });
     }
   }
+  async getOrderUsersData(req: Request, res: Response) {
+    try {
+      const user = await userService.getDetailCustomerById(
+        +(req.user as any)?.id || 0
+      );
+      const status = req.query.status as string | undefined;
+      const type = req.query.type as string | undefined;
+      const search = req.query.search as string | undefined;
+      const orders = await OrderService.getAllOrdersByUser(
+        status,
+        type,
+        search, +(req.user as any)?.id
+      );
+      return res.json({
+        success: true,
+        data: orders,
+      });
+    } catch (error) {
+      console.error("Error getting orders data:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Không thể lấy dữ liệu đơn hàng",
+      });
+    }
+  }
+
+  async getOrderPdf(req: Request, res: Response) {
+    try {
+      const orderId = req.params.id;
+      const order = await OrderService.getOrderById(orderId);
+
+      if (!order) {
+        return res.status(404).send("Order not found");
+      }
+
+      // Render EJS to HTML string
+      res.render("admin/orders/bill", { order }, (err, html) => {
+        if (err) {
+          console.error("EJS render error:", err);
+          return res.status(500).send("Error rendering invoice template");
+        }
+
+        // Convert HTML → PDF stream
+        pdf.create(html).toStream((err, stream) => {
+          if (err) {
+            console.error("PDF generation error:", err);
+            return res.status(500).send("Error generating PDF");
+          }
+
+          res.setHeader("Content-Type", "application/pdf");
+          res.setHeader(
+            "Content-Disposition",
+            `attachment; filename=order_${order.order_id}.pdf`
+          );
+
+          stream.pipe(res);
+        });
+      });
+    } catch (error) {
+      console.error("Error generating order PDF:", error);
+      res.status(500).send("Internal server error");
+    }
+  }
+
 }
 
 export default new OrderController();

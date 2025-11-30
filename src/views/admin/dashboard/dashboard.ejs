@@ -218,8 +218,14 @@
 
                             </div>
                             <div class="best-sellers-list">
-                                <p>Blogs</p>
+                                <h4>
+                                    <%= blog.title %>
+                                </h4>
+                                <img src="<%= blog.thumbnail %>" alt="">
 
+                                <p>
+                                    <%= blog.description %>
+                                </p>
                             </div>
                         </div>
                         <div class="card">
@@ -232,6 +238,17 @@
                                 </div>
                             </div>
                             <canvas id="revenueChart" class="chart-canvas"></canvas>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <div>
+                                    <h3>Thống kê danh mục</h3>
+                                </div>
+                                <div class="time-toggles">
+
+                                </div>
+                            </div>
+                            <canvas id="categoryPie" class="chart-canvas"></canvas>
                         </div>
                     </div>
                 </div>

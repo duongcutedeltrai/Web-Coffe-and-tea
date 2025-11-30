@@ -1,95 +1,116 @@
 import { Request, Response } from "express";
-import qs from "querystring";
 import orderService from "../../services/order.service";
+import promotionService from "../../services/promotion.service";
 import { PaymentService } from "../../services/payment.service";
 import { InfoOrderSchema } from "../../validation/infoOrder.schema";
-import promotionService from "../../services/promotion.service";
-function sortObject(obj) {
-    let sorted = {};
-    let keys = Object.keys(obj).sort();
-    keys.forEach((key) => {
-        sorted[key] = obj[key];
-    });
-    return sorted;
-}
+import {
+    IpnFailChecksum,
+    IpnOrderNotFound,
+    IpnInvalidAmount,
+    InpOrderAlreadyConfirmed,
+    IpnUnknownError,
+    IpnSuccess,
+} from "vnpay";
+import userService from "../../services/user.service";
+
 function generateOrderId() {
     const now = new Date();
-    const pad = (n) => String(n).padStart(2, "0");
-
-    const hh = pad(now.getHours());
-    const mm = pad(now.getMinutes());
-    const ss = pad(now.getSeconds());
-
-    let prefix = "OR"; // fallback
-    prefix = "DL";
-    return `${prefix}_${hh}${mm}${ss}`;
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `DL_${pad(now.getHours())}${pad(now.getMinutes())}${pad(
+        now.getSeconds()
+    )}`;
 }
+
 class PaymentController {
+    // Bước 1: Tạo thanh toán
     async createPayment(req: Request, res: Response) {
+        console.log(req.body);
         const validate = InfoOrderSchema.safeParse(req.body);
         if (!validate.success) {
-            const errorZod = validate.error.issues;
-            const errors = errorZod?.map((item) => ({
-                field: item.path[0], // tên field trong schema
+            const errors = validate.error.issues.map((item) => ({
+                field: item.path[0],
                 message: item.message,
             }));
-            return res.status(200).json({ success: false, errors });
+            return res.status(400).json({ success: false, errors });
         }
+
         const user_id = (req.user as any)?.id;
-        const { totalPrice, promotion_id, address } = req.body;
+        const order_id = generateOrderId();
+        const { totalPrice, promotion_id, address, note, phone, name } =
+            req.body;
+
+        // Lưu session để sử dụng khi return_url
+        (req.session as any).paymentData = {
+            payment_method: "vnpay",
+            order_type: "DELIVERY",
+            order_id,
+            user_id,
+            promotion_id: promotion_id || "",
+            totalPrice,
+            receiver_name: name,
+            receiver_phone: phone,
+            delivery_address: address,
+            note: note || "",
+        };
 
         const result = await promotionService.applyPromotionByClient(
             +user_id,
             +totalPrice,
-            promotion_id
+            promotion_id || ""
         );
-        const totalAmount = result.totalAfterDiscount;
+
+        const totalAmount = result.totalAfterDiscount || totalPrice;
+        console.log(totalAmount);
         const url = await PaymentService.createPaymentUrl(totalAmount);
         return res.status(201).json({ url });
-        //     try {
-        //         const data = req.body;
-        //         // 1️⃣ Validate dữ liệu cơ bản
-        //         if (
-        //             !data.receiver_name ||
-        //             !data.receiver_phone ||
-        //             !Array.isArray(data.products)
-        //         ) {
-        //             return res.status(400).json({
-        //                 success: false,
-        //                 message: "Dữ liệu đơn hàng không hợp lệ",
-        //             });
-        //         }
-        //         // 2️⃣ Tạo đơn hàng trong DB (trạng thái PENDING)
-        //         const newOrder = await orderService.createOrder({
-        //             ...data,
-        //             status: "PENDING",
-        //         });
-        //         // 3️⃣ Nếu thanh toán bằng VNPAY → tạo URL thanh toán
-        //         if (data.payment_method === "vnpay") {
-        //             const paymentUrl = await PaymentService.createPaymentUrl(
-        //                 newOrder
-        //             );
-        //             return res.json({
-        //                 success: true,
-        //                 message: "Tạo đơn hàng thành công, chuyển hướng VNPAY",
-        //                 paymentUrl,
-        //             });
-        //         }
-        //         return res.json({
-        //             success: true,
-        //             message: "Tạo đơn hàng thành công (chưa thanh toán)",
-        //             data: newOrder,
-        //         });
-        //     } catch (error: any) {
-        //         console.error("Error creating order:", error);
-        //         return res.status(500).json({
-        //             success: false,
-        //             message: error.message || "Không thể tạo đơn hàng",
-        //         });
-        //     }
-        // }
     }
 
-    async createOrder(req: Request, res: Response) {}
+    // Bước 2: Xử lý return_url VNPay
+    async paymentReturn(req: Request, res: Response) {
+        try {
+            console.log("hi");
+            console.log("VNPay query:", req.query);
+            const result = await PaymentService.verifyIpnRequest(req);
+            console.log("Verification result:", result);
+            switch (result.status) {
+                case "fail_checksum":
+                    return res.json(IpnFailChecksum);
+
+                case "order_not_found":
+                    return res.json(IpnOrderNotFound);
+
+                case "invalid_amount":
+                    return res.json(IpnInvalidAmount);
+
+                case "already_confirmed":
+                    return res.json(InpOrderAlreadyConfirmed);
+
+                case "success": {
+                    const paymentData = (req.session as any).paymentData;
+                    if (!paymentData)
+                        return res.status(400).send("Session expired");
+                    console.log("hiiiii", paymentData);
+                    const order = await orderService.createOrderByClient(
+                        paymentData
+                    );
+                    const user = await userService.getDetailCustomerById(
+                        +(req.user as any)?.id || 0
+                    );
+                    delete (req.session as any).paymentData;
+                    return res.render("client/success/success.ejs", {
+                        order,
+                        user,
+                    });
+                }
+
+                default:
+                    return res.json(IpnUnknownError);
+            }
+        } catch (error) {
+            console.error("VNPay Return error:", error);
+            return res.json(IpnUnknownError);
+        }
+    }
 }
+
 export default new PaymentController();

@@ -140,6 +140,12 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 async function applyPromotion() {
     try {
+        if (promotionSelected.length == 0) {
+            // Nếu chưa chọn voucher, reset discount và thoát luôn
+            discount = 0;
+            localStorage.removeItem("selectedVoucher");
+            return null;
+        }
         const promotionId = promotionSelected?.promotion_id;
         const totalPrice = subtotal;
         const response = await fetch("/admin/data/promotions/apply-promotion", {
@@ -155,6 +161,8 @@ async function applyPromotion() {
 
         if (!data.success) {
             alert(data.message || "Mã khuyến mãi không hợp lệ.");
+            localStorage.removeItem("selectedVoucher");
+            discount = 0;
             return null;
         }
 

@@ -133,7 +133,7 @@ function createProductCard(product) {
     const basePrice = matchedSize?.price || 0;
     const currentPrice = basePrice - discount;
     const originalPrice = basePrice;
-
+    console.log(product.endTime);
     return $(`
     <div class="product-card pd-product-card" data-id="${product.product_id}">
       <div class="product-image-container">
@@ -211,9 +211,9 @@ const productsPerView = 5;
 let products = [];
 async function renderProducts() {
     try {
-        const res = await fetch("/admin/data/promotions/flashsale");
+        const res = await fetch("/admin/data/promotions/flashsale/client");
         const data = await res.json();
-
+        
         if (!data.success) throw new Error("Không thể tải flash sale");
 
         const flashSales = data.data;
@@ -229,36 +229,35 @@ async function renderProducts() {
             // 🕒 Chỉ hiển thị khi đang trong khoảng thời gian
             if (now < startDate || now > endDate) return;
 
-            promotion.promotion_products.forEach((promoProd) => {
-                const product = promoProd.products;
-                // const basePrice = product.price_product[0]?.price || 0;
-                const discountValue = promotion.discount_price || 0;
+            const product = promotion.products;
+            // const basePrice = product.price_product[0]?.price || 0;
+            const discountValue = promotion.discount_price || 0;
 
-                if (promoProd.size === "all") {
-                    product.price_product.forEach((pp) => {
-                        const $card = createProductCard({
-                            ...product,
-                            size: pp.size,
-                            discountValue: discountValue,
-                            endTime: promotion.end_date,
-                        });
-                        $carousel.append($card);
-                    });
-                }
-                // ⚙️ Nếu size cụ thể → chỉ render 1 card
-                else {
+            if (promotion.size === "all") {
+                product.price_product.forEach((pp) => {
                     const $card = createProductCard({
                         ...product,
-                        size: promoProd.size,
+                        size: pp.size,
                         discountValue: discountValue,
                         endTime: promotion.end_date,
                     });
                     $carousel.append($card);
-                }
+                });
+            }
+            // ⚙️ Nếu size cụ thể → chỉ render 1 card
+            else {
+                const $card = createProductCard({
+                    ...product,
+                    size: promotion.size,
+                    discountValue: discountValue,
+                    endTime: promotion.end_date,
+                });
+                $carousel.append($card);
+            }
 
-                // $carousel.append($card);
-            });
+            // $carousel.append($card);
         });
+
         localStorage.setItem("flashsale-product", JSON.stringify(products));
         if ($carousel.children().length === 0) {
             $carousel.append(
@@ -270,7 +269,10 @@ async function renderProducts() {
         // 🧭 Countdown
         $(".countdown-timer").each(function () {
             const $element = $(this);
-            const endTime = new Date($element.attr("data-endtime"));
+            const raw = $element.attr("data-endtime");
+            const localStr = raw.replace("Z", "");
+            const endTime = new Date(localStr);
+            console.log(endTime);
             updateCountdown(endTime, $element);
             setInterval(() => updateCountdown(endTime, $element), 1000);
         });
@@ -383,7 +385,7 @@ $(document).ready(() => {
     // Initialize carousels
     renderProducts();
     renderCombos();
-
+    loadPdNewsArticles();
     // Event Handlers using jQuery event delegation
     $(document).on("click", ".favorite-btn", function () {
         const $btn = $(this);
@@ -503,14 +505,11 @@ const voucherData = {
     ],
 };
 
-$(document).ready(() => {
+$(document).ready(async () => {
+    await loadVouchersAPI();
     loadVouchers();
 
     // Smooth scroll for "View All" link
-    $(".view-all-link").on("click", (e) => {
-        e.preventDefault();
-        showAllVouchers();
-    });
 
     // Lazy loading for images
     const images = document.querySelectorAll("img");
@@ -541,6 +540,35 @@ $(document).ready(() => {
     });
 });
 
+async function loadVouchersAPI() {
+    try {
+        const res = await fetch(
+            "http://localhost:3000/admin/data/promotions/voucher"
+        );
+        const result = await res.json();
+
+        if (!result.success) return;
+
+        // Lấy 3 voucher đầu tiên
+        const firstThree = result.data.slice(0, 3);
+
+        // Map về format hiện tại
+        voucherData.vouchers = firstThree.map((item, index) => ({
+            id: index + 1,
+            label: "ƯU ĐÃI", // Hoặc tự động lấy từ API nếu có
+            offer: `${item.discount_percent}%`, // Bạn có thể tuỳ chỉnh
+            description: `${new Date(item.start_date).toLocaleDateString(
+                "vi-VN"
+            )} - ${new Date(item.end_date).toLocaleDateString("vi-VN")}`,
+            code: item.code,
+            image: "/public/vietnamese-coffee-products-on-dark-background.jpg", // Hoặc URL thực tế từ API
+        }));
+
+        console.log("voucherData:", voucherData);
+    } catch (error) {
+        console.error("Lỗi khi load vouchers:", error);
+    }
+}
 function loadVouchers(limit = 3) {
     displayVouchers(voucherData.vouchers.slice(0, limit));
 }
@@ -555,11 +583,11 @@ function displayVouchers(vouchers) {
         <div class="voucher-card" data-voucher-id="${voucher.id}" data-code="${voucher.code}">
             <div class="voucher-left">
                 <div class="voucher-description">${voucher.description}</div>
-                <h3 class="voucher-offer">${voucher.offer}</h3>
+                <h3 class="voucher-offer">GIẢM ${voucher.offer}</h3>
             </div>  
             <div class="voucher-right">
                 <div class="voucher-code">${voucher.code}</div>
-                <button class="voucher-btn">LƯU MÃ</button>
+                <button class="voucher-btn">SAO CHÉP</button>
             </div>
         </div>
       </div>
@@ -967,13 +995,17 @@ $(document).ready(function () {
                 })
                 .get(),
         };
+
         let cart = getCartFromStorage();
+
         cart = addToCart(cart, product);
+        console.log("hi");
         updateCartSummary(cart);
         saveCartToStorage(cart);
         updateCartBadge();
         updateCart();
         openCart();
+
         // Gọi Ajax
         $.ajax({
             url: "/api/cart",
@@ -1024,32 +1056,50 @@ function updateCartUI(cart) {
 ////blog
 
 // Sample news data
-const pdNewsArticles = [
-    {
-        id: 1,
-        title: "Sữa Chua Bông Buổi – Sữa Chua Ổ Long Đã Xay 🧋",
-        excerpt:
-            "Lễ khai giảng năm học chill 2025 – 2026 bắt đầu! Đang tìm vào là đâu để mừng là Khởi Động Chill độ 'ban học' Sữa Chua Bông Buổi dẫn đầu...",
-        image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-twt6kdwHURLx78xehPO5oxg2ZQPb9u.png",
-        date: "04-09-2025",
-    },
-    {
-        id: 2,
-        title: "Sữa Chua Bông Buổi – Sữa Chua Ổ Long Đã Xay 🧋",
-        excerpt:
-            "Lễ khai giảng năm học chill 2025 – 2026 bắt đầu! Đang tìm vào là đâu để mừng là Khởi Động Chill độ 'ban học' Sữa Chua Bông Buổi dẫn đầu...",
-        image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&h=400&fit=crop",
-        date: "04-09-2025",
-    },
-    {
-        id: 3,
-        title: "Sữa Chua Bông Buổi – Sữa Chua Ổ Long Đã Xay 🧋",
-        excerpt:
-            "Lễ khai giảng năm học chill 2025 – 2026 bắt đầu! Đang tìm vào là đâu để mừng là Khởi Động Chill độ 'ban học' Sữa Chua Bông Buổi dẫn đầu...",
-        image: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&h=400&fit=crop",
-        date: "05-09-2025",
-    },
+let pdNewsArticles = [
+    // {
+    //     id: 1,
+    //     title: "Sữa Chua Bông Buổi – Sữa Chua Ổ Long Đã Xay 🧋",
+    //     excerpt:
+    //         "Lễ khai giảng năm học chill 2025 – 2026 bắt đầu! Đang tìm vào là đâu để mừng là Khởi Động Chill độ 'ban học' Sữa Chua Bông Buổi dẫn đầu...",
+    //     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-twt6kdwHURLx78xehPO5oxg2ZQPb9u.png",
+    //     date: "04-09-2025",
+    // },
+    // {
+    //     id: 2,
+    //     title: "Sữa Chua Bông Buổi – Sữa Chua Ổ Long Đã Xay 🧋",
+    //     excerpt:
+    //         "Lễ khai giảng năm học chill 2025 – 2026 bắt đầu! Đang tìm vào là đâu để mừng là Khởi Động Chill độ 'ban học' Sữa Chua Bông Buổi dẫn đầu...",
+    //     image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&h=400&fit=crop",
+    //     date: "04-09-2025",
+    // },
+    // {
+    //     id: 3,
+    //     title: "Sữa Chua Bông Buổi – Sữa Chua Ổ Long Đã Xay 🧋",
+    //     excerpt:
+    //         "Lễ khai giảng năm học chill 2025 – 2026 bắt đầu! Đang tìm vào là đâu để mừng là Khởi Động Chill độ 'ban học' Sữa Chua Bông Buổi dẫn đầu...",
+    //     image: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&h=400&fit=crop",
+    //     date: "05-09-2025",
+    // },
 ];
+
+async function loadPdNewsArticles() {
+    try {
+        const res = await fetch("http://localhost:3000/admin/data/blogs");
+        const data = await res.json();
+        console.log(data);
+        pdNewsArticles = data.slice(0, 3).map((item, index) => ({
+            id: index + 1,
+            title: item.title,
+            excerpt: item.description || "",
+            image: item.thumbnail,
+            date: new Date(item.created_at).toLocaleDateString("vi-VN"),
+        }));
+    } catch (error) {
+        console.error("Lỗi khi load blogs:", error);
+        return [];
+    }
+}
 
 // Create news card HTML
 function pdCreateNewsCard(article) {

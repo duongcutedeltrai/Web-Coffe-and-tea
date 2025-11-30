@@ -279,7 +279,7 @@ body {
 .pd-footer-brand {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 0rem;
 }
 
 .pd-footer-logo {
@@ -292,7 +292,13 @@ body {
     font-size: 3rem;
     color: #fff;
 }
-
+.pd-news-excerpt{
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 4;
+}
 .pd-footer-logo-text {
     display: flex;
     flex-direction: column;

@@ -2,6 +2,8 @@
 import { Request, Response } from "express";
 import AdminUserService from "../../services/user.service";
 import orderService from "../../services/order.service";
+import excelJs from "exceljs";
+
 
 class AdminUserController {
     // user phan customer
@@ -43,8 +45,11 @@ class AdminUserController {
         const { id } = req.params;
         const user = await AdminUserService.getDetailCustomerById(+id);
 
+        const totalPoints = user.point_history.reduce((sum, point) => sum + point.change, 0);
+
         return res.render("admin/users/detail_customer.ejs", {
             user: user,
+            totalPoints: totalPoints
         });
     };
 
@@ -99,6 +104,54 @@ class AdminUserController {
             res.status(401).json("có lỗi xảy ra");
         }
     };
+
+    exportCustomerData = async (req: Request, res: Response) => {
+        try {
+            const users = await AdminUserService.getDetailCustomerById();
+            const workbook = new excelJs.Workbook();
+            const worksheet = workbook.addWorksheet("Users");
+
+            worksheet.columns = [
+                { header: "ID", key: "user_id", width: 10 },
+                { header: "Khách hàng", key: "username", width: 30 },
+                { header: "số tiền", key: "final_amount", width: 30 },
+            ];
+
+
+
+            users.orders.forEach((order) => {
+                worksheet.addRow({
+                    user_id: order.user_id,
+                    username: order.receiver_name,
+                    final_amount: Number(order.final_amount),
+                });
+            })
+
+            // Tính tổng
+            const totalAmount = users.orders.reduce((sum, order) => sum + Number(order.final_amount), 0);
+
+            worksheet.addRow({
+                user_id: "",
+                username: "Tổng tiền",
+                final_amount: totalAmount,
+            });
+
+            // đặt header để trình duyệt tải về
+            res.setHeader(
+                "Content-Type",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            );
+            res.setHeader(
+                "Content-Disposition",
+                "attachment; filename=orders.xlsx"
+            );
+
+            await workbook.xlsx.write(res);
+            res.end();
+        } catch (err) {
+            console.error("Error exporting customer data:", err);
+        }
+    }
     // end user phan customer
 
     // user phan admin phan staff

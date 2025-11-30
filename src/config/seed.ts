@@ -3,6 +3,8 @@ import {
   product_size,
   OrderType,
   OrderSource,
+  BlogType,
+  BlogStatus,
 } from "@prisma/client";
 import { prisma } from "./client";
 
@@ -22,6 +24,8 @@ const initDatabase = async () => {
   const countCaterogies = await prisma.categories.count();
   const countStaffSchedule = await prisma.staff_schedules.count();
   const countWorkShift = await prisma.work_shifts.count();
+  const countBlog = await prisma.blogs.count();
+
   if (countRole == 0) {
     await prisma.roles.createMany({
       data: [
@@ -80,9 +84,9 @@ const initDatabase = async () => {
             password: await hashPassword("123456"),
             phone: "1111111",
             role_id: adminRole.role_id,
-          }
-        ]
-      })
+          },
+        ],
+      });
     }
   }
 
@@ -299,6 +303,67 @@ const initDatabase = async () => {
 
     await prisma.categories.createMany({
       data: categories,
+    });
+  }
+  if (countBlog == 0) {
+    const blogs = [
+      {
+        blog_id: "5511054a-eeb6-4581-a96c-a378411f4554",
+        title: "Phê La Có Hỷ – Cả Làng Chill Vui",
+        slug: "phe-la-co-hy-ca-lang-chill-vui",
+        description:
+          "“Ôi, vui quá xá là vui!” 🎶 Phê La mời cả Làng Chill đi cưới. Lấy cảm hứng từ nét đẹp cưới hỏi truyền thống, Phê La duyên dáng khoác chiếc áo đỏ son rực rỡ, rộn ràng báo tin vui: Phê La Có Hỷ.\r\nKhông chỉ ngày uyên ương sánh đôi, chữ Hỷ còn là lời chúc may mắn, niềm vui gửi đến Đồng Chill mỗi ngày.",
+        content:
+          '<h3>Trân trọng kính mời toàn thể Đồng Chill 03 miền cùng nâng Cốc Phê La Có Hỷ, chúc mừng cho hạnh phúc của Tổ Trưởng và nhâm nhi các Thức Uống Đặc Sản, từ 05.10.2025 <img src="https://static.xx.fbcdn.net/images/emoji.php/v9/t1f/1/16/1f3b6.png" alt="🎶" width="16" height="16"><img src="https://static.xx.fbcdn.net/images/emoji.php/v9/tf/1/16/1f942.png" alt="🥂" width="16" height="16"></h3><p>&nbsp;</p><p><i><strong>“Ôi, vui quá xá là vui!”</strong></i> <img src="https://static.xx.fbcdn.net/images/emoji.php/v9/t1f/1/16/1f3b6.png" alt="🎶" width="16" height="16"> Phê La mời cả Làng Chill đi cưới. Lấy cảm hứng từ nét đẹp cưới hỏi truyền thống, Phê La duyên dáng khoác chiếc áo đỏ son rực rỡ, rộn ràng báo tin vui: Phê La Có Hỷ.<br>Không chỉ ngày uyên ương sánh đôi, chữ Hỷ còn là lời chúc may mắn, niềm vui gửi đến Đồng Chill mỗi ngày.<br><br>Kính mời quan viên hai họ khắp chốn chill Phê La 03 miền, xúng xính áo quần, nâng ly và nhâm nhi tiệc trà thân mật cùng Tổ Trưởng từ 05.10.2025 nhé <img src="https://static.xx.fbcdn.net/images/emoji.php/v9/t1f/1/16/1f3b6.png" alt="🎶" width="16" height="16"><br><br><strong>Phê La thông báo:</strong></p><p>Tin vui nối tiếp chuyện Hỷ, Tổ Trưởng mời Đồng Chill dự tiệc trà thân mật trên tất cả chốn chill Phê La. Hỷ sự chưa hết, Phê La còn tặng thêm quà - Miễn Phí Upsize từ size Phê lên size La khi mua 01 sản phẩm Trà Sữa</p><p><img src="https://static.xx.fbcdn.net/images/emoji.php/v9/te9/1/16/1f496.png" alt="💖" width="16" height="16"> Sản phẩm áp dụng: Ô Long Sữa Phê La, Ô Long Nhài Sữa, Tấm, Khói B\'Lao, Phong Lan.</p><p><img src="https://static.xx.fbcdn.net/images/emoji.php/v9/te9/1/16/1f496.png" alt="💖" width="16" height="16"> Chương trình áp dụng khi mua trực tiếp hoặc mang về tại cửa hàng Phê La 03 miền, từ ngày 30/10 - 31/10.</p><p>&nbsp;</p><p><i><strong>Lưu ý:</strong></i></p><p><img src="https://static.xx.fbcdn.net/images/emoji.php/v9/t1f/1/16/1f3b6.png" alt="🎶" width="16" height="16"> Số lượng phần quà giới hạn, chương trình có thể kết thúc sớm hơn dự kiến.</p><p><img src="https://static.xx.fbcdn.net/images/emoji.php/v9/t1f/1/16/1f3b6.png" alt="🎶" width="16" height="16"> Có áp dụng tích điểm dựa trên giá trị thanh toán hóa đơn thực tế.</p><p><img src="https://static.xx.fbcdn.net/images/emoji.php/v9/t1f/1/16/1f3b6.png" alt="🎶" width="16" height="16"> Có áp dụng lũy tiến.</p><p><img src="https://static.xx.fbcdn.net/images/emoji.php/v9/t1f/1/16/1f3b6.png" alt="🎶" width="16" height="16"> Không áp dụng đồng thời với các chương trình khuyến mãi khác và chương trình giảm giá hạng thành viên.</p><p><img src="https://static.xx.fbcdn.net/images/emoji.php/v9/t1f/1/16/1f3b6.png" alt="🎶" width="16" height="16"> Chương trình không áp dụng trên các app giao hàng hay đặt hàng qua Fanpage Phê La, Zalo OA “Phê La Official”.</p><p>Có Hỷ khắp nơi - có La khắp chốn! Đồng Chill nhận được thiệp mời, comment xác nhận với Tổ Trưởng nha <img src="https://static.xx.fbcdn.net/images/emoji.php/v9/t1f/1/16/1f3b6.png" alt="🎶" width="16" height="16"></p>',
+        thumbnail:
+          "https://res.cloudinary.com/dimrl0w79/image/upload/v1762857136/uploaded_images_blog/rmcig64twxu3ifwllu39.jpg",
+        type: BlogType.EVENT,
+        status: BlogStatus.PUBLISHED,
+        published_at: null,
+        author_id: 1,
+        meta_title: "Phê La Có Hỷ – Cả Làng Chill Vui",
+        meta_description: "Phê La Có Hỷ – Cả Làng Chill Vui",
+        view_count: 18,
+      },
+      {
+        blog_id: "eba72316-9d5c-4e69-ba76-13d4fd125317",
+        title: "LY GẠO LÀNG CHILL ",
+        slug: "ly-gao-lang-chill",
+        description:
+          'Tháng 04 rộn ràng những dịp lễ đặc biệt, cũng là lúc Đồng Chill rủ hội bạn hay đồng nghiệp cùng “góp gạo" mở tiệc lớn, cùng sẻ chia vị thanh mát, mềm mượt từ Lụa Gạo & Lụa Đào. Hân hoan niềm vui mùa vụ, Tổ Trưởng đặc biệt chill đãi khi đặt hàng qua Fanpage Phê La/ Zalo OA “Phê La Official”. Mời Đồng Chill gặt quà, lên đơn chill dịp lễ tháng 04 cùng Phê La nha ',
+        content:
+          '<p><i><strong>“Từ nơi đồng xanh thơm hương lúa</strong></i></p><p><i><strong>Về nơi nhà cao xe giăng phố… “</strong></i></p><p><strong>Bắc Nam một nhà, chung 01 ký ức <img src="https://static.xx.fbcdn.net/images/emoji.php/v9/t1f/1/16/1f3b6.png" alt="🎶" width="16" height="16"><img src="https://static.xx.fbcdn.net/images/emoji.php/v9/tcf/1/16/1f1fb_1f1f3.png" alt="🇻🇳" width="16" height="16"></strong></p><p>Góp nhặt tinh hoa đất trời, hạt gạo tuy nhỏ bé nhưng nuôi dưỡng bao thế hệ người Việt mình <img src="https://static.xx.fbcdn.net/images/emoji.php/v9/tcf/1/16/1f1fb_1f1f3.png" alt="🇻🇳" width="16" height="16">. Từ sự mộc mạc và thân thương ấy, Phê La họa nên Ly Gạo Làng Chill đầy chất thơ, mang theo cảm hứng từ nét vẽ tranh Đông Hồ truyền thống. Mỗi chi tiết trên ly là từng thước phim chậm rãi tua về hình ảnh Hạt Gạo Làng Chill, nơi em bé mục đồng thong dong giữa biển vàng lúa chín.</p><p><br><strong>Vui như có Sổ Gạo Phê La <img src="https://static.xx.fbcdn.net/images/emoji.php/v9/t1f/1/16/1f3b6.png" alt="🎶" width="16" height="16"></strong></p><p>Mang theo ký ức một thời, “Hợp tác xã” Phê La tặng Sổ Gạo tới Đồng Chill 03 miền <img src="https://static.xx.fbcdn.net/images/emoji.php/v9/tcf/1/16/1f1fb_1f1f3.png" alt="🇻🇳" width="16" height="16">. Với thiết kế mộc mạc, Sổ Gạo kèm thêm 02 trang kẻ ô và đặc biệt “sít rịt” 02 trang tô màu để bạn thỏa sức sáng tạo.</p><p>Không cần tem phiếu, chỉ cần bạn ghé chill Phê La với hoá đơn từ 160K là có thể mang quà về nhà.</p><p><img src="https://static.xx.fbcdn.net/images/emoji.php/v9/tf4/1/16/2728.png" alt="✨" width="16" height="16"> Áp dụng với đơn mua trực tiếp và mang về tại quầy thu ngân trên cửa hàng Phê La 03 miền, từ 14/04 - 17/04;</p><p><img src="https://static.xx.fbcdn.net/images/emoji.php/v9/tf4/1/16/2728.png" alt="✨" width="16" height="16"> Áp dụng khi mua các sản phẩm: Đồ uống đóng ly, đóng lon &amp; đóng chai, Topping, Bánh ngọt và sản phẩm Merchandise;</p><p><img src="https://static.xx.fbcdn.net/images/emoji.php/v9/tf4/1/16/2728.png" alt="✨" width="16" height="16"> Giá trị hoá đơn từ 160K sau khi áp dụng giảm giá hạng thành viên;</p><p><img src="https://static.xx.fbcdn.net/images/emoji.php/v9/tf4/1/16/2728.png" alt="✨" width="16" height="16"> Số lượng quà tặng có hạn, chương trình có thể kết thúc sớm hơn dự kiến tùy từng cửa hàng.</p><p>&nbsp;</p><p><strong>Lưu ý:</strong></p><p><img src="https://static.xx.fbcdn.net/images/emoji.php/v9/tac/1/16/1f4cc.png" alt="📌" width="16" height="16"> Có áp dụng chương trình giảm giá hạng thành viên và chương trình tích điểm;</p><p><img src="https://static.xx.fbcdn.net/images/emoji.php/v9/tac/1/16/1f4cc.png" alt="📌" width="16" height="16"> Không áp dụng lũy tiến theo hóa đơn;</p><p><img src="https://static.xx.fbcdn.net/images/emoji.php/v9/tac/1/16/1f4cc.png" alt="📌" width="16" height="16"> Không áp dụng với đơn hàng trên app giao hàng;</p><p><img src="https://static.xx.fbcdn.net/images/emoji.php/v9/tac/1/16/1f4cc.png" alt="📌" width="16" height="16"> Không áp dụng song song cùng các chương trình khuyến mãi khác.</p><p>Mời Đồng Chill 03 miền <img src="https://static.xx.fbcdn.net/images/emoji.php/v9/tcf/1/16/1f1fb_1f1f3.png" alt="🇻🇳" width="16" height="16"> nhanh qua Phê La nhận Sổ Gạo, lấy lương thực về nấu cơm.<br>Từ 01.04.2025, Mời Đồng Chill gặt quà, lên đơn chill dịp lễ tháng 04 cùng Phê La nha <img src="https://static.xx.fbcdn.net/images/emoji.php/v9/t1f/1/16/1f3b6.png" alt="🎶" width="16" height="16"><img src="https://static.xx.fbcdn.net/images/emoji.php/v9/t9d/1/16/1f33e.png" alt="🌾" width="16" height="16"></p>',
+        thumbnail:
+          "https://res.cloudinary.com/dimrl0w79/image/upload/v1762865697/uploaded_images_blog/jnhzezswufhgymtu7vs9.jpg",
+        type: BlogType.EVENT,
+        status: BlogStatus.PUBLISHED,
+        published_at: null,
+        author_id: 1,
+        meta_title: "LY GẠO LÀNG CHILL ",
+        meta_description: "LY GẠO LÀNG CHILL ",
+        view_count: 11,
+      },
+      {
+        blog_id: "f5bddcc4-ebd4-4ef4-a1fb-b3cd74edb4e4",
+        title: "Phê La - Chuyển mùa có Len ❄️",
+        slug: "phe-la-chuyen-mua-co-len",
+        description:
+          "Nắng đã có mũ, mưa đã có ô, Chuyển mùa có Phê La Len! Hẹn Đồng Chill ngày 11.11.2025 này xúng xính trong 02 chiếc áo Phê La Len ấm áp, ghé chốn chill 03 miền nhâm nhi những Thức Uống Đặc Sản nha 🎶❄️",
+        content:
+          '<p><a href="https://www.facebook.com/phelaxinchao/posts/pfbid02ZBqycZDSTCkDaTA1auDhRySz9VADF98BzkX7JSvPWZtEF4LMqew3ecS28rHadb2ul?__cft__[0]=AZUmcSipk8iewPzQ5ESXmiit-Z9Ad42RC_jmiNA7cB6bkwoQ4yhbL2OAmzxu7y8MhV6lqEWZITrDqfDEGQC7xPGzj4Ra7BmeGWC0JdYkZZP_cysqlpitw5EFDFVo44s25aOrLMkQ39AiLka3kusfgeF1Hf3UOHPZulGYcd7wacgFvxqVMqOwuy7Ic6GEeCjG93HVEtX1oQMVrCfG_vIO77UK&amp;__tn__=H-R"><strong>Áo Len đã có, xin gió cứ về 🎶</strong></a>Nắng đã có mũ, mưa đã có ô, Chuyển mùa có Phê La Len! Hẹn Đồng Chill ngày 11.11.2025 này xúng xính trong 02 chiếc áo Phê La Len ấm áp, ghé chốn chill 03 miền nhâm nhi những Thức Uống Đặc Sản nha <img src="https://static.xx.fbcdn.net/images/emoji.php/v9/t1f/1/16/1f3b6.png" alt="🎶" width="16" height="16"><img src="https://static.xx.fbcdn.net/images/emoji.php/v9/t2e/1/16/2744.png" alt="❄️" width="16" height="16"></p><p><strong>DEN HEN LAI LEN <img src="https://static.xx.fbcdn.net/images/emoji.php/v9/t2e/1/16/2744.png" alt="❄" width="16" height="16"></strong></p><p>Như lời hẹn chill mỗi khi chuyển mùa, Phê La háo hức mở tủ, mang chiếc áo len thân thuộc cùng Đồng Chill viết tiếp câu chuyện Phê La Len năm nay.</p><p>Những chiếc áo ấm với hoạ tiết vặn thừng dập nổi, nay Phê La phóng khoáng và sáng tạo hơn cùng những gam màu mới, tỉ mỉ đan nên “Phê La Len size Phê” nâu be dịu dàng, “Phê La Len size La” xanh trà Ô Long.</p><p>Chuyển mùa rồi, Đồng Chill 03 miền nhớ mặc ấm nha! Hẹn nhau 11.11.2025 này trong chiếc áo Phê La Len ấm áp, mình cùng nhâm nhi những Thức Uống Đặc Sản <img src="https://static.xx.fbcdn.net/images/emoji.php/v9/t1f/1/16/1f3b6.png" alt="🎶" width="16" height="16"></p><p>&nbsp;</p><p>Hẹn Đồng Chill 11.11.2025 này trong chiếc áo Phê La Len ấm áp, mình cùng ngồi bên nhau, nhâm nhi những Thức Uống Đặc Sản nha <img src="https://static.xx.fbcdn.net/images/emoji.php/v9/t1f/1/16/1f3b6.png" alt="🎶" width="16" height="16"><img src="https://static.xx.fbcdn.net/images/emoji.php/v9/t2e/1/16/2744.png" alt="❄️" width="16" height="16"></p>',
+        thumbnail:
+          "/images/blogs/88a7664b-316f-4bed-9a83-c6683efc8006.jpg",
+        type: BlogType.EVENT,
+        status: BlogStatus.PUBLISHED,
+        published_at: null,
+        author_id: 1,
+        meta_title: "",
+        meta_description: "",
+        view_count: 5,
+      },
+    ];
+    await prisma.blogs.createMany({
+      data: blogs,
     });
   }
   if (countProduct === 0) {

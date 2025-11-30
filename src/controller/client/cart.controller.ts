@@ -9,6 +9,7 @@ class CartController {
             return res.redirect("/auth/login");
         }
         const cart = await cartService.getCartByUserId(+userId);
+        console.log(cart);
         res.json({ success: true, cart: cart });
     };
     addProductToCartAPI = async (req: Request, res: Response) => {

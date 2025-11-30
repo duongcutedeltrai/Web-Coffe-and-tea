@@ -61,6 +61,8 @@ class PromotionController {
     try {
       const promotions =
         await promotionService.getAllPromotionsFlashsale();
+      //  const promotions =
+      // await promotionService.getAllPromotionsFlashsaleCurrent();
       return res.status(200).json({
         success: true,
         data: promotions,
@@ -168,10 +170,27 @@ class PromotionController {
       res.status(500).json({ success: false, message: error.message });
     }
   }
-
+  async getAllPromotionsFlashsaleClient(req: Request, res: Response) {
+    try {
+      const promotions =
+        await promotionService.getAllPromotionsFlashsaleCurrent();
+      //  const promotions =
+      // await promotionService.();
+      return res.status(200).json({
+        success: true,
+        data: promotions,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
   async applyPromotion(req: Request, res: Response) {
     try {
-      const { code, orderAmount, userId, phone } = req.body;
+      console.log("Applying promotion with data:", req.body);
+      const { code, orderAmount, userId, phone, products } = req.body;
       if (!code || !orderAmount || !phone) {
         return res.status(400).json({
           success: false,
@@ -183,7 +202,8 @@ class PromotionController {
         code,
         orderAmount,
         userId,
-        phone
+        phone,
+        products
       );
       return res.status(200).json({
         success: true,

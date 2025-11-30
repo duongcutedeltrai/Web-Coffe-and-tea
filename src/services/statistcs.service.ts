@@ -302,6 +302,52 @@ class AdminStatisticService {
 
         const productDetail = await prisma.products.findMany()
 
+        //Tỷ lệ số lượng bán theo danh mục
+        const categoriesSales = await prisma.order_details.groupBy({
+            by: ["product_id"],
+            _sum: {
+                quantity: true,
+            }
+        })
+
+        //lay danh sách product_id
+        const productIds = categoriesSales.map((item) => item.product_id);
+        //lay thong tin category cua tung product
+        const productInfo = await prisma.products.findMany({
+            where: {
+                product_id: {
+                    in: productIds
+                }
+            },
+            select: {
+                product_id: true,
+                category_id: true,
+                categories: {
+                    select: {
+                        name: true
+                    }
+                }
+            }
+        })
+
+        // Gộp số lượng theo category
+        const categoryMap: Record<string, number> = {};
+
+        categoriesSales.forEach(sale => {
+            const prod = productInfo.find(p => p.product_id === sale.product_id);
+            if (!prod) return;
+
+            const categoryName = prod.categories?.name || "Khác";
+            const qty = sale._sum.quantity || 0;
+
+            categoryMap[categoryName] = (categoryMap[categoryName] || 0) + qty;
+        });
+
+        // Convert thành mảng để gửi ra EJS
+        const categoryLabels = Object.keys(categoryMap);
+        const categoryQuantities = Object.values(categoryMap);
+        //end tỷ lệ số lượng bán theo danh mục
+
         // Return payload
         return {
             labels,
@@ -312,7 +358,9 @@ class AdminStatisticService {
             favoriteProducts,
 
             totalOrders,
-            productDetail
+            productDetail,
+            categoryLabels,
+            categoryQuantities,
         };
     };
 }
