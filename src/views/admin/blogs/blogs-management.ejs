@@ -1,228 +1,651 @@
-<!DOCTYPE html>
-<html lang="vi">
+import { prisma } from "../config/client";
+class PromotionService {
+async createPromotion(data: any) {
+try {
+const promotionData: any = {
+code: data.code || null,
+promotion_id: data.promotion_id,
+description: data.description || null,
+discount_percent: data.discount_percent || null,
+discount_price: data.discount_price || null,
+min_order_amount: data.min_order_amount || null,
+start_date: new Date(data.start_date),
+end_date: new Date(data.end_date),
+is_active: data.is_active || true,
+is_for_new_user: data.is_for_new_user || false,
+applicable_membership: data.applicable_membership || null,
+max_usage_count: data.max_usage_count || null,
+type: data.type || "voucher",
+};
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quản lý Blog</title>
-  <link rel="stylesheet" href="/admin/css/blogs/blogs-management.css" />
-  <link rel="stylesheet" href="/admin/css/style.css" />
-  <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="shortcut icon" href="/images/favicon/favicon.ico" type="image/x-icon" />
-  <link rel="icon" href="/images/favicon/favicon.ico" type="image/x-icon" />
-</head>
+await prisma.promotions.create({
+data: promotionData,
+});
+if (data.applicable_products !== "all") {
+await prisma.promotion_products.createMany({
+data: data.applicable_products.map((item: any) => ({
+promotion_id: data.promotion_id,
+product_id: item.productId,
+size: item.size,
+})),
+});
+}
 
-<body>
-  <div class="container">
-    <%- include('../layout/sidebar.ejs'); -%>
-      <!-- <Header -->
+return promotionData;
+} catch (error) {
+console.error("Error creating promotion:", error);
+throw new Error("Failed to create promotion");
+}
+}
 
-      <!-- Main Content -->
-      <div class="container-wrapper">
-        <main class="main-content">
-          <!-- Updated filters section to match schema -->
-          <div class="header1">
-            <div class="breadcrumb1">
-              <h1 style="font-size: 35px">Quản lý Blog</h1>
-              <p style="color: black; font-size: 16px">
-                Tạo, chỉnh sửa và quản lý các bài viết blog
-              </p>
-            </div>
-            <div class="filters-section">
-              <div class="filters-left">
-                <div class="search-wrapper">
-                  <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                  </svg>
-                  <input type="text" id="searchInput" class="search-input" placeholder="Tìm kiếm blog..." />
-                </div>
+async getAllPromotionsVoucher() {
+try {
+const promotions = await prisma.promotions.findMany({
+where: { type: "voucher" },
+include: {
+promotion_products: true,
+promotion_usage: true,
+},
+});
+return promotions;
+} catch (error) {
+console.error("Error fetching promotions:", error);
+return [];
+}
+}
+async getAllPromotionsFlashsale() {
+try {
+const promotions = await prisma.promotions.findMany({
+where: { type: "flashsale" },
+include: {
+promotion_products: {
+include: {
+products: {
+include: { price_product: true },
+},
+},
+},
+promotion_usage: true,
+},
+});
+return promotions;
+} catch (error) {
+console.error("Error fetching promotions:", error);
+return [];
+}
+}
+async getAllPromotionsFlashsaleCurrent() {
+try {
+const now = new Date();
+const promotionsRaw = await prisma.promotions.findMany({
+where: {
+type: "flashsale",
+start_date: { lte: now },
+end_date: { gte: now },
+},
+include: {
+promotion_products: {
+include: {
+products: {
+include: { price_product: true },
+},
+},
+},
+promotion_usage: true,
+},
+});
 
-                <div class="filter-group">
-                  <select id="typeFilter" class="filter-select">
-                    <option value="">Tất cả loại</option>
-                    <option value="NEWS">Tin tức</option>
-                    <option value="PROMOTION">
-                      Khuyến mãi
-                    </option>
-                    <option value="PRODUCT">
-                      Sản phẩm
-                    </option>
-                    <option value="EVENT">Sự kiện</option>
-                    <option value="GUIDE">Hướng dẫn</option>
-                  </select>
+// Lọc theo usage
+const promotions = promotionsRaw.filter(
+(p) => p.current_usage < p.max_usage_count ); // Trả về mảng promotion_products của tất cả promotions const
+  allPromotionProducts=promotions.flatMap((p)=>
+  p.promotion_products.map((pp) => ({
+  ...pp,
+  discount_price: p.discount_price,
+  start_date: p.start_date,
+  end_date: p.end_date,
+  }))
+  );
 
-                  <select id="statusFilter" class="filter-select">
-                    <option value="">
-                      Tất cả trạng thái
-                    </option>
-                    <option value="DRAFT">Bản nháp</option>
-                    <option value="PUBLISHED">
-                      Đã xuất bản
-                    </option>
-                    <option value="ARCHIVED">
-                      Đã lưu trữ
-                    </option>
-                  </select>
-                </div>
-              </div>
+  console.log(allPromotionProducts);
+  return allPromotionProducts;
+  } catch (error) {
+  console.error("Error fetching promotions:", error);
+  return [];
+  }
+  }
+  async getAllFlashsaleCurrentByUser(user_id: number) {
+  try {
+  const now = new Date();
 
-              <button class="btn-advanced-filter" onclick="openCreateBlogDrawer()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="12" y1="5" x2="12" y2="19"></line>
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                Tạo blog mới
-              </button>
-            </div>
-          </div>
+  // Lấy tất cả flashsale còn hiệu lực và active
+  const promotionsRaw = await prisma.promotions.findMany({
+  where: {
+  type: "flashsale",
+  start_date: { lte: now },
+  end_date: { gte: now },
+  is_active: true,
+  },
+  include: {
+  promotion_products: {
+  include: {
+  products: {
+  include: { price_product: true },
+  },
+  },
+  },
+  promotion_usage: {
+  where: { user_id }, // chỉ lấy usage của user hiện tại
+  },
+  },
+  });
+  const validPromotions = promotionsRaw.filter(
+  (p) => p.current_usage < p.max_usage_count ); const allPromotionProducts=[]; for (const promo of validPromotions) {
+    for (const pp of promo.promotion_products) { // Kiểm tra user đã dùng chưa cho đúng product const
+    usedByUser=promo.promotion_usage.some( (u)=> u.product_id === pp.product_id
+    );
 
-          <!-- Blogs Grid -->
-          <div class="blogs-grid" id="blogsGrid">
-            <!-- Blog cards will be rendered here -->
-          </div>
+    if (!usedByUser) {
+    allPromotionProducts.push({
+    ...pp,
+    discount_price: promo.discount_price,
+    start_date: promo.start_date,
+    end_date: promo.end_date,
+    });
+    }
+    }
+    }
+    console.log(allPromotionProducts);
+    return allPromotionProducts;
+    } catch (error) {
+    console.error("Error fetching promotions:", error);
+    return [];
+    }
+    }
 
-          <!-- Empty State -->
-          <div class="empty-state" id="emptyState" style="display: none">
-            <div class="empty-icon">📝</div>
-            <h3>Không có blog nào</h3>
-            <p>
-              Bắt đầu bằng cách tạo bài viết blog đầu tiên của bạn
-            </p>
-          </div>
-        </main>
-      </div>
+    async getPromotionById(promotionId: string) {
+    try {
+    const promotion = await prisma.promotions.findUnique({
+    where: { promotion_id: promotionId },
+    include: {
+    promotion_products: true,
+    promotion_usage: true,
+    },
+    });
+    return promotion;
+    } catch (error) {
+    console.error("Error fetching promotion by ID:", error);
+    return null;
+    }
+    }
 
-      <!-- Create/Edit Blog Drawer - now integrated with form -->
-      <% if (isAdmin) { %>
-        <div class="drawer-overlay" id="blogDrawerOverlay"></div>
-        <div class="blog-drawer hidden" id="blogDrawer">
-          <div class="drawer-header">
-            <h2 id="drawerTitle">Tạo blog mới</h2>
-            <button class="close-btn" id="closeDrawerBtn">
-              &times;
-            </button>
-          </div>
-          <div class="drawer-content">
-            <form id="blogForm" class="blog-form">
-              <div class="form-section">
-                <h3 class="form-section-title">Thông tin cơ bản</h3>
-                <div class="form-group">
-                  <label for="title">Tiêu đề *</label>
-                  <input type="text" id="title" name="title" required placeholder="Nhập tiêu đề blog" />
-                </div>
-                <div class="form-group">
-                  <label for="slug">Slug *</label>
-                  <input type="text" id="slug" name="slug" required placeholder="url-friendly-slug" />
-                </div>
-                <div class="form-group">
-                  <label for="description">Mô tả ngắn *</label>
-                  <textarea id="description" name="description" required rows="2"
-                    placeholder="Mô tả ngắn gọn về bài viết (tối đa 500 ký tự)"></textarea>
-                </div>
-              </div>
+    async updatePromotion(promotionId: string, data: any) {
+    try {
+    // 1. Cập nhật bảng chính
+    const updated = await prisma.promotions.update({
+    where: { promotion_id: promotionId },
+    data: {
+    code: data.code,
+    description: data.description || null,
+    discount_percent: data.discount_percent || null,
+    min_order_amount: data.min_order_amount || null,
+    start_date: new Date(data.start_date),
+    end_date: new Date(data.end_date),
+    is_active: data.is_active ?? true,
+    is_for_new_user: data.is_for_new_user || false,
+    applicable_membership: data.applicable_membership || null,
+    max_usage_count: data.max_usage_count || null,
+    },
+    });
 
-              <div class="form-section">
-                <h3 class="form-section-title">Phân loại</h3>
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="type">Loại bài viết *</label>
-                    <select id="type" name="type" required>
-                      <option value="">Chọn loại</option>
-                      <option value="NEWS">Tin tức</option>
-                      <option value="PROMOTION">
-                        Khuyến mãi
-                      </option>
-                      <option value="PRODUCT">
-                        Sản phẩm
-                      </option>
-                      <option value="EVENT">Sự kiện</option>
-                      <option value="GUIDE">Hướng dẫn</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label for="status">Trạng thái *</label>
-                    <select id="status" name="status" required>
-                      <option value="DRAFT">Bản nháp</option>
-                      <option value="PUBLISHED">
-                        Đã xuất bản
-                      </option>
-                      <option value="ARCHIVED">
-                        Đã lưu trữ
-                      </option>
-                    </select>
-                  </div>
-                </div>
-              </div>
+    // 2. Cập nhật sản phẩm áp dụng
+    await prisma.promotion_products.deleteMany({
+    where: { promotion_id: promotionId },
+    });
 
-              <div class="form-section">
-                <h3 class="form-section-title">Nội dung</h3>
-                <div class="form-group">
-                  <label for="thumbnail">Ảnh đại diện</label>
-                  <div class="image-upload">
-                    <input type="file" id="thumbnail" name="thumbnail" accept="image/*" />
-                    <div class="upload-preview" id="thumbnailPreview"></div>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="content">Nội dung *</label>
-                  <textarea id="content" name="content" required></textarea>
-                </div>
-              </div>
+    if (data.applicable_products !== "all") {
+    await prisma.promotion_products.createMany({
+    data: data.applicable_products.map((item: any) => ({
+    promotion_id: promotionId,
+    product_id: item.productId,
+    size: item.size,
+    })),
+    });
+    }
 
-              <div class="form-section">
-                <h3 class="form-section-title">SEO</h3>
-                <div class="form-group">
-                  <label for="metaTitle">Meta Title</label>
-                  <input type="text" id="metaTitle" name="metaTitle" placeholder="Tiêu đề SEO" />
-                </div>
-                <div class="form-group">
-                  <label for="metaDescription">Meta Description</label>
-                  <textarea id="metaDescription" name="metaDescription" placeholder="Mô tả SEO" rows="2"></textarea>
-                </div>
-              </div>
-            </form>
-          </div>
-          <div class="drawer-footer">
-            <button type="button" class="btn btn-outline" onclick="closeBlogDrawer()">
-              Hủy
-            </button>
-            <button type="button" class="btn btn-primary" onclick="submitBlog()">
-              Lưu blog
-            </button>
-          </div>
-        </div>
+    return updated;
+    } catch (error) {
+    console.error("Error updating promotion:", error);
+    throw new Error("Failed to update promotion");
+    }
+    }
+    async validatePromotion(
+    code: string,
+    orderAmount: number,
+    userId?: number,
+    phone?: string
+    ) {
+    const promotion = await prisma.promotions.findUnique({
+    where: { code },
+    include: { promotion_usage: true },
+    });
+    if (!promotion) {
+    return {
+    valid: false,
+    promotion: null,
+    message: "Không tìm thấy mã khuyến mãi",
+    };
+    }
+    if (promotion.is_active === false) {
+    return {
+    valid: false,
+    promotion: null,
+    message: "Mã khuyến mãi không hợp lệ",
+    };
+    }
+    if (promotion.end_date < new Date()) { return { valid: false, promotion: null, message: "Mã khuyến mãi đã hết hạn" ,
+      }; } if (promotion.start_date> new Date()) {
+      return {
+      valid: false,
+      promotion: null,
+      message: "Mã khuyến mãi chưa bắt đầu",
+      };
+      }
+      if (
+      promotion.max_usage_count !== null &&
+      promotion.max_usage_count <= promotion.promotion_usage.length ) { return { valid: false, promotion: null,
+        message: "Đã đạt giới hạn sử dụng mã khuyến mãi" , }; } if ( promotion.min_order_amount && orderAmount <
+        promotion.min_order_amount.toNumber() ) { return { valid: false, promotion: null, message: `Giá trị đơn hàng tối
+        thiểu là ${promotion.min_order_amount}`, }; } if (promotion.is_for_new_user && userId) { const
+        userOrderCount=await prisma.orders.count({ where: { user_id: userId }, }); if (userOrderCount> 0) {
+        return {
+        valid: false,
+        promotion: null,
+        message: "Mã khuyến mãi chỉ dành cho khách hàng mới",
+        };
+        }
+        }
+        if (promotion.applicable_membership && userId) {
+        const user = await prisma.users.findUnique({
+        where: { user_id: userId },
+        });
 
-        <!-- Blog Detail Modal -->
-        <div class="modal-overlay" id="blogModalOverlay">
-          <div class="blog-modal" id="blogModal">
-            <div class="modal-header">
-              <h2 id="modalTitle">Chi tiết blog</h2>
-              <button class="close-btn" id="closeModalBtn">
-                &times;
-              </button>
-            </div>
-            <div class="modal-content" id="modalContent">
-              <!-- Content will be rendered here -->
-            </div>
-            <div class="modal-footer">
-              <button class="btn btn-outline" onclick="closeBlogModal()">
-                Đóng
-              </button>
-              <button class="btn btn-primary" onclick="editBlog()">
-                Chỉnh sửa
-              </button>
-            </div>
-          </div>
-        </div>
-  </div>
-  <% } %>
+        if (user?.membership !== promotion.applicable_membership) {
+        return {
+        valid: false,
+        promotion: null,
+        message: `Mã khuyến mãi chỉ dành cho thành viên ${promotion.applicable_membership}`,
+        };
+        }
+        }
+        let usedPromotion = null;
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        if (userId) {
+        usedPromotion = promotion.promotion_usage.find(
+        (usage) => usage.user_id === userId
+        );
+        }
+        // Nếu không có userId thì mới check theo phone
+        if (!usedPromotion && phone) {
+        usedPromotion = promotion.promotion_usage.find(
+        (usage) => usage.user_phone === phone
+        );
+        }
+        console.log("Checking promotion usage:", {
+        userId,
+        phone,
+        promotion_usage: promotion.promotion_usage,
+        usedPromotion,
+        });
+        if (usedPromotion) {
+        return {
+        valid: false,
+        promotion: null,
+        message: "Bạn đã sử dụng mã khuyến mãi này",
+        };
+        }
 
-    <script src="/admin/js/blogs/blogs-management.js"></script>
-</body>
+        return {
+        valid: true,
+        promotion,
+        };
+        }
+        // async validatePromotion(
+        // code: string,
+        // orderAmount: number,
+        // userId?: number,
+        // phone?: string
+        // ) {
+        // const promotion = await prisma.promotions.findUnique({
+        // where: { code },
+        // include: { promotion_usage: true },
+        // });
+        // if (!promotion) {
+        // return {
+        // valid: false,
+        // promotion: null,
+        // message: "Không tìm thấy mã khuyến mãi",
+        // };
+        // }
+        // if (promotion.is_active === false) {
+        // return {
+        // valid: false,
+        // promotion: null,
+        // message: "Mã khuyến mãi không hợp lệ",
+        // };
+        // }
+        // if (promotion.end_date < new Date()) { // return { // valid: false, // promotion: null, //
+          message: "Mã khuyến mãi đã hết hạn" , // }; // } // if (promotion.start_date> new Date()) {
+          // return {
+          // valid: false,
+          // promotion: null,
+          // message: "Mã khuyến mãi chưa bắt đầu",
+          // };
+          // }
+          // if (
+          // promotion.max_usage_count !== null &&
+          // promotion.max_usage_count <= promotion.promotion_usage.length // ) { // return { // valid: false, //
+            promotion: null, // message: "Đã đạt giới hạn sử dụng mã khuyến mãi" , // }; // } // if ( //
+            promotion.min_order_amount && // orderAmount < promotion.min_order_amount.toNumber() // ) { // return { //
+            valid: false, // promotion: null, // message: `Giá trị đơn hàng tối thiểu là ${promotion.min_order_amount}`,
+            // }; // } // if (promotion.is_for_new_user && userId) { // const userOrderCount=await prisma.orders.count({
+            // where: { user_id: userId }, // }); // if (userOrderCount> 0) {
+            // return {
+            // valid: false,
+            // promotion: null,
+            // message: "Mã khuyến mãi chỉ dành cho khách hàng mới",
+            // };
+            // }
+            // }
+            // if (promotion.applicable_membership && userId) {
+            // const user = await prisma.users.findUnique({
+            // where: { user_id: userId },
+            // });
 
-</html>
+            // if (user?.membership !== promotion.applicable_membership) {
+            // return {
+            // valid: false,
+            // promotion: null,
+            // message: `Mã khuyến mãi chỉ dành cho thành viên ${promotion.applicable_membership}`,
+            // };
+            // }
+            // }
+
+            // const usedPromotion = promotion.promotion_usage.find(
+            // (usage) =>
+            // usage.user_id === userId ||
+            // (phone && usage.user_phone === phone)
+            // );
+            // console.log("Used promotion:", usedPromotion);
+            // if (usedPromotion) {
+            // return {
+            // valid: false,
+            // promotion: null,
+            // message: "Bạn đã sử dụng mã khuyến mãi này",
+            // };
+            // }
+
+            // return {
+            // valid: true,
+            // promotion,
+            // };
+            // }
+
+            async calculateDiscount(promotion: any, orderAmount: number) {
+            let discountAmount = 0;
+
+            if (promotion.discount_percent) {
+            discountAmount =
+            (orderAmount * promotion.discount_percent.toNumber()) / 100;
+            } else if (promotion.discount_amount) {
+            discountAmount = Math.min(
+            promotion.discount_amount.toNumber(),
+            orderAmount
+            ); // Không giảm quá tổng tiền
+            }
+
+            return discountAmount;
+            }
+
+            async recordPromotionUsage(
+            promotionId: number,
+            orderId: string,
+            userId?: number,
+            phone?: string
+            ) {
+            return await prisma.promotion_usage.create({
+            data: {
+            promotion_id: promotionId.toString(),
+            order_id: orderId,
+            user_id: userId,
+            user_phone: phone,
+            },
+            });
+            }
+            async applyPromotion(
+            code: string,
+            orderAmount: number,
+            userId?: number,
+            phone?: string,
+            products?: { product_id: number; size?: string }[]
+            ) {
+            // 1️⃣ Validate cơ bản
+            const validation = await this.validatePromotion(
+            code,
+            orderAmount,
+            userId,
+            phone
+            );
+            if (!validation.valid) throw new Error(validation.message);
+
+            const promotion = await prisma.promotions.findUnique({
+            where: { code },
+            include: { promotion_products: true },
+            });
+
+            if (!promotion) throw new Error("Không tìm thấy mã khuyến mãi");
+            // 2️⃣ Kiểm tra sản phẩm hợp lệ nếu voucher chỉ áp dụng cho một số sản phẩm
+            if (
+            promotion.promotion_products.length > 0 &&
+            products &&
+            products.length > 0
+            ) {
+            const applicableProducts = promotion.promotion_products.map(
+            (p) => p.product_id
+            );
+
+            const hasApplicableProduct = products.some((p) =>
+            applicableProducts.includes(p.product_id)
+            );
+
+            if (!hasApplicableProduct) {
+            throw new Error(
+            "Mã voucher không áp dụng cho sản phẩm trong đơn hàng này"
+            );
+            }
+            }
+
+            // 3️⃣ Tính giảm giá (theo phần trăm)
+            const percent = promotion.discount_percent?.toNumber() || 0;
+            const discountAmount = Math.floor((percent / 100) * orderAmount);
+            const finalAmount = orderAmount - discountAmount;
+
+            return {
+            success: true,
+            message: "Áp dụng voucher thành công",
+            data: {
+            promotionId: promotion.promotion_id,
+            discountPercent: percent,
+            discountAmount,
+            finalAmount,
+            originalAmount: orderAmount,
+            code: code,
+            },
+            };
+            }
+
+            // async applyPromotionByClientDemo(
+            // code: string,
+            // orderAmount: number,
+            // userId?: number
+            // ) {
+            // // 1️⃣ Xác thực mã khuyến mãi
+            // const validation = await this.validatePromotionByCode(code, userId);
+            // if (!validation.valid) {
+            // throw new Error(validation.message);
+            // }
+
+            // const promotion = validation.promotion;
+
+            // // 2️⃣ Tính tiền giảm
+            // const discountAmount = await this.calculateDiscount(promotion, orderAmount);
+
+            // // 3️⃣ Tính tổng tiền sau giảm
+            // const finalAmount = orderAmount - discountAmount;
+
+            // // 4️⃣ Trả về kết quả chi tiết
+            // return {
+            // promotionId: promotion.promotion_id,
+            // code: promotion.code,
+            // originalAmount: orderAmount,
+            // discountAmount,
+            // finalAmount,
+            // discountPercent: promotion.discount_percent,
+            // message: `Giảm ${discountAmount.toLocaleString()}₫, tổng còn ${finalAmount.toLocaleString()}₫`,
+            // };
+            // }
+            async applyPromotionByClient(
+            userId: number,
+            totalPrice: number,
+            promotion_id: string
+            ) {
+            const now = new Date();
+            console.log(promotion_id);
+            // 🔹 Lấy thông tin promotion theo ID
+            const promotion = await prisma.promotions.findUnique({
+            where: { promotion_id },
+            include: {
+            promotion_products: true,
+            },
+            });
+
+            if (!promotion) {
+            return { success: false, message: "Mã khuyến mãi không tồn tại." };
+            }
+
+            // 🔹 Kiểm tra trạng thái active
+            if (!promotion.is_active) {
+            return {
+            success: false,
+            message: "Khuyến mãi không còn hoạt động.",
+            };
+            }
+
+            // 🔹 Kiểm tra thời gian hiệu lực
+            if (promotion.start_date > now || promotion.end_date < now) { return { success: false,
+              message: "Khuyến mãi đã hết hạn hoặc chưa bắt đầu." , }; } // 🔹 Kiểm tra điều kiện đơn hàng tối thiểu if
+              ( promotion.min_order_amount && totalPrice < Number(promotion.min_order_amount) ) { return { success:
+              false, message: "Đơn hàng chưa đạt giá trị tối thiểu để áp dụng khuyến mãi." , }; } // 🔹 Kiểm tra người
+              dùng đã dùng voucher này chưa const usedBefore=await prisma.promotion_usage.findFirst({ where: { user_id:
+              userId, promotion_id }, }); if (usedBefore) { return { success: false,
+              message: "Bạn đã sử dụng mã khuyến mãi này rồi." , }; } // 🔹 Nếu voucher chỉ áp dụng cho sản phẩm cụ thể,
+              kiểm tra giỏ hàng const cart=await prisma.cart.findUnique({ where: { user_id: userId }, include: {
+              cart_details: { include: { products: true } }, }, }); if (!cart) return { success: false,
+              message: "Không tìm thấy giỏ hàng." }; const productIdsInCart=cart.cart_details.map((d)=> d.product_id);
+              const promoProductIds = promotion.promotion_products.map(
+              (p) => p.product_id
+              );
+
+              const hasApplicableProduct =
+              promoProductIds.length === 0 ||
+              promoProductIds.some((pid) => productIdsInCart.includes(pid));
+
+              if (!hasApplicableProduct) {
+              return {
+              success: false,
+              message:
+              "Mã khuyến mãi không áp dụng cho sản phẩm trong giỏ hàng.",
+              };
+              }
+
+              // 🔹 Tính giảm giá
+              let discountPrice = 0;
+              if (promotion.discount_price && promotion.discount_price > 0) {
+              discountPrice = promotion.discount_price;
+              } else if (
+              promotion.discount_percent &&
+              Number(promotion.discount_percent) > 0
+              ) {
+              discountPrice = Math.floor(
+              (Number(promotion.discount_percent) / 100) * totalPrice
+              );
+              }
+
+              // ✅ Nếu hợp lệ → trả về kết quả
+              return {
+              success: true,
+              message: "Áp dụng khuyến mãi thành công.",
+              discountPrice,
+              totalAfterDiscount: totalPrice - discountPrice,
+              promotion,
+              };
+              }
+              async getValidVouchers(userId: number, totalPrice: number) {
+              // console.log(userId);
+              const cart = await prisma.cart.findUnique({
+              where: { user_id: userId },
+              include: {
+              cart_details: {
+              include: {
+              products: true,
+              },
+              },
+              },
+              });
+
+              if (!cart) throw new Error("Cart not found.");
+
+              const now = new Date();
+
+              // 2️⃣ Lấy toàn bộ voucher (type = voucher)
+              const vouchers = await prisma.promotions.findMany({
+              where: { type: "voucher" },
+              include: {
+              promotion_products: true,
+              },
+              });
+              const usedBefore = await prisma.promotion_usage.findMany({
+              where: { user_id: userId },
+              });
+              // 3️⃣ Duyệt từng voucher và kiểm tra điều kiện
+              const result = vouchers.map((voucher) => {
+              let isValid = true;
+              const usedVoucher=usedBefore.some((u)=>u.promotion_id===voucher.promotion_id);
+              if(usedVoucher) isValid=false;
+              // ⚡ Kiểm tra active
+              if (!voucher.is_active) isValid = false;
+
+              // ⏰ Kiểm tra thời gian hợp lệ
+              if (voucher.start_date > now || voucher.end_date < now) isValid=false; // 💰 Kiểm tra giá trị đơn hàng tối
+                thiểu if ( voucher.min_order_amount && totalPrice < Number(voucher.min_order_amount) ) isValid=false; //
+                🧃 Kiểm tra sản phẩm có nằm trong danh sách voucher const productIdsInCart=cart.cart_details.map((d)=>
+                d.product_id);
+                const promoProductIds = voucher.promotion_products.map(
+                (p) => p.product_id
+                );
+
+                const hasApplicableProduct =
+                promoProductIds.length === 0 ||
+                promoProductIds.some((pid) => productIdsInCart.includes(pid));
+                if (!hasApplicableProduct) isValid = false;
+
+                return {
+                ...voucher,
+                is_valid: isValid,
+                };
+                });
+
+                return result;
+                }
+                }
+                export default new PromotionService();

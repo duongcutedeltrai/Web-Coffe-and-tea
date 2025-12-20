@@ -107,3 +107,117 @@
         </div>
     </div>
 </footer>
+
+  <button id="toggle-btn"><img src="/images/chat-btn.png" alt="" style="width: 100%; height: 100%;object-fit: cover; "></button>
+
+  <div id="chat-widget" style="display:none;">
+    <div id="chat-header"><div><img src="/images/chat-btn.png" style="width: 35px; height: 35px; border-radius:50%;object-fit:  cover; " alt=""> <span>Chat với Phê La</span> </div> <i class="fa-solid fa-x" onclick="exit()" style="color: #ffffff; margin-right: 10px; cursor: pointer;"></i></div>
+    <div id="chat-body"></div>
+    <div id="chat-input">
+      <input id="msg" placeholder="Hỏi về menu, giá, khuyến mãi..." />
+      <button id="send">Gửi</button>
+    </div>
+  </div>
+  <script>
+    const serverUrl = "http://localhost:3000/api/chat/chatbot"; // đổi khi deploy
+
+    // UI elements
+    const widget = document.getElementById('chat-widget');
+    const toggle = document.getElementById('toggle-btn');
+    const bodyEl = document.getElementById('chat-body');
+    const input = document.getElementById('msg');
+
+    // session id (simple)
+    const sessionId = localStorage.getItem('chat_session') || ('s_' + Date.now());
+    localStorage.setItem('chat_session', sessionId);
+    function exit(){
+         widget.style.display ='none';
+    }
+    // restore history from localStorage
+    const STORAGE_KEY = 'chat_history_' + sessionId;
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    saved.forEach(m => appendMsg(m.text, m.role));
+
+    toggle.onclick = () => {
+      widget.style.display = widget.style.display === 'none' ? 'flex' : 'none';
+      if (widget.style.display !== 'none') input.focus();
+    };
+
+    document.getElementById('send').onclick = sendMessage;
+    input.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+    function appendMsg(text, role) {
+  if (role === 'bot') {
+    const wrap = document.createElement('div');
+    wrap.className = 'msg bot-wrapper';
+
+    const ava = document.createElement('img');
+    ava.src = "/images/chat-btn.png";   // 🔥 đổi avatar bot ở đây
+    ava.className = "avatar";
+
+    const bubble = document.createElement('div');
+    bubble.className = "msg bot";
+    bubble.innerText = text;
+
+    wrap.appendChild(ava);
+    wrap.appendChild(bubble);
+    bodyEl.appendChild(wrap);
+
+  } else {
+    const d = document.createElement('div');
+    d.className = 'msg user';
+    d.innerText = text;
+    bodyEl.appendChild(d);
+  }
+
+  bodyEl.scrollTop = bodyEl.scrollHeight;
+}
+
+
+    async function sendMessage() {
+      const text = input.value.trim();
+      if (!text) return;
+      appendMsg(text, 'user');
+      saveToLocal({ role: 'user', text });
+      input.value = '';
+      // show typing placeholder
+     const typing = document.createElement('div');
+typing.className = 'msg bot-wrapper';
+
+typing.innerHTML = `
+  <img src="/images/chat-btn.png" class="avatar">
+   <div class="msg bot typing">
+      <span class="dot-chat"></span>
+      <span class="dot-chat"></span>
+      <span class="dot-chat"></span>
+  </div>
+`;
+
+      bodyEl.appendChild(typing);
+      bodyEl.scrollTop = bodyEl.scrollHeight;
+
+      try {
+        const resp = await fetch(serverUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text, sessionId }),
+        });
+        const data = await resp.json();
+        typing.remove();
+        const reply = data.reply || 'Xin lỗi, mình chưa hiểu.';
+        appendMsg(reply, 'bot');
+        saveToLocal({ role: 'bot', text: reply });
+      } catch (err) {
+        typing.remove();
+        appendMsg('Lỗi kết nối server. Thử lại sau.', 'bot');
+      }
+    }
+
+    function saveToLocal(msg) {
+      const arr = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      arr.push(msg);
+      // trim to last 40 messages
+      if (arr.length > 40) arr.splice(0, arr.length - 40);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+    }
+  </script>

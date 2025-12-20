@@ -172,8 +172,9 @@ class PromotionController {
   }
   async getAllPromotionsFlashsaleClient(req: Request, res: Response) {
     try {
+      const user_id = (req.user as any)?.id;
       const promotions =
-        await promotionService.getAllPromotionsFlashsaleCurrent();
+        await promotionService.getAllFlashsaleCurrentByUser(+user_id);
       //  const promotions =
       // await promotionService.();
       return res.status(200).json({

@@ -67,10 +67,10 @@ let products = [];
               <div class="status-box">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
                   <span class="detail-label">Đã sử dụng</span>
-                  <span class="detail-value">${voucher.current_usage}/${voucher.max_usage_count}</span>
+                  <span class="detail-value">${voucher.promotion_usage.length}/${voucher.max_usage_count}</span>
                 </div>
                 <div class="usage-bar">
-                  <div class="usage-fill" style="width: ${Math.min((voucher.current_usage / voucher.max_usage_count) * 100, 100)}%"></div>
+                  <div class="usage-fill" style="width: ${Math.min((voucher.promotion_usage.length / voucher.max_usage_count) * 100, 100)}%"></div>
                 </div>
               </div>
             `
@@ -107,7 +107,7 @@ let products = [];
 
     // Modal functions
     function openModal(voucher) {
-      const usagePercentage = (voucher.current_usage / voucher.max_usage_count) * 100;
+      const usagePercentage = (voucher.promotion_usage.length / voucher.max_usage_count) * 100;
       const expired = isExpired(voucher.end_date);
 
       const modalBody = document.getElementById("modalBody");
@@ -162,7 +162,7 @@ let products = [];
           <div class="usage-stats">
             <div class="usage-info">
               <span class="detail-label">Lần Sử Dụng:</span>
-              <span class="detail-value">${voucher.current_usage} / ${voucher.max_usage_count}</span>
+              <span class="detail-value">${voucher.promotion_usage.length} / ${voucher.max_usage_count}</span>
             </div>
             <div class="usage-bar">
               <div class="usage-fill" style="width: ${Math.min(usagePercentage, 100)}%"></div>
@@ -259,10 +259,6 @@ let products = [];
 
     // Giả sử API trả về danh sách voucher
     const voucherss = Array.isArray(data) ? data : data.data || [];
-
-    
-
-   
 
     voucherss.forEach((item) => {
      vouchers.push(item);

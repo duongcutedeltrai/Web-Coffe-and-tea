@@ -238,7 +238,6 @@ async function submitBlog() {
   submitFormData.append("status", formData.get("status"));
   submitFormData.append("content", content);
   submitFormData.append("meta_title", formData.get("metaTitle") || "");
-
   const pathParts = window.location.pathname.split('/');
   const blogId = pathParts[3];
 
@@ -256,7 +255,6 @@ async function submitBlog() {
   try {
     if (currentEditingId) {
       // GỌI API UPDATE
-
       submitFormData.append("blog_id", blogId);
       console.log(submitFormData);
       const response = await fetch(`/admin/data/blogs/update`, {
@@ -345,7 +343,6 @@ async function viewBlogDetails(id) {
         <div class="blog-detail-header">
             <h2 class="blog-detail-title">${blog.title}</h2>
             <div class="blog-detail-meta">
-
                 <span class="detail-badge"><i class="fa-solid fa-pen" style="color: #714024;"></i> ${getTypeLabel(blog.type)}</span>
                 <span class="detail-badge"><i class="fa-solid fa-calendar" style="color: #714024;"></i> ${publishDate}</span>
                 <span class="detail-badge"><i class="fa-solid fa-eye" style="color: #714024;"></i> ${blog.view_count} lượt xem</span>
@@ -524,5 +521,56 @@ window.addEventListener("popstate", () => {
     const id = path.match(/\/admin\/blogs\/(\d+)$/)[1];
     openBlogModal(id);
   }
+});
 
+const aiBtn = document.getElementById("aiBlogBtn");
+const modal = document.getElementById("aiBlogModal");
+const loader = document.getElementById("aiLoader");
+const generateBtn = document.getElementById("aiGenerateBtn");
+const promptInput = document.getElementById("aiPrompt");
+const cancelBt = document.getElementById("aiCancelBtn");
+const fillForm = (data) => {
+  document.getElementById("title").value = data.title || "";
+  document.getElementById("slug").value = data.slug || "";
+  document.getElementById("description").value = data.description || "";
+  if (editor) {
+    editor.setData(data.content);
+  }
+  document.getElementById("metaTitle").value = data.meta_title || "";
+  document.getElementById("metaDescription").value = data.meta_description || "";
+};
+aiBtn.addEventListener("click", () => {
+  modal.classList.add("show");
+});
+
+cancelBt.addEventListener("click", () => {
+  modal.classList.remove("show");
+});
+let editorInstance;
+
+
+generateBtn.addEventListener("click", async () => {
+  const prompt = promptInput.value.trim();
+  if (!prompt) return alert("Vui lòng nhập mô tả blog.");
+  loader.style.display = "flex";
+  try {
+    const res = await fetch("/admin/generate-blog-ai", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt })
+    });
+    const data = await res.json();
+
+    // Điền vào form
+    fillForm(data);
+
+    modal.style.display = "none";
+    promptInput.value = "";
+  } catch (err) {
+    console.error(err);
+    alert("Có lỗi xảy ra khi tạo blog.");
+  }
+  finally {
+    loader.style.display = "none"; // hide loader
+  }
 });

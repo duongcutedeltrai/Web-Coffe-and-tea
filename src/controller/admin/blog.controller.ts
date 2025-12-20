@@ -85,5 +85,17 @@ class BlogController {
       res.status(400).json({ error: (error as Error).message });
     }
   }
-}
+
+  async createBlogAI (req:Request, res:Response)  {
+    const { prompt } = req.body;
+    if (!prompt) return res.status(400).json({ error: "Missing prompt" });
+
+    try {
+        const data = await BlogService.generateBlogAI(prompt);
+        res.json(data);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "AI generation failed" });
+    }
+}}
 export default new BlogController();

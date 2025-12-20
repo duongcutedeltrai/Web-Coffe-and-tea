@@ -158,7 +158,8 @@ model products {
   promotion_products promotion_products[]
   price_product      price_product[]
   favorites          favorite[]
-promotion_usages promotion_usage[]
+  promotion_usages   promotion_usage[]
+
   @@index([category_id], map: "category_id")
 }
 
@@ -209,20 +210,21 @@ model promotions {
   promotion_products promotion_products[]
   promotion_usage    promotion_usage[]
 }
+
 model promotion_usage {
-  usage_id     Int       @id @default(autoincrement())
+  usage_id     Int      @id @default(autoincrement())
   promotion_id String
   order_id     String
   product_id   Int?
   user_id      Int?
-  user_phone   String?   @db.VarChar(20)
-  used_at      DateTime  @default(now()) @db.DateTime(0)
+  user_phone   String?  @db.VarChar(20)
+  used_at      DateTime @default(now()) @db.DateTime(0)
 
   // Relations
-  product      products? @relation(fields: [product_id], references: [product_id], onDelete: NoAction)
-  promotion    promotions @relation(fields: [promotion_id], references: [promotion_id], onDelete: NoAction)
-  order        orders     @relation(fields: [order_id], references: [order_id], onDelete: NoAction)
-  user         users?     @relation("UserPromotionUsage", fields: [user_id], references: [user_id], onDelete: NoAction)
+  product   products?  @relation(fields: [product_id], references: [product_id], onDelete: NoAction)
+  promotion promotions @relation(fields: [promotion_id], references: [promotion_id], onDelete: NoAction)
+  order     orders     @relation(fields: [order_id], references: [order_id], onDelete: NoAction)
+  user      users?     @relation("UserPromotionUsage", fields: [user_id], references: [user_id], onDelete: NoAction)
 
   // Indexes & constraints
   @@unique([promotion_id, user_id, product_id])
@@ -230,7 +232,6 @@ model promotion_usage {
   @@index([order_id])
   @@index([user_id])
 }
-
 
 model roles {
   role_id     Int     @id @default(autoincrement())

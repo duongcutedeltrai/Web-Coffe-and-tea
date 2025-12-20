@@ -199,6 +199,11 @@ class OrderService {
               changed_at: "desc",
             },
           },
+          promotion_usage: {
+            include: {
+              promotion: true
+            }
+          },
         },
       });
 
