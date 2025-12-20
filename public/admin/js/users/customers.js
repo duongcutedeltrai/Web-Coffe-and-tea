@@ -21,21 +21,27 @@ function initSearch() {
                 )}&email=${encodeURIComponent(q)}`
             );
             const data = await res.json();
+            const customers = data.customers.searchCustomer;
+            const orders = data.customers.orders;
+
+            function getOrdersByUser(userId, orders) {
+                return orders.filter(order => order.user_id === userId);
+            }
 
             customerTableBody.innerHTML = "";
 
-            data.forEach((customer) => {
+            customers.forEach((customer) => {
                 const tr = document.createElement("tr");
-
+                const customerOrders = getOrdersByUser(customer.user_id, orders);
                 tr.setAttribute(
                     "onclick",
-                    `window.location='/admin/customer/detail_staff/${customer.user_id}'`
+                    `window.location='/admin/customer/customer-detail/${customer.user_id}'`
                 );
                 tr.style.cursor = "pointer";
 
                 // Tính tổng tiền đơn hàng
-                const total = (customer.orders || []).reduce(
-                    (sum, order) => sum + (order.total_amount || 0),
+                const total = customerOrders.reduce(
+                    (sum, order) => sum + Number(order.final_amount),
                     0
                 );
                 const totalFormatted = new Intl.NumberFormat("vi-VN", {
@@ -47,7 +53,8 @@ function initSearch() {
                     <td>${customer.username}</td>
                     <td>${customer.email}</td>
                     <td>${customer.gender || ""}</td>
-                    <td>${customer.orders ? customer.orders.length : 0}</td>
+                    <td>${totalFormatted}</td>
+                    <td>${customerOrders ? customerOrders.length : 0}</td>
                     <td>
                         <div style="display:flex; gap:20px; position:relative; left:100px;">
 
@@ -76,7 +83,7 @@ function initSearch() {
                 customerTableBody.appendChild(tr);
             });
 
-            if (data.length === 0) {
+            if (customers.length === 0) {
                 customerTableBody.innerHTML =
                     "<tr><td colspan='6'>Không có khách hàng nào</td></tr>";
             }

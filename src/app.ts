@@ -39,12 +39,12 @@ webRouter(app);
 
 initDatabase();
 const io = new Server(server, {
-    cors: {
-        origin: "http://localhost:3000", // hoặc http://localhost:5173 nếu FE chạy riêng
-        credentials: true,
-    },
+  cors: {
+    origin: "http://localhost:3000", // hoặc http://localhost:5173 nếu FE chạy riêng
+    credentials: true,
+  },
 });
 setupSocket(io);
 server.listen(PORT, () => {
-    console.log(`✅ Server is running on http://localhost:${PORT}`);
+  console.log(`✅ Server is running on http://localhost:${PORT}`);
 });

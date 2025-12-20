@@ -351,6 +351,7 @@ class AdminUserService {
                 user_id: "asc",
             },
         });
+        const orders = await prisma.orders.findMany();
 
         return searchCustomer;
     };
@@ -528,10 +529,6 @@ class AdminUserService {
         });
         return staffDetail?.staff_id ?? null;
     };
-
-
-
-
 }
 
 export default new AdminUserService();

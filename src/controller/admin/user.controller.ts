@@ -97,9 +97,12 @@ class AdminUserController {
             const customers = await AdminUserService.handleSearchCustomer(
                 +currentPageCustomer,
                 username,
-                email
+                email,
             );
-            res.json(customers);
+            res.json({
+                customers
+
+            });
         } catch (err) {
             res.status(401).json("có lỗi xảy ra");
         }
@@ -116,8 +119,6 @@ class AdminUserController {
                 { header: "Khách hàng", key: "username", width: 30 },
                 { header: "số tiền", key: "final_amount", width: 30 },
             ];
-
-
 
             users.orders.forEach((order) => {
                 worksheet.addRow({
@@ -211,36 +212,44 @@ class AdminUserController {
     };
 
     postCreateUser = async (req: Request, res: Response) => {
-        const {
-            username,
-            email,
-            phone,
-            birthday,
-            address,
-            gender,
-            password,
-            position,
-            salary,
-            shiftId,
-        } = req.body;
-        const file = req.file;
-        const avatar = file?.filename ?? null;
+        try {
+            const {
+                username,
+                email,
+                phone,
+                birthday,
+                address,
+                gender,
+                password,
+                position,
+                salary,
+                shiftId,
+            } = req.body;
+            const file = req.file;
+            const avatar = file?.filename ?? null;
 
-        await AdminUserService.handleCreateUser(
-            username,
-            email,
-            phone,
-            birthday,
-            address,
-            gender,
-            password,
-            avatar,
-            position,
-            +salary,
-            +shiftId
-        );
-        //success
-        return res.redirect("/admin/staff");
+            const result = await AdminUserService.handleCreateUser(
+                username,
+                email,
+                phone,
+                birthday,
+                address,
+                gender,
+                password,
+                avatar,
+                position,
+                +salary,
+                +shiftId
+            );
+
+
+            //success
+            return res.redirect("/admin/staff");
+        } catch (error) {
+            if (error.message === 'Email đã tồn tại') {
+                return res.redirect("/admin/staff");
+            }
+        }
     };
 
     postUpdateStaff = async (req: Request, res: Response) => {

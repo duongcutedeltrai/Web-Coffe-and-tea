@@ -70,7 +70,7 @@ function initSearch() {
 
             if (data.length === 0) {
                 staffTableBody.innerHTML =
-                    "<tr><td colspan = '5'>Không có nhân viên nào </td></td>";
+                    "<tr><td colspan='5'>Không có nhân viên nào</td></tr>";
             }
         } catch (err) {
             console.error(err);
