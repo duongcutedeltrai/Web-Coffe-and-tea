@@ -13,7 +13,7 @@ class AdminDashboardController {
         const blogs = await dashboardService.getAllBlogs();
 
 
-        const blog = blogs[2];
+        const blog = blogs[0];
         // Lọc đơn hàng hôm nay
         const today = new Date();
         const todayOrders = totalAmount.filter((order) => {

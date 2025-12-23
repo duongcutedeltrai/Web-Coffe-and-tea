@@ -26,6 +26,7 @@ import statisticsRouter from "./admin/statistics.route";
 import { paymentAPI } from "./client/payment.route";
 import favoriteRouteAPI from "./client/favorite.route";
 import { ChatbotController } from "../controller/client/chatbot.controller";
+import staffRoute from "./admin/staff.route";
 
 const router = express.Router();
 const webRouter = (app: Express) => {
@@ -45,6 +46,7 @@ const webRouter = (app: Express) => {
 
     app.use("/admin", blogRoute);
     app.use("/admin", blogDataRoute);
+    app.use("/staff", staffRoute);
     /////clientauthMiddleware,
     app.use("/", ClientHomeRouter);
     app.use("/", feedbackRoute);
@@ -57,7 +59,7 @@ const webRouter = (app: Express) => {
     app.use("/products", categoryRoute);
 
     app.use("/auth", authRoute);
-// app.post("/chatbot", ChatbotController.chat);
+    // app.post("/chatbot", ChatbotController.chat);
     // Middleware 404 - phải để sau cùng
     app.use((req: Request, res: Response) => {
         // Nếu là API request → trả JSON

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phê La - Quản lý Danh mục</title>
+    <link rel="stylesheet" href="/admin/css/staffs/staffs.css" />
+    <link rel="stylesheet" href="/admin/css/style.css" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png" />
+    <link rel="shortcut icon" href="/images/favicon/favicon.ico" type="image/x-icon" />
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" />
+
+    <!-- Calendar -->
+</head>
+
+<body>
+    <div class="container">
+        <%- include('../admin/layout/sidebar.ejs'); -%>
+
+            <main class="main-content">
+                <h1 class="page-title">Lịch làm việc của tôi</h1>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <h3>CA LÀM THÁNG NÀY</h3>
+                                <div class="stat-value">12</div>
+                                <div class="stat-change positive">+2 so với tháng trước</div>
+                            </div>
+                            <div class="stat-icon blue">
+                                <svg width="24" height="24" fill="none" stroke="#2563eb" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <h3>GIỜ LÀM VIỆC</h3>
+                                <div class="stat-value">96h</div>
+                                <div class="stat-change neutral">Trung bình 8h/ca</div>
+                            </div>
+                            <div class="stat-icon green">
+                                <svg width="24" height="24" fill="none" stroke="#059669" viewBox="0 0 24 24">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <h3>CA SẮP TỚI</h3>
+                                <div class="stat-value" id="upcomingCount">7</div>
+                                <div class="stat-change" style="color: #ea580c;">Trong 7 ngày tới</div>
+                            </div>
+                            <div class="stat-icon orange">
+                                <svg width="24" height="24" fill="none" stroke="#ea580c" viewBox="0 0 24 24">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Calendar -->
+                <div class="tab-content" id="calendarTab">
+
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color shift-morning"></div>
+                            <span>Ca sáng (7h-15h)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color shift-afternoon"></div>
+                            <span>Ca chiều (14h-22h)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color shift-off"></div>
+                            <span>Ca tối (22h-06h)</span>
+                        </div>
+                    </div>
+
+                    <div class="schedule-card">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                Lịch Làm Việc Hàng Tuần
+                            </h2>
+                        </div>
+
+                        <div class="responsive-table">
+                            <table class="schedule-table" data-schedule>
+                                <thead>
+                                    <tr>
+                                        <th>Nhân viên</th>
+                                        <th>Thứ Hai</th>
+                                        <th>Thứ Ba</th>
+                                        <th>Thứ Tư</th>
+                                        <th>Thứ Năm</th>
+                                        <th>Thứ Sáu</th>
+                                        <th>Thứ Bảy</th>
+                                        <th>Chủ Nhật</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <% staffCalender.forEach(staff=> { %>
+                                        <tr data-staff-id="<%= staff.staff_id %>">
+                                            <td>
+                                                <div class="employee-info">
+
+                                                    <div class="employee-details">
+                                                        <div class="employee-name">
+                                                            <%= staff.username %>
+                                                        </div>
+                                                        <div class="employee-role">
+                                                            <%= staff.staff_detail?.position %>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <% staff.staff_detail?.staff_schedules.forEach(day=>
+                                                { %>
+                                                <td>
+                                                    <div class="shift-cell <%= day.work_shifts.name.includes('Sáng') ? 'shift-morning' : day.work_shifts.name.includes('Chiều') ? 'shift-afternoon' : day.work_shifts.name.includes('Tối') ? 'shift-night' : 'shift-off' %>"
+                                                        data-staff-id="<%= staff.user_id %>"
+                                                        data-day-of-week="<%= day.day_of_week %>">
+                                                        <%= day.work_shifts.name %>
+                                                    </div>
+                                                </td>
+                                                <% }) %>
+                                        </tr>
+                                        <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bottom-grid">
+                    <div class="info-card">
+                        <h3 class="card-title">
+                            <svg width="20" height="20" fill="none" stroke="#d97706" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            Hướng dẫn & quy định ca làm
+                        </h3>
+
+                        <div class="shift-list">
+                            <div class="shift-item">
+                                <span>Ca sáng</span>
+                                <span>07h – 15h (có mặt trước 10 phút)</span>
+                            </div>
+
+                            <div class="shift-item">
+                                <span>Ca chiều</span>
+                                <span>14h – 22h</span>
+                            </div>
+
+                            <div class="shift-item">
+                                <span>Đổi ca</span>
+                                <span>Báo trước ít nhất 24 giờ</span>
+                            </div>
+
+                            <div class="shift-item">
+                                <span>Nghỉ đột xuất</span>
+                                <span>Liên hệ quản lý trực tiếp</span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="info-card">
+                        <h3 class="card-title">
+                            <svg width="20" height="20" fill="none" stroke="#2563eb" viewBox="0 0 24 24">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            Ghi chú quan trọng
+                        </h3>
+                        <div class="note-box blue">
+                            <p><span class="note-label">Lưu ý:</span> Nhớ đến đúng giờ và mặc đồng phục đầy đủ</p>
+                        </div>
+                        <div class="note-box amber">
+                            <p><span class="note-label">Yêu cầu:</span> Kiểm tra máy pha và dụng cụ trước ca làm</p>
+                        </div>
+                        <div class="note-box green">
+                            <p><span class="note-label">Hỗ trợ:</span> Liên hệ quản lý nếu cần đổi ca hoặc có vấn đề
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+    </div>
+</body>
+
+</html>

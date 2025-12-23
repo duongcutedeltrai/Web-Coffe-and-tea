@@ -43,6 +43,12 @@
               window.location.href = "/auth/login";
             </script>
             <% } %>
+              <% if (isStaff) { %>
+                <!-- Menu chỉ admin -->
+                <a href="/staff/my-calendar" class="menu-item"><i class="fa-solid fa-gear"></i> <span>Lịch làm
+                    việc</span></a>
+                <% } %>
+
   </div>
 
   <div class="sidebar-footer">
