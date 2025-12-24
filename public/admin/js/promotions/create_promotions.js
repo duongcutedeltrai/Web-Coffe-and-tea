@@ -484,7 +484,9 @@ async function renderFlashSaleTable() {
               )}</td>
               <td class="cell-start-date">${startDate}</td>
               <td class="cell-end-date">${endDate}</td>
-              <td class="cell-quantity">${item.current_usage}/${item.max_usage_count || 0}</td>
+              <td class="cell-quantity">${item.current_usage}/${
+            item.max_usage_count || 0
+          }</td>
               <td class="cell-discount-amount">${formatCurrency(
                 discountPrice
               )}</td>
@@ -1226,7 +1228,7 @@ async function submitPromotions() {
       alert("Tạo khuyến mãi thành công!");
       closePromotionDrawer();
     } catch (error) {
-      console.error("Error creating promotion:", error);
+      console.error("Error creating promotion in js:", error.message);
       alert(error.message);
     }
   }

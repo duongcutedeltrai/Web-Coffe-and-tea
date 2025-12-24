@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phê La - Home</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link rel="stylesheet" href="/client/css/style.css" />
+    <link rel="stylesheet" href="/client/css/home/home.css" />
+    <link rel="stylesheet" href="/client/css/cart/cart-popup.css" />
+    <link rel="stylesheet" href="/client/css/profile/profile.css" />
+
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font-->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+      rel="stylesheet"
+    />
+
+    <!--Favicon-->
+    <link
+      rel="shortcut icon"
+      href="/images/favicon/favicon.ico"
+      type="image/x-icon"
+    />
+    <link rel="icon" href="/images/favicon/favicon.ico" type="image/x-icon" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <%- include('../layout/navbar_login.ejs'); -%>
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- User info card spans full width at top -->
+      <!-- <%= JSON.stringify(user) %> -->
+      <div class="user-header">
+        <div class="user-info-top">
+          <div class="user-avatar1-section">
+            <img
+              src="<%= user?.avatar || '/images/users/avatar-face.jpg' %>"
+              alt="Avatar"
+              class="user-avatar1"
+            />
+            <button class="btn-edit-avatar">✎</button>
+          </div>
+          <div class="user-details-grid">
+            <div class="detail-item">
+              <label>Tên Người Dùng</label>
+              <p class="detail-value"><%=user.username %></p>
+            </div>
+            <div class="detail-item">
+              <label>Email</label>
+              <p class="detail-value"><%=user.email %></p>
+            </div>
+            <div class="detail-item">
+              <label>Địa Chỉ</label>
+              <p class="detail-value"><%=user.address %></p>
+            </div>
+            <div class="detail-item loyalty-points">
+              <label>Điểm Tích Lũy</label>
+              <p class="detail-value points">
+                <%= user.point %> <span class="points-label">điểm</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Two-column layout: sidebar on left, content on right -->
+      <div class="content-container">
+        <!-- Left Sidebar -->
+        <aside class="sidebar-internal">
+          <nav class="sidebar-menu">
+            <a href="#" class="menu-item active" data-section="user-info">
+              <span class="menu-text">Thông Tin Cá Nhân</span>
+            </a>
+            <a href="#" class="menu-item" data-section="purchase-history">
+              <span class="menu-text">Lịch Sử Mua Hàng</span>
+            </a>
+            <a href="#" class="menu-item" data-section="points-history">
+              <span class="menu-text">Lịch Sử Điểm</span>
+            </a>
+          </nav>
+
+          <div class="sidebar-actions">
+            <button class="btn-back">Quay Lại</button>
+            <button class="btn-logout">Đăng Xuất</button>
+          </div>
+        </aside>
+
+        <!-- Right Content Area -->
+        <div class="content-area">
+          <!-- User Info Section -->
+          <section id="user-info" class="content-section active">
+            <!-- Edit Profile Section -->
+            <div class="edit-profile-section">
+              <div class="section-header">
+                <h2>Chỉnh Sửa Thông Tin Cá Nhân</h2>
+                <button class="btn-toggle-edit" id="toggleEditBtn">
+                  Chỉnh Sửa
+                </button>
+              </div>
+
+              <form class="edit-form hidden" id="editForm">
+                <div class="form-group">
+                  <label for="fullname">Tên Đầy Đủ</label>
+                  <input
+                    type="text"
+                    id="fullname"
+                    name="fullname"
+                    value="<%=user.username %>"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value="<%=user.email %>"
+                    required
+                    readonly
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="phone">Số Điện Thoại</label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value="<%=user.phone %>"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="address">Địa Chỉ</label>
+                  <input
+                    type="text"
+                    id="address"
+                    name="address"
+                    value="<%=user.address %>"
+                    required
+                  />
+                </div>
+
+                <div class="form-actions">
+                  <button type="submit" class="btn-save">Lưu Thay Đổi</button>
+                  <button type="button" class="btn-cancel" id="cancelEditBtn">
+                    Hủy
+                  </button>
+                </div>
+              </form>
+            </div>
+          </section>
+
+          <!-- Purchase History Section -->
+          <section
+            id="purchase-history"
+            class="content-section history-section"
+          >
+            <h2 style="color: black">Lịch Sử Mua Hàng</h2>
+            <div class="history-list"></div>
+
+            <div id="orderModal" class="modal-overlay hidden">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h2 class="modal-title" id="modalTitle">Chi tiết đơn hàng</h2>
+                  <button class="modal-close" onclick="closeOrderModal()">
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="modal-body"></div>
+                <div class="modal-footer">
+                  <button class="btn btn-outline" onclick="closeOrderModal()">
+                    Đóng
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="points-history" class="content-section history-section">
+            <h2 style="color: black">Lịch Sử Điểm</h2>
+            <div class="points-history-list">
+              <!-- Danh sách lịch sử điểm sẽ được render ở đây -->
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <script src="/client/js/profile/profile.js"></script>
+  </body>
+</html>

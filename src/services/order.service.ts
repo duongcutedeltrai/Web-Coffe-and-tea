@@ -1,5 +1,5 @@
 import { prisma } from "../config/client";
-import { orders_status } from "@prisma/client";
+import { membership_level, orders_status } from "@prisma/client";
 
 class OrderService {
   async getAllOrders(status?: string, type?: string, search?: string) {
@@ -232,11 +232,34 @@ class OrderService {
             created_at: new Date(),
           },
         });
-        await prisma.users.update({
+
+        // Cập nhật điểm và lấy tổng điểm mới
+        const updatedUser = await prisma.users.update({
           where: { user_id: data.user_id },
           data: {
             point: { increment: earnedPoints },
           },
+          select: { point: true },
+        });
+
+        // Xác định hạng thành viên dựa trên tổng điểm
+        let newMembership: membership_level = membership_level.bronze;
+        const totalPoints = updatedUser.point || 0;
+
+        if (totalPoints < 1000) {
+          newMembership = membership_level.bronze;
+        } else if (totalPoints < 2000) {
+          newMembership = membership_level.silver;
+        } else if (totalPoints < 3000) {
+          newMembership = membership_level.gold;
+        } else {
+          newMembership = membership_level.platinum;
+        }
+
+        // Cập nhật hạng thành viên
+        await prisma.users.update({
+          where: { user_id: data.user_id },
+          data: { membership: newMembership },
         });
       }
 
@@ -288,6 +311,98 @@ class OrderService {
     } catch (error: any) {
       console.error("Error fetching order by ID:", error);
       throw new Error(error.message || "Could not fetch order");
+    }
+  }
+
+  async getAllOrdersByUser(
+    status?: string,
+    type?: string,
+    search?: string,
+    userId?: number
+  ) {
+    try {
+      const whereClause: any = {
+        user_id: userId, // ⭐ Thêm filter user_id vào đầu
+      };
+
+      if (search && search.trim() !== "") {
+        const searchStr = search.trim();
+        whereClause.AND = [
+          { user_id: userId },
+          ...(status ? [{ status: status as orders_status }] : []),
+          ...(type && type !== "all"
+            ? [{ order_type: type.toUpperCase() }]
+            : []),
+          {
+            OR: [
+              { order_id: { contains: searchStr } },
+              { receiver_name: { contains: searchStr } },
+              {
+                users: {
+                  is: {
+                    username: { contains: searchStr },
+                  },
+                },
+              },
+            ],
+          },
+        ];
+      } else {
+        if (status) whereClause.status = status as orders_status;
+        if (type && type !== "all") whereClause.order_type = type.toUpperCase();
+      }
+
+      const orders = await prisma.orders.findMany({
+        where: whereClause,
+        include: {
+          users: {
+            select: {
+              user_id: true,
+              username: true,
+              email: true,
+              phone: true,
+            },
+          },
+          order_details: {
+            include: {
+              products: {
+                include: {
+                  price_product: true,
+                },
+              },
+            },
+          },
+          payment: {
+            select: {
+              payment_id: true,
+              method: true,
+              status: true,
+              total_amount: true,
+              transaction_date: true,
+            },
+          },
+          promotion_usage: {
+            include: {
+              promotions: {
+                select: {
+                  promotion_id: true,
+                  discount_percent: true,
+                  discount_price: true,
+                  type: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: {
+          orderDate: "desc", // Sắp xếp theo ngày đặt hàng mới nhất
+        },
+      });
+
+      return orders;
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      throw new Error("Could not fetch orders");
     }
   }
 

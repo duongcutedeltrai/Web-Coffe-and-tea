@@ -1,0 +1,10 @@
+thêm hàm ở home route để lấy data user 
+them ham update o client.service -> dat vao home route
+
+
+//ap dung ma giam giam  
+    sua ham validatePromotion
+    them vao ham createOrder logic cap nhat diem cho thanh vien
+    sua enum membership_level
+
+// fix dang ky, them so dien thoai, sua lai logic kiem tra phone, email: AuthService, signin.ejs (doan script)

@@ -1,3 +1,4 @@
+import { product } from "src/routers/client/product.route";
 import { prisma } from "../config/client";
 class PromotionService {
   async createPromotion(data: any) {
@@ -18,6 +19,40 @@ class PromotionService {
         type: data.type || "voucher",
       };
 
+      console.log("applicable_products:", data.applicable_products);
+      //kiem tra xem san pham trong danh sach truyen xuong co dang co flash sale khong
+      if (data.type === "flashsale" && data.applicable_products !== "all") {
+        const now = new Date();
+        for (const item of data.applicable_products) {
+          const existingFlashsale = await prisma.promotions.findFirst({
+            where: {
+              type: "flashsale",
+              promotion_products: {
+                some: {
+                  product_id: item.productId,
+                },
+              },
+              AND: [{ start_date: { lte: now } }, { end_date: { gte: now } }],
+            },
+            include: {
+              promotion_products: {
+                include: { products: true },
+              },
+            },
+          });
+          if (existingFlashsale) {
+            const matched = existingFlashsale.promotion_products.find(
+              (pp: any) => pp.product_id === item.productId
+            );
+            const productName =
+              matched?.products?.name ?? `ID ${item.productId}`;
+            throw new Error(
+              `Sản phẩm ${productName} đã có flash sale đang diễn ra. Vui lòng chọn sản phẩm khác hoặc thay đổi thời gian khuyến mãi.`
+            );
+          }
+        }
+      }
+
       await prisma.promotions.create({
         data: promotionData,
       });
@@ -34,7 +69,7 @@ class PromotionService {
       return promotionData;
     } catch (error) {
       console.error("Error creating promotion:", error);
-      throw new Error("Failed to create promotion");
+      throw new Error(error.message || error);
     }
   }
 
@@ -74,6 +109,7 @@ class PromotionService {
       return [];
     }
   }
+
   async getPromotionById(promotionId: string) {
     try {
       const promotion = await prisma.promotions.findUnique({
@@ -137,6 +173,7 @@ class PromotionService {
     userId?: number,
     phone?: string
   ) {
+    console.log(code, orderAmount, userId, phone);
     const promotion = await prisma.promotions.findUnique({
       where: { code },
       include: { promotion_usage: true },
@@ -189,9 +226,24 @@ class PromotionService {
         message: `Giá trị đơn hàng tối thiểu là ${promotion.min_order_amount}`,
       };
     }
-    if (promotion.is_for_new_user && userId) {
+    // ✅ Nếu chưa có userId nhưng có số điện thoại, cố gắng truy ra user
+    let resolvedUserId = userId;
+    let resolvedMembership: string | undefined;
+    if (!resolvedUserId && phone) {
+      const foundUser = await prisma.users.findFirst({
+        where: { phone },
+        select: { user_id: true, membership: true },
+      });
+      if (foundUser) {
+        resolvedUserId = foundUser.user_id;
+        resolvedMembership = foundUser.membership;
+      }
+    }
+
+    // 🔹 Kiểm tra điều kiện chỉ dành cho khách hàng mới
+    if (promotion.is_for_new_user && resolvedUserId) {
       const userOrderCount = await prisma.orders.count({
-        where: { user_id: userId },
+        where: { user_id: resolvedUserId },
       });
 
       if (userOrderCount > 0) {
@@ -202,24 +254,47 @@ class PromotionService {
         };
       }
     }
-    if (promotion.applicable_membership && userId) {
-      const user = await prisma.users.findUnique({
-        where: { user_id: userId },
-      });
 
-      if (user?.membership !== promotion.applicable_membership) {
+    // 🔹 Kiểm tra hạng thành viên áp dụng
+    if (
+      promotion.applicable_membership &&
+      (resolvedUserId || resolvedMembership)
+    ) {
+      // Lấy membership nếu chưa có
+      let userMembership = resolvedMembership;
+      if (!userMembership && resolvedUserId) {
+        const user = await prisma.users.findUnique({
+          where: { user_id: resolvedUserId },
+          select: { membership: true },
+        });
+        userMembership = user?.membership;
+      }
+
+      const allowedMemberships = Array.isArray(
+        promotion.applicable_membership as any
+      )
+        ? (promotion.applicable_membership as any as string[])
+        : [promotion.applicable_membership as any as string];
+
+      if (
+        allowedMemberships.length > 0 &&
+        (!userMembership || !allowedMemberships.includes(userMembership))
+      ) {
         return {
           valid: false,
           promotion: null,
-          message: `Mã khuyến mãi chỉ dành cho thành viên ${promotion.applicable_membership}`,
+          message: `Mã khuyến mãi chỉ dành cho các hạng thành viên: ${allowedMemberships.join(
+            ", "
+          )}`,
         };
       }
+      console.log("User membership:", userMembership);
     }
     let usedPromotion = null;
-
-    if (userId) {
+    // Ưu tiên kiểm tra theo userId đã được resolve
+    if (resolvedUserId) {
       usedPromotion = promotion.promotion_usage.find(
-        (usage) => usage.user_id === userId
+        (usage) => usage.user_id === resolvedUserId
       );
     }
     // Nếu không có userId thì mới check theo phone

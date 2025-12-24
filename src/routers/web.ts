@@ -23,42 +23,42 @@ import favoriteRouteAPI from "./client/favorite.route";
 
 const router = express.Router();
 const webRouter = (app: Express) => {
-    ////admin
-    app.use("/admin",authMiddleware, productRoute);
-    app.use("/api/admin",authMiddleware, productRouteAPI);
-    app.use("/admin", authMiddleware, categoryRoute);
-    app.use("/admin", authMiddleware, userRoute);
-    app.use("/", ClientHomeRouter);
-    app.use("/admin", authMiddleware, orderRoute);
-    app.use("/admin", authMiddleware, orderDataRoute);
-    app.use("/admin", authMiddleware, promotionDataRoute);
-    app.use("/admin",authMiddleware, promotionRoute);
-    app.use("/admin", authMiddleware, statisticsRouter);
-    /////client
-    app.use("/", homeRoute);
-    app.use("/", feedbackRoute);
-    app.use("/", ClientHomeRouter);
-    app.use("/api", productAPI);
-    app.use("/api", cartRouteAPI);
-    app.use("/api", favoriteRouteAPI);
-    app.use("/api/payment", paymentAPI);
-    app.use("/api/chat", chatRouteAPI);
-    app.use("/products", categoryRoute);
+  ////admin
+  app.use("/admin", authMiddleware, productRoute);
+  app.use("/api/admin", authMiddleware, productRouteAPI);
+  app.use("/admin", authMiddleware, categoryRoute);
+  app.use("/admin", authMiddleware, userRoute);
+  app.use("/", ClientHomeRouter);
+  app.use("/admin", authMiddleware, orderRoute);
+  app.use("/admin", orderDataRoute);
+  app.use("/admin", authMiddleware, promotionDataRoute);
+  app.use("/admin", authMiddleware, promotionRoute);
+  app.use("/admin", authMiddleware, statisticsRouter);
+  /////client
+  app.use("/", homeRoute);
+  app.use("/", feedbackRoute);
+  app.use("/", ClientHomeRouter);
+  app.use("/api", productAPI);
+  app.use("/api", cartRouteAPI);
+  app.use("/api", favoriteRouteAPI);
+  app.use("/api/payment", paymentAPI);
+  app.use("/api/chat", chatRouteAPI);
+  app.use("/products", categoryRoute);
 
-    app.use("/auth", authRoute);
+  app.use("/auth", authRoute);
 
-    // Middleware 404 - phải để sau cùng
-    app.use((req: Request, res: Response) => {
-        // Nếu là API request → trả JSON
-        if (req.originalUrl.startsWith("/api")) {
-            return res.status(404).json({ message: "Not Found" });
-        }
+  // Middleware 404 - phải để sau cùng
+  app.use((req: Request, res: Response) => {
+    // Nếu là API request → trả JSON
+    if (req.originalUrl.startsWith("/api")) {
+      return res.status(404).json({ message: "Not Found" });
+    }
 
-        // Nếu là request web → render trang 404
-        return res
-            .status(404)
-            .render("auth/404_page.ejs", { url: req.originalUrl });
-    });
+    // Nếu là request web → render trang 404
+    return res
+      .status(404)
+      .render("auth/404_page.ejs", { url: req.originalUrl });
+  });
 };
 
 export default webRouter;

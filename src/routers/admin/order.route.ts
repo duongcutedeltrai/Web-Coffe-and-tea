@@ -1,3 +1,4 @@
+import { authMiddleware } from "../../middleware/auth.middleware";
 import orderController from "../../controller/admin/order.controller";
 import express from "express";
 const orderRoute = express.Router();
@@ -11,6 +12,11 @@ orderRoute.get("/orders/create", orderController.getOrdersPage);
 orderDataRoute.get("/data/orders", orderController.getOrdersData);
 orderDataRoute.get("/data/orders/:id", orderController.getOrderById);
 orderDataRoute.post("/data/orders/create", orderController.createOrder);
+orderDataRoute.get(
+  "/data/orders-user",
+  authMiddleware,
+  orderController.getOrderUsersData
+);
 
 orderRoute.put("/orders/:id/status", orderController.updateOrderStatus);
 

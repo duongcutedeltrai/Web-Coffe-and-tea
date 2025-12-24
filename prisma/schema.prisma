@@ -252,7 +252,7 @@ model users {
   reset_token_expire  DateTime?              @db.DateTime(0)
   auth_provider users_auth_provider? @default(system)
 
-   membership    membership_level?
+  membership    membership_level?
   discount_rate Int?              @default(0)
   cart          cart[]
   point_history point_history[]
@@ -356,10 +356,10 @@ model staff_schedules {
 
 
 enum membership_level {
-  BRONZE
-  SILVER
-  GOLD
-  DIAMOND
+  bronze
+  silver
+  gold
+  platinum
 }
 enum inventory_change_type {
   import

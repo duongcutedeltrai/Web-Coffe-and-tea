@@ -18,7 +18,9 @@ class PromotionController {
         message: "Tạo mã khuyến mãi thành công",
       });
     } catch (error) {
-      return res.status(500).json({
+      console.error("Error creating promotion1:", error);
+      console.log("Error creating promotion2:", error.message);
+      return res.status(400).json({
         success: false,
         message: error.message,
       });
