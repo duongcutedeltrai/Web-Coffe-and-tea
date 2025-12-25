@@ -529,7 +529,7 @@ select.form-control {
 
 
 /* Modal Styles */
-.modal {
+/* .modal {
     display: none;
     position: fixed;
     top: 0;
@@ -546,7 +546,7 @@ select.form-control {
     align-items: center;
     justify-content: center;
     animation: modalFadeIn 0.3s ease-out;
-}
+} */
 
 @keyframes modalFadeIn {
     from {
@@ -558,6 +558,7 @@ select.form-control {
     }
 }
 
+/* 
 .modal-content {
     background: white;
     border-radius: 20px;
@@ -568,7 +569,7 @@ select.form-control {
     overflow-y: auto;
     position: relative;
     animation: modalSlideIn 0.4s ease-out;
-}
+} */
 
 @keyframes modalSlideIn {
     from {
@@ -582,20 +583,20 @@ select.form-control {
     }
 }
 
-.modal-header {
+/* .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
     padding-bottom: 20px;
     border-bottom: 2px solid #e2e8f0;
-}
-
+} */
+/* 
 .modal-title {
     font-size: 1.8rem;
     color: #714024;
     font-weight: 700;
-}
+} */
 
 .close-btn {
     background: none;
@@ -723,4 +724,239 @@ select.form-control {
         transform: rotate(360deg);
     }
 
+}
+
+.btn-view-detail {
+    background: transparent;
+    color: #333;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    text-decoration: underline;
+    transition: color 0.3s;
+}
+
+.btn-view-detail:hover {
+    color: #8B4513;
+}
+
+/* ===== ORDER DETAIL MODAL ===== */
+/* ===== OVERLAY ===== */
+.order-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.order-modal.show {
+    display: flex;
+}
+
+/* ===== MODAL BOX ===== */
+.order-modal-content {
+    width: 90%;
+    max-width: 820px;
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+}
+
+/* ================= MODAL OVERLAY ================= */
+.order-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 999;
+}
+
+.order-modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ================= MODAL CONTENT ================= */
+.order-modal-content {
+    background: #f9fafb;
+    border-radius: 14px;
+    width: 600px;
+    max-width: 95%;
+    max-height: 85vh;
+    overflow-y: auto;
+
+    transform: scale(0.92) translateY(20px);
+    opacity: 0;
+    transition: transform 0.35s ease, opacity 0.35s ease;
+}
+
+.order-modal.show .order-modal-content {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+/* ================= HEADER ================= */
+.order-modal-header {
+    background: #9b4f19;
+    color: #fff;
+    padding: 18px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 14px 14px 0 0;
+}
+
+.order-modal-header h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* ================= CLOSE BUTTON ================= */
+.order-close-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.6rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.order-close-btn:hover {
+    transform: rotate(90deg);
+    opacity: 0.8;
+}
+
+/* ================= BODY ================= */
+.order-modal-body {
+    padding: 22px 26px;
+    scroll-behavior: smooth;
+}
+
+/* ================= ORDER INFO ================= */
+.order-info-box {
+    background: #fff;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 22px;
+}
+
+.order-info-box p {
+    margin: 8px 0;
+    font-size: 0.95rem;
+    color: #374151;
+}
+
+/* ================= PRODUCT LIST ================= */
+.product-list-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 0.95rem;
+}
+
+.product-list-item:last-child {
+    border-bottom: none;
+}
+
+/* ================= TOTAL ================= */
+.order-total-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 2px solid #e5e7eb;
+}
+
+.order-total-label {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #111827;
+}
+
+.order-total-value {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #9b4f19;
+}
+
+/* ===== STATUS ===== */
+.order-info-value .status-completed,
+.order-info-value .completed {
+    background: #86efac;
+    color: #14532d;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* ===== PRODUCT LIST ===== */
+.products-list-section h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: #111827;
+}
+
+.product-list-item {
+    background: #fafafa;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+}
+
+.product-item-name {
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 6px;
+}
+
+.product-item-price {
+    color: #9b4f19;
+    font-weight: 700;
+}
+
+/* ===== TOTAL ===== */
+.order-total-section {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 2px solid #9b4f19;
+    text-align: right;
+}
+
+.order-total-label {
+    font-size: 1rem;
+    color: #374151;
+}
+
+.order-total-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #9b4f19;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .order-modal-content {
+        width: 95%;
+    }
+
+    .order-info-row {
+        flex-direction: column;
+        gap: 4px;
+    }
 }

@@ -151,38 +151,8 @@
                                         <th>Thao tác</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <% user.orders.forEach(order=> { %> <% order.order_details.forEach(detail=> { %>
-                                            <tr>
-                                                <td>
-                                                    #<%= "MD" + order.order_id.toString().padStart(3, '0' ) %>
-                                                </td>
-                                                <td>
-                                                    <%= new Date(order.orderDate).toLocaleDateString("vi-VN") %>
-                                                </td>
-                                                <td>
-                                                    <%= detail.products.name %> x<%= detail.quantity %>
-                                                </td>
-                                                <td>
-                                                    <%= new Intl.NumberFormat("vi-VN", { style: "currency" ,
-                                                        currency: "VND" }).format(detail.price * detail.quantity) %>
-                                                </td>
-                                                <td>
-                                                    <span class="order-status status-<%= order.status %>">
-                                                        <%= order.status %>
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <button class="btn" style="
-                                                    padding: 8px 16px;
-                                                    font-size: 0.9rem;
-                                                ">
-                                                        Xem chi tiết
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                            <% }) %>
-                                                <% }) %>
+                                <tbody id="ordersTableBody">
+
                                 </tbody>
                             </table>
                         </div>
@@ -227,6 +197,20 @@
                     </div>
                 </div>
             </main>
+    </div>
+
+    <!-- ================= MODAL ================= -->
+    <div class="order-modal" id="orderDetailModal">
+        <div class="order-modal-content">
+            <div class="order-modal-header">
+                <h2>Chi tiết đơn hàng</h2>
+                <button class="order-close-btn" id="closeOrderModal" onclick="closeOrderModal()">×</button>
+            </div>
+            <div class="order-modal-body" id="orderModalBody"></div>
+        </div>
+    </div>
+
+    <div id="orders-data" data-orders='<%- JSON.stringify(user.orders) %>'>
     </div>
 
     <script src="/admin/js/users/user_details.js"></script>

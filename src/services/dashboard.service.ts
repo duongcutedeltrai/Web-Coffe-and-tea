@@ -62,14 +62,21 @@ class DashboardService {
 
     getProductFromOrderDetails = async () => {
         const product = await prisma.orders.findMany({
+            take: 1,
             include: {
                 order_details: {
+
                     include: {
                         products: true,
                     },
                 },
             },
+
+
         });
+
+        console.log("procut", product);
+
         return product;
     };
 
