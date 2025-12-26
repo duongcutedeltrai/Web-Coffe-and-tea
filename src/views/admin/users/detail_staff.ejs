@@ -6,26 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Phê La - Chi tiết Nhân viên</title>
     <link rel="stylesheet" href="/admin/css/style.css" />
-    <link rel="stylesheet" href="/admin/css/users/detailUser.css" />
+    <link rel="stylesheet" href="/admin/css/users/detailStaff.css" />
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
         integrity="sha512-2SwdPD6INVr   V/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
- <!--Favicon-->
-        <link
-            rel="shortcut icon"
-            href="/images/favicon/favicon.ico"
-            type="image/x-icon"
-        />
-        <link
-            rel="icon"
-            href="/images/favicon/favicon.ico"
-            type="image/x-icon"
-        />
-        <link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-/>
+    <!--Favicon-->
+    <link rel="shortcut icon" href="/images/favicon/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="/images/favicon/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
 </head>
 
@@ -373,13 +362,14 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label class="form-label">Ngày sinh</label>
-                                    <input type="date" class="form-input" name="birthday" value="1990-08-15" disabled />
+                                    <input type="date" class="form-input" name="birthday" disabled />
                                 </div>
 
                                 <div class="form-group">
                                     <label class="form-label">Password</label>
                                     <input type="password" class="form-input" name="password"
-                                        value="<%= user.password %>" />
+                                        placeholder="Enter new password" />
+
                                 </div>
                             </div>
 
@@ -441,7 +431,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
-    <script src="/admin/js/users/user_details.js"></script>
+    <script src="/admin/js/users/staff_details.js"></script>
 </body>
 
 </html>

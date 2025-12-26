@@ -217,5 +217,7 @@ class PromotionController {
       });
     }
   }
+
+
 }
 export default new PromotionController();

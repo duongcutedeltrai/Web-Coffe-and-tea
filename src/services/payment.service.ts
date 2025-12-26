@@ -3,10 +3,10 @@ import url from "url";
 import { Request } from "express";
 import { VNPay, ignoreLogger, ProductCode, VnpLocale, dateFormat } from "vnpay";
 
-const VNP_TMN_CODE = process.env.VNP_TMN_CODE || "FNNTUTKB";
-const VNP_HASH_SECRET = process.env.VNP_HASH_SECRET || "BOHIQ2LHEQSXXCVXKQ2IPFMWLLB0H68S";
+const VNP_TMN_CODE = process.env.VNP_TMN_CODE || "AU2Z94YT";
+const VNP_HASH_SECRET = process.env.VNP_HASH_SECRET || "O985RID5ZFGYGR7Q7Z9I3YMHAJKVH1XC";
 const VNP_RETURN_URL = process.env.VNP_RETURN_URL || "http://localhost:3000/api/payment/vnpay/return";
-const VNP_HOST = process.env.VNP_HOST || "https://sandbox.vnpayment.vn/";
+const VNP_HOST = process.env.VNP_HOST || "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 
 interface VnpVerifyResult {
     isVerified: boolean;

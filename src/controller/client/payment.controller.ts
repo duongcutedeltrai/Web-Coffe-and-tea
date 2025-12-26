@@ -96,6 +96,7 @@ class PaymentController {
                     const user = await userService.getDetailCustomerById(
                         +(req.user as any)?.id || 0
                     );
+                    console.log("Created order:", order);
                     delete (req.session as any).paymentData;
                     return res.render("client/success/success.ejs", {
                         order,

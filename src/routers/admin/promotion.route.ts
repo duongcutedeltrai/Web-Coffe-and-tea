@@ -45,7 +45,6 @@ promotionDataRoute.post(
 
 promotionDataRoute.get(
   "/data/promotions/voucher",
-
   promotionController.getAllPromotionsVoucher
 );
 promotionDataRoute.get(

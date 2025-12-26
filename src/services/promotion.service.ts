@@ -746,5 +746,7 @@ class PromotionService {
 
     return result;
   }
+
+
 }
 export default new PromotionService();
