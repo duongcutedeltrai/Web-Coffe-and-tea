@@ -32,6 +32,10 @@
             "./node_modules/@types",
             "./src/types"
         ],
+        "types": [
+            "node",
+            "express"
+        ]
     },
     "include": [
         "src"
