@@ -48,7 +48,7 @@ const webRouter = (app: Express) => {
     app.use("/admin", blogDataRoute);
     app.use("/staff", staffRoute);
     /////clientauthMiddleware,
-    app.use("/", ClientHomeRouter);
+    // app.use("/", ClientHomeRouter);
     app.use("/", feedbackRoute);
     app.use("/", ClientHomeRouter);
     app.use("/api", productAPI);
