@@ -64,7 +64,7 @@ class AuthController {
       } else if (req.user && (req.user as any).role === 2) {
         return res.redirect("/admin/dashboard");
       } else {
-        return res.redirect("/home");
+        return res.redirect("/");
       }
     } catch (error) {
       console.error("Login error:", error.message);
