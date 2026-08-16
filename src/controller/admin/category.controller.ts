@@ -32,14 +32,14 @@ class AdminCategoryController {
     }
 
     async getUpdateCategoriesPage(req: Request, res: Response) {
-        const id = req.params.id;
+        const id = req.params.id as string;
         const category = await CategoryService.getCategoryById(Number(id));
         return res.render("admin/categories/update_category.ejs", { category });
     }
 
     async updateCategory(req: Request, res: Response) {
         try {
-            const id = req.params.id;
+            const id = req.params.id as string;
             const data = {
                 groupName: req.body.groupName,
                 groupDescription: req.body.groupDescription,
@@ -57,7 +57,7 @@ class AdminCategoryController {
 
     async deleteCategory(req: Request, res: Response) {
         try {
-            const id = req.params.id;
+            const id = req.params.id as string;
             await CategoryService.deleteCategory(Number(id));
             return res.redirect("/admin/categories");
         } catch (error) {

@@ -50,7 +50,7 @@ class BlogController {
   }
   async getBlogByID(req: Request, res: Response) {
     try {
-      const blogID = req.params.id;
+      const blogID = req.params.id as string;
       const blog = await BlogService.getBlogByID(blogID);
       if (!blog) {
         return res.status(404).json({ error: "Blog not found" });
@@ -78,7 +78,7 @@ class BlogController {
 
   async deleteBlog(req: Request, res: Response) {
     try {
-      const blogID = req.params.id;
+      const blogID = req.params.id as string;
       await BlogService.deleteBlog(blogID);
       return res.status(204).send();
     } catch (error) {

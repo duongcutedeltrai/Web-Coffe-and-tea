@@ -8,7 +8,7 @@ import {
 const ClientHomeRouter = express.Router();
 
 ClientHomeRouter.get(
-    "/home",
+    "/",
     authMiddleware,
     ClientHomeController.getHomeClientPage
 );

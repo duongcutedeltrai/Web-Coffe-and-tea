@@ -41,7 +41,7 @@ class PromotionController {
     async getValidVouchers(req: Request, res: Response) {
         try {
             const user_id = (req.user as any)?.id;
-            const totalPrice = req.params.total;
+            const totalPrice = req.params.total as string;
             const data = await promotionService.getValidVouchers(
                 +user_id,
                 +totalPrice
@@ -76,7 +76,7 @@ class PromotionController {
     }
     async getPromotionById(req: Request, res: Response) {
         try {
-            const promotionId = req.params.id;
+            const promotionId = req.params.id as string;
             const promotion = await promotionService.getPromotionById(
                 promotionId
             );
@@ -100,7 +100,7 @@ class PromotionController {
 
     async updatePromotion(req: Request, res: Response) {
         try {
-            const promotionId = req.params.id;
+            const promotionId = req.params.id as string;
             const promotionData = req.body;
             const updatedPromotion = await promotionService.updatePromotion(
                 promotionId,

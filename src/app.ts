@@ -10,7 +10,7 @@ import { setupSocket } from "./socket";
 import session from "express-session";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3003;
 const server = http.createServer(app);
 //config view enginee
 app.use(session({
@@ -33,12 +33,17 @@ app.use(express.static("public"));
 
 //config routers
 webRouter(app);
-getConection();
+
+// Initialize database connection with error handling
+getConection().catch((error) => {
+    console.warn("⚠️ Database connection warning:", error.message);
+    // Continue startup even if legacy DB connection fails
+});
 
 initDatabase();
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:3000", // hoặc http://localhost:5173 nếu FE chạy riêng
+        origin: "http://localhost:3002", // hoặc http://localhost:5173 nếu FE chạy riêng
         credentials: true,
     },
 });

@@ -71,7 +71,7 @@ class ClientHomeController {
         +(req.user as any)?.id || 0
     );
 
-    const blogID = req.params.id;
+    const blogID = req.params.id as string;
     const blog = await blogService.getBlogByID(blogID);
  if (blog) {
      await blogService.incrementView(blogID);

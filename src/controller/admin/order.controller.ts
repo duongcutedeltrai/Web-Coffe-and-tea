@@ -64,7 +64,7 @@ class OrderController {
 
     async getOrderById(req: Request, res: Response) {
         try {
-            const orderId = req.params.id;
+            const orderId = req.params.id as string;
 
             const order = await OrderService.getOrderById(orderId);
             return res.json({ success: true, data: order });
@@ -93,7 +93,7 @@ class OrderController {
 
     async updateOrderStatus(req: Request, res: Response) {
         try {
-            const orderId = req.params.id;
+            const orderId = req.params.id as string;
             const { status } = req.body;
 
             if (!status) {

@@ -44,7 +44,7 @@ class AdminProductController {
     getProductByCategoriesId = async (req: Request, res: Response) => {
         try {
             const { page } = req.query;
-            const id_category = req.params.id;
+            const id_category = req.params.id as string;
             let currentPage = page ? +page : 1;
             if (currentPage <= 0) {
                 currentPage = 1;
@@ -125,7 +125,7 @@ class AdminProductController {
         }
     };
     getDetailProductPage = async (req: Request, res: Response) => {
-        const id = req.params.id;
+        const id = req.params.id as string;
         const product = await ProductService.getDetailProductsById(+id);
         const categories = await CategoryService.getAllCategories();
         return res.render("admin/products/detail_product.ejs", {
@@ -136,7 +136,7 @@ class AdminProductController {
 
     updateProduct = async (req: Request, res: Response) => {
         try {
-            const id = req.params.id;
+            const id = req.params.id as string;
             const images = req?.file?.filename || req.body.old_images;
             console.log(req.body);
             const validate = ProductSchema.safeParse(req.body);
@@ -248,7 +248,7 @@ class AdminProductController {
         }
     };
     deleteProduct = async (req: Request, res: Response) => {
-        const id = req.params.id;
+        const id = req.params.id as string;
         try {
             await ProductService.deleteProduct(+id);
             return res.status(200).json({

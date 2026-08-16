@@ -43,7 +43,7 @@ class CartController {
     updateCartAPI = async (req: Request, res: Response) => {
         try {
             const { id_product, quantity, size } = req.body;
-            const cartDetailId = req.params.cartDetailId;
+            const cartDetailId = req.params.cartDetailId as string;
             console.log(cartDetailId, id_product, quantity, size);
             const updatedCart = await cartService.updateCartDetail(
                 +cartDetailId,
@@ -59,7 +59,7 @@ class CartController {
 
     deleteCartAPI = async (req: Request, res: Response) => {
         try {
-            const cartDetailId = req.params.cartDetailId;
+            const cartDetailId = req.params.cartDetailId as string;
             await cartService.deleteCartDetail(+cartDetailId);
             res.json("success");
         } catch (error) {
